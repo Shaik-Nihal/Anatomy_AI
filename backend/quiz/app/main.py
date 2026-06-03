@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes.quiz import router as quiz_router
 from app.routes.progress import router as progress_router
+from app.routes.tutor import router as tutor_router
+from app.routes.voice import router as voice_router
 from app.database import get_connection
 
 # Initialize database tables on startup
@@ -47,6 +49,14 @@ app.include_router(
     progress_router,
     prefix="/progress",
     tags=["Progress"]
+)
+app.include_router(
+    tutor_router,
+    prefix="/api"
+)
+app.include_router(
+    voice_router,
+    prefix="/api"
 )
 
 @app.get("/")

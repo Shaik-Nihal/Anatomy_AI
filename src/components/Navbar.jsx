@@ -17,6 +17,7 @@ function Navbar() {
     { label: "Dashboard", path: "/dashboard", icon: "🏠" },
     { label: "3D Anatomy", path: "/body-selection", icon: "🫀" },
     { label: "Quizzes", path: "/quiz", icon: "🧬" },
+    { label: "AI Tutor", path: "/ai-tutor", icon: "🤖" },
     { label: "Progress Tracking", path: "/learning-progress", icon: "📈" },
   ];
 

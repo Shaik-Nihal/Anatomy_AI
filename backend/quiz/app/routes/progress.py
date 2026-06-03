@@ -68,3 +68,26 @@ def get_user_results(user_id: str):
     conn.close()
 
     return [dict(row) for row in data]
+
+@router.get("/tutor/{user_id}")
+def get_tutor_progress(user_id: str):
+    conn = get_connection()
+    data = conn.execute(
+        "SELECT * FROM quiz_attempts WHERE user_id=?",
+        (user_id,)
+    ).fetchall()
+    conn.close()
+    
+    sessions = len(data)
+    if sessions > 0:
+        avg_score = int(sum(row["percentage"] for row in data) / sessions)
+        topics = list(set(row["organ"] for row in data))
+    else:
+        avg_score = 0
+        topics = []
+        
+    return {
+        "sessions": sessions,
+        "clarity": avg_score,
+        "topics": topics
+    }

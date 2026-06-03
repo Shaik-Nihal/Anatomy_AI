@@ -221,25 +221,33 @@ function Dashboard() {
 
           {/* AI Tutor */}
           <div
-            style={disabledCardStyle}
-            onClick={() => alert("AI Tutor feature is coming soon!")}
+            style={cardStyle}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-8px)";
+              e.currentTarget.style.boxShadow = "0 0 35px rgba(6, 182, 212, 0.30)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0px)";
+              e.currentTarget.style.boxShadow = "0 0 20px rgba(6, 182, 212, 0.12)";
+            }}
+            onClick={() => navigate("/ai-tutor")}
           >
             <div style={{ fontSize: "36px" }}>🤖</div>
 
             <h2
               style={{
-                color: "#94A3B8",
+                color: "#06B6D4",
                 marginTop: "18px",
                 fontSize: "24px",
                 fontWeight: 600,
               }}
             >
-              AI Tutor <span style={{ fontSize: "12px", background: "rgba(255,255,255,0.08)", padding: "2px 8px", borderRadius: "8px", marginLeft: "8px" }}>Coming Soon</span>
+              AI Tutor
             </h2>
 
             <p
               style={{
-                color: "#94A3B8",
+                color: "#CBD5E1",
                 marginTop: "14px",
                 lineHeight: "1.5",
                 fontSize: "15px",

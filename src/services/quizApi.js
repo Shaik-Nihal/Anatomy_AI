@@ -40,3 +40,14 @@ export const getUserProgress = async (userId) => {
   const response = await axios.get(`${PROGRESS_API_URL}/user/${userId}`);
   return response.data;
 };
+
+export const sendTutorQuestion = async (question) => {
+  const response = await axios.post(`${QUIZ_API_URL}/tutor`, { question });
+  return response.data;
+};
+
+export const getTutorProgress = async (userId) => {
+  const response = await axios.get(`${PROGRESS_API_URL}/tutor/${userId}`);
+  return response.data;
+};
+

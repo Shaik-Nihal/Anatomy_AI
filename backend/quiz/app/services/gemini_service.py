@@ -1,15 +1,22 @@
 import os
 import json
 import google.generativeai as genai
+import openai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+# Check for keys
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
-model = genai.GenerativeModel("gemini-2.5-flash")
+# Configure Gemini key if it seems like a Gemini key
+if GEMINI_API_KEY and not GEMINI_API_KEY.startswith("gsk_"):
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel("gemini-2.5-flash")
+else:
+    model = None
+
 
 
 def generate_quiz(organ, difficulty):
@@ -155,8 +162,41 @@ For image questions:
 - Return image_url field
 """
 
-    response = model.generate_content(prompt)
+    # Check if we should use Groq
+    use_groq = False
+    gsk = None
 
+    if GROQ_API_KEY and GROQ_API_KEY.startswith("gsk_"):
+        use_groq = True
+        gsk = GROQ_API_KEY
+    elif GEMINI_API_KEY and GEMINI_API_KEY.startswith("gsk_"):
+        use_groq = True
+        gsk = GEMINI_API_KEY
+
+    if use_groq:
+        openai.api_key = gsk
+        openai.api_base = "https://api.groq.com/openai/v1"
+        try:
+            print("Generating quiz using Groq...")
+            response = openai.ChatCompletion.create(
+                model="llama-3.3-70b-versatile",
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.3
+            )
+            text = response.choices[0].message.content.strip()
+            if text.startswith("```json"):
+                text = text.replace("```json", "").replace("```", "").strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"Quiz generation with Groq failed: {e}. Falling back to Gemini...")
+
+    # Fallback to Gemini
+    if model is None:
+        raise Exception("No valid API keys configured. Set GEMINI_API_KEY or GROQ_API_KEY in your .env.")
+
+    response = model.generate_content(prompt)
     text = response.text.strip()
 
     if text.startswith("```json"):

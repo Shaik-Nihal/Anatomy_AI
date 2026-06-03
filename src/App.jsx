@@ -9,6 +9,7 @@ import OrganSelection from "./pages/OrganSelection/OrganSelection";
 import ARViewer from "./pages/ARViewer/ARViewer";
 import LearningProgress from "./pages/LearningProgress/LearningProgress";
 import Quiz from "./pages/Quiz/Quiz";
+import AITutor from "./pages/AITutor/AITutor";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -41,6 +42,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Quiz />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-tutor"
+        element={
+          <ProtectedRoute>
+            <AITutor />
           </ProtectedRoute>
         }
       />
