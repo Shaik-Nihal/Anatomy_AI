@@ -131,28 +131,9 @@ function AITutor() {
       <Navbar />
 
       {/* Main layout grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "260px 1fr",
-          gap: "28px",
-          padding: "35px",
-          flex: 1,
-          height: "calc(100vh - 80px)",
-          boxSizing: "border-box",
-        }}
-      >
+      <div className="tutor-grid">
         {/* Left Sidebar Tabs */}
-        <aside
-          style={{
-            background: "rgba(15, 23, 42, 0.45)",
-            border: "1px solid rgba(255, 255, 255, 0.05)",
-            borderRadius: "22px",
-            padding: "24px 18px",
-            height: "100%",
-            boxSizing: "border-box",
-          }}
-        >
+        <aside className="tutor-sidebar">
           <h3 style={{ color: "#fff", fontSize: "16px", marginBottom: "20px", paddingLeft: "8px", fontWeight: "700", letterSpacing: "0.5px" }}>TUTOR SECTIONS</h3>
           <button style={tabBtnStyle(activeTab === "tutor")} onClick={() => setActiveTab("tutor")}>
             💬 Chat Tutor

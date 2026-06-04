@@ -66,28 +66,10 @@ function OrganSelection() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom right, #020617, #0F172A, #111827)",
-        color: "white",
-        fontFamily: "Arial",
-        position: "relative",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="body-select-container">
       <Navbar />
 
-      <div
-        style={{
-          padding: "40px",
-          position: "relative",
-          zIndex: 1,
-          flex: 1,
-        }}
-      >
+      <div className="dashboard-content">
         {/* Background Glow */}
         <div
           style={{
@@ -107,17 +89,12 @@ function OrganSelection() {
         <div
           style={{
             textAlign: "center",
-            marginBottom: "60px",
+            marginBottom: "35px",
             position: "relative",
             zIndex: 1,
           }}
         >
-          <h1
-            style={{
-              fontSize: "52px",
-              marginBottom: "15px",
-            }}
-          >
+          <h1 className="body-select-title">
             Select Organ
           </h1>
 

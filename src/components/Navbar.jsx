@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import logo from "../assets/logo.png";
+import { FiMenu, FiX } from "react-icons/fi";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -24,45 +26,6 @@ function Navbar() {
     { label: "Progress Tracking", path: "/learning-progress", icon: "📈" },
   ];
 
-  const headerStyle = {
-    background: "rgba(15, 23, 42, 0.65)",
-    backdropFilter: "blur(20px)",
-    WebkitBackdropFilter: "blur(20px)",
-    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-    padding: "15px 40px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    position: "sticky",
-    top: 0,
-    zIndex: 1000,
-    fontFamily: "'Inter', 'Segoe UI', sans-serif",
-  };
-
-  const brandStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    cursor: "pointer",
-  };
-
-  const titleStyle = {
-    color: "#06B6D4",
-    fontSize: "24px",
-    fontWeight: "800",
-    margin: 0,
-    letterSpacing: "1px",
-    textShadow: "0 0 15px rgba(6, 182, 212, 0.3)",
-  };
-
-  const navListStyle = {
-    display: "flex",
-    gap: "24px",
-    listStyle: "none",
-    margin: 0,
-    padding: 0,
-  };
-
   const linkStyle = (isActive) => ({
     color: isActive ? "#06B6D4" : "#94A3B8",
     textDecoration: "none",
@@ -77,13 +40,9 @@ function Navbar() {
     gap: "8px",
     cursor: "pointer",
     transition: "all 0.3s ease",
+    width: "100%",
+    boxSizing: "border-box",
   });
-
-  const profileStyle = {
-    display: "flex",
-    alignItems: "center",
-    gap: "16px",
-  };
 
   const userGreetingStyle = {
     color: "#E2E8F0",
@@ -102,11 +61,12 @@ function Navbar() {
     fontSize: "14px",
     boxShadow: "0 4px 15px rgba(239, 68, 68, 0.25)",
     transition: "all 0.3s ease",
+    width: "fit-content",
   };
 
   return (
-    <header style={headerStyle}>
-      <div style={brandStyle} onClick={() => navigate("/dashboard")}>
+    <header className="nav-header">
+      <div className="nav-brand" onClick={() => navigate("/dashboard")}>
         <img
           src={logo}
           alt="AR AnatomyAI Logo"
@@ -117,19 +77,26 @@ function Navbar() {
             filter: "drop-shadow(0 0 10px rgba(6, 182, 212, 0.5))",
           }}
         />
-        <h1 style={titleStyle}>AR AnatomyAI</h1>
+        <h1 className="nav-title">AR AnatomyAI</h1>
       </div>
 
-      <nav>
-        <ul style={navListStyle}>
+      <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+        {menuOpen ? <FiX /> : <FiMenu />}
+      </button>
+
+      <nav className={`nav-list ${menuOpen ? "open" : ""}`} style={{ flex: 1, display: menuOpen ? "flex" : undefined, justifyContent: "center" }}>
+        <ul className={`nav-list ${menuOpen ? "open" : ""}`}>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || 
               (item.path === "/body-selection" && 
                 (location.pathname === "/organ-selection" || location.pathname === "/ar-viewer"));
             return (
-              <li key={item.path}>
+              <li key={item.path} style={{ width: menuOpen ? "100%" : "auto" }}>
                 <span
-                  onClick={() => navigate(item.path)}
+                  onClick={() => {
+                    navigate(item.path);
+                    setMenuOpen(false);
+                  }}
                   style={linkStyle(isActive)}
                   onMouseEnter={(e) => {
                     if (!isActive) {
@@ -153,7 +120,7 @@ function Navbar() {
         </ul>
       </nav>
 
-      <div style={profileStyle}>
+      <div className={`nav-profile ${menuOpen ? "open" : ""}`}>
         <span style={userGreetingStyle}>
           👋 Hi, <strong style={{ color: "#06B6D4" }}>{displayName}</strong>
         </span>

@@ -270,15 +270,7 @@ if (question.type === "true_false") {
 
 <div className="match-container">
 
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: "40% 20% 40%",
-      gap: "20px",
-      alignItems: "center",
-      marginTop: "20px"
-    }}
-  >
+  <div className="match-grid">
 
     <div>
       <h4>Left Side</h4>

@@ -41,19 +41,7 @@ function Login() {
   };
 
   return (
-    <div
-      style={{
-        height: "100vh",
-        background:
-          "linear-gradient(to bottom right, #020617, #0F172A, #111827)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "relative",
-        overflow: "hidden",
-        fontFamily: "'Inter', sans-serif, Arial",
-      }}
-    >
+    <div className="auth-container">
       {/* Background Glow */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
@@ -74,16 +62,7 @@ function Login() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        style={{
-          width: "430px",
-          padding: "40px",
-          borderRadius: "24px",
-          background: "rgba(30,41,59,0.6)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          backdropFilter: "blur(20px)",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)",
-          zIndex: 1,
-        }}
+        className="auth-card"
       >
         {/* Logo */}
         <motion.div
@@ -99,37 +78,16 @@ function Login() {
           <img
             src={logo}
             alt="AR AnatomyAI Logo"
-            style={{
-              width: "160px",
-              height: "160px",
-              objectFit: "contain",
-              filter: "drop-shadow(0 0 20px rgba(6,182,212,0.6))",
-            }}
+            className="auth-logo"
           />
         </motion.div>
 
         {/* Title */}
-        <h1
-          style={{
-            color: "#F8FAFC",
-            textAlign: "center",
-            marginBottom: "8px",
-            fontSize: "32px",
-            fontWeight: "bold",
-            letterSpacing: "-0.5px"
-          }}
-        >
+        <h1 className="auth-title">
           Welcome Back
         </h1>
 
-        <p
-          style={{
-            color: "#94A3B8",
-            textAlign: "center",
-            marginBottom: "30px",
-            fontSize: "15px"
-          }}
-        >
+        <p className="auth-subtitle">
           Login to continue your anatomy journey
         </p>
 
@@ -147,7 +105,7 @@ function Login() {
             placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
+            className="auth-input"
             required
           />
 
@@ -158,7 +116,7 @@ function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
+            className="auth-input"
             required
           />
 
@@ -227,7 +185,7 @@ function Login() {
           style={{
             color: "#94A3B8",
             textAlign: "center",
-            marginTop: "30px",
+            marginTop: "20px",
             fontSize: "14px",
             cursor: "pointer",
           }}
@@ -238,19 +196,5 @@ function Login() {
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "14px 16px",
-  marginBottom: "16px",
-  borderRadius: "12px",
-  border: "1px solid rgba(255,255,255,0.1)",
-  background: "rgba(15,23,42,0.5)",
-  color: "white",
-  outline: "none",
-  fontSize: "15px",
-  boxSizing: "border-box",
-  transition: "border 0.2s ease, background 0.2s ease",
-};
 
 export default Login;

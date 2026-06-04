@@ -647,19 +647,8 @@ function ARViewer() {
       <Navbar />
 
       {/* Toolbar / Control Bar */}
-      <div
-        style={{
-          height: "60px",
-          background: "rgba(15,23,42,0.45)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "0 40px",
-          zIndex: 10,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+      <div className="ar-toolbar">
+        <div className="ar-toolbar-section">
           <button
             onClick={() => navigate("/organ-selection")}
             style={{
@@ -681,7 +670,7 @@ function ARViewer() {
           </span>
         </div>
 
-        <div style={{ display: "flex", gap: "12px" }}>
+        <div className="ar-toolbar-controls">
           <button 
             style={autoRotate ? activeButtonStyle : buttonStyle}
             onClick={() => setAutoRotate(!autoRotate)}
@@ -706,27 +695,9 @@ function ARViewer() {
       </div>
 
       {/* Main Content Area */}
-      <div
-        style={{
-          display: "flex",
-          flex: 1,
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
+      <div className="ar-main-layout">
         {/* Left Panel */}
-        <div
-          style={{
-            width: "350px",
-            background: "rgba(30,41,59,0.45)",
-            backdropFilter: "blur(20px)",
-            borderRight: "1px solid rgba(255,255,255,0.08)",
-            padding: "25px",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 5,
-          }}
-        >
+        <div className="ar-left-panel">
           <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "15px" }}>
             <div style={{ fontSize: "50px" }}>
               {selectedOrgan === "Heart" && "🫀"}
@@ -873,12 +844,7 @@ function ARViewer() {
         </div>
 
         {/* Viewer 3D Canvas */}
-        <div
-          style={{
-            flex: 1,
-            position: "relative",
-          }}
-        >
+        <div className="ar-canvas-container">
           {/* Background Glow */}
           <div
             style={{
@@ -979,21 +945,7 @@ function ARViewer() {
 
       {/* Side Detail Panel overlay */}
       {activePanel && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            right: 0,
-            width: "420px",
-            height: "100vh",
-            background: "#0F172A",
-            borderLeft: "1px solid rgba(255,255,255,0.1)",
-            padding: "30px",
-            zIndex: 9999,
-            overflowY: "auto",
-            fontFamily: "sans-serif",
-          }}
-        >
+        <div className="ar-detail-overlay">
           <button
             onClick={() => setActivePanel(null)}
             style={{

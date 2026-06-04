@@ -927,3 +927,96 @@ margin:auto;
   object-fit:contain;
   vertical-align:middle;
 }
+
+/* Match the Following Grid */
+.match-grid {
+  display: grid;
+  grid-template-columns: 40% 20% 40%;
+  gap: 20px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* Media Queries for Quiz Section */
+@media (max-width: 768px) {
+  .top-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .top-section h1 {
+    font-size: 28px;
+    text-align: center;
+  }
+  .subtitle {
+    text-align: center;
+  }
+  .search-bar {
+    width: 100%;
+  }
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+  .organ-panel {
+    width: 100%;
+  }
+  .human-body {
+    height: 380px;
+  }
+  .difficulty-modal {
+    width: 90% !important;
+    padding: 20px !important;
+  }
+  .quiz-screen {
+    padding: 20px !important;
+  }
+  .question-card {
+    padding: 20px !important;
+    margin-top: 20px !important;
+  }
+  .match-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    text-align: center;
+  }
+  .match-grid h4 {
+    margin-bottom: 10px;
+  }
+  .match-grid select {
+    margin-bottom: 10px !important;
+  }
+  .result-page {
+    padding: 16px !important;
+  }
+  .result-wrapper {
+    padding: 24px !important;
+    gap: 24px !important;
+  }
+  .result-actions {
+    flex-direction: column !important;
+  }
+  .result-actions > div {
+    flex-direction: column !important;
+  }
+  .result-btn {
+    width: 100% !important;
+    height: 50px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-section h1 {
+    font-size: 24px;
+  }
+  .human-body {
+    height: 280px;
+  }
+  .accuracy-circle {
+    width: 130px !important;
+    height: 130px !important;
+    font-size: 28px !important;
+  }
+}

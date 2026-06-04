@@ -25,25 +25,10 @@ function Dashboard() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom right, #020617, #0F172A, #111827)",
-        color: "white",
-        fontFamily: "'Inter', sans-serif",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
+    <div className="dashboard-container">
       <Navbar />
 
-      <div
-        style={{
-          padding: "35px",
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
+      <div className="dashboard-content">
         {/* Glow */}
         <div
           style={{
@@ -60,27 +45,8 @@ function Dashboard() {
         />
 
         {/* Hero Section */}
-        <div
-          style={{
-            background:
-              "linear-gradient(to right, rgba(6,182,212,0.10), rgba(37,99,235,0.12))",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: "30px",
-            padding: "40px",
-            marginBottom: "38px",
-            backdropFilter: "blur(20px)",
-            boxShadow: "0 0 25px rgba(6,182,212,0.10)",
-            position: "relative",
-          }}
-        >
-          <h2
-            style={{
-              fontSize: "36px",
-              marginBottom: "20px",
-              color: "#F8FAFC",
-              fontWeight: 700,
-            }}
-          >
+        <div className="dashboard-hero">
+          <h2 className="dashboard-hero-title">
             Explore Human Anatomy in 3D & AR
           </h2>
 
@@ -97,14 +63,7 @@ function Dashboard() {
         </div>
 
         {/* Cards Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-            gap: "22px",
-            position: "relative",
-          }}
-        >
+        <div className="dashboard-grid">
           {/* Learn Anatomy */}
           <div
             style={cardStyle}

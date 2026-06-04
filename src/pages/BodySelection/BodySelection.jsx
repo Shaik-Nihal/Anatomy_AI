@@ -5,8 +5,6 @@ function BodySelection() {
   const navigate = useNavigate();
 
   const cardStyle = {
-    width: "280px",
-    height: "420px",
     borderRadius: "30px",
     background: "rgba(30,41,59,0.45)",
     border: "1px solid rgba(255,255,255,0.1)",
@@ -21,32 +19,10 @@ function BodySelection() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom right, #020617, #0F172A, #111827)",
-        color: "white",
-        fontFamily: "Arial",
-        overflow: "hidden",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="body-select-container">
       <Navbar />
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "relative",
-          zIndex: 1,
-          padding: "40px",
-        }}
-      >
+      <div className="body-select-content">
         {/* Background Glow */}
         <div
           style={{
@@ -61,38 +37,27 @@ function BodySelection() {
         />
 
         {/* Title */}
-        <h1
-          style={{
-            fontSize: "52px",
-            color: "#F8FAFC",
-            marginBottom: "15px",
-            zIndex: 1,
-          }}
-        >
+        <h1 className="body-select-title">
           Choose Body Type
         </h1>
 
         <p
           style={{
             color: "#94A3B8",
-            marginBottom: "60px",
+            marginBottom: "30px",
             fontSize: "18px",
             zIndex: 1,
+            textAlign: "center",
           }}
         >
           Select a human anatomy model to begin exploration
         </p>
 
         {/* Cards */}
-        <div
-          style={{
-            display: "flex",
-            gap: "50px",
-            zIndex: 1,
-          }}
-        >
+        <div className="body-select-grid">
           {/* Male */}
           <div
+            className="body-select-card"
             style={cardStyle}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-8px)";
@@ -137,6 +102,7 @@ function BodySelection() {
 
           {/* Female */}
           <div
+            className="body-select-card"
             style={cardStyle}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-8px)";

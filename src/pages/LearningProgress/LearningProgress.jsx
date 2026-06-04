@@ -418,12 +418,7 @@ function LearningProgress() {
         ) : (
           <>
             {/* ── Row 1: Stats ── */}
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "220px repeat(4,1fr)",
-              gap: 12,
-              marginBottom: 16,
-            }}>
+            <div className="progress-container-grid">
               {/* Overall Mastery */}
               <div style={{ ...card, display: "flex", flexDirection: "column" }}>
                 <span style={{ color: "#94a3b8", fontSize: 12, fontWeight: 600, marginBottom: 8 }}>
@@ -461,7 +456,7 @@ function LearningProgress() {
             </div>
 
             {/* ── Row 2: Charts ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 12, marginBottom: 16 }}>
+            <div className="progress-charts-grid">
 
               {/* Mastery Over Time */}
               <div style={card}>
@@ -539,7 +534,7 @@ function LearningProgress() {
             </div>
 
             {/* ── Row 3: Quizzes / Donut / Milestone ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 240px 220px", gap: 12, marginBottom: 16 }}>
+            <div className="progress-details-grid">
 
               {/* Recent Quizzes */}
               <div style={card}>
@@ -695,13 +690,7 @@ function LearningProgress() {
             </div>
 
             {/* ── Row 4: Study Insights ── */}
-            <div style={{
-              ...card,
-              display: "grid",
-              gridTemplateColumns: "repeat(4,1fr)",
-              gap: 16,
-              alignItems: "start",
-            }}>
+            <div style={card} className="progress-insights-grid">
               <div style={{ gridColumn: "1 / -1", fontWeight: 600, color: "#e2e8f0", fontSize: 14 }}>
                 Study Insights
               </div>
