@@ -30,5 +30,6 @@ __pycache__/
 venv/
 .env
 .env.*
+!.env.example
 *.db
 *.sqlite3

@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import Navbar from "../../components/Navbar";
 import { getUserProgress } from "../../services/quizApi";
+import { useAuth } from "../../contexts/AuthContext";
 
 // ─── Small reusable components ───────────────────────────────────────────────
 
@@ -92,9 +93,9 @@ function LearningProgress() {
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState([]);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
-  const activeUser = JSON.parse(localStorage.getItem("user")) || { email: "temp_user" };
-  const email = activeUser.email || "temp_user";
+  const email = user?.email || "temp_user";
 
   useEffect(() => {
     getUserProgress(email)

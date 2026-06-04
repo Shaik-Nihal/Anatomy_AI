@@ -1,14 +1,14 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
-function ProtectedRoute({ children }) {
+function PublicRoute({ children }) {
   const { session } = useAuth();
 
-  if (!session) {
-    return <Navigate to="/login" replace />;
+  if (session) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;
 }
 
-export default ProtectedRoute;
+export default PublicRoute;

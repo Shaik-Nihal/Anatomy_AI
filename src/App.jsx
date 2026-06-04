@@ -11,13 +11,28 @@ import LearningProgress from "./pages/LearningProgress/LearningProgress";
 import Quiz from "./pages/Quiz/Quiz";
 import AITutor from "./pages/AITutor/AITutor";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Splash />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route 
+        path="/login" 
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/register" 
+        element={
+          <PublicRoute>
+            <Register />
+          </PublicRoute>
+        } 
+      />
       <Route
         path="/dashboard"
         element={

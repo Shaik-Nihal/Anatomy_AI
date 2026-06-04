@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 import { sendTutorQuestion, getTutorProgress } from "../../services/quizApi";
+import { useAuth } from "../../contexts/AuthContext";
 
 function AITutor() {
   const [activeTab, setActiveTab] = useState("tutor");
@@ -20,9 +21,9 @@ function AITutor() {
   const [progressData, setProgressData] = useState(null);
   const [progressLoading, setProgressLoading] = useState(true);
   const [progressError, setProgressError] = useState("");
+  const { user } = useAuth();
 
-  const activeUser = JSON.parse(localStorage.getItem("user")) || { name: "Learner", email: "temp_user" };
-  const userId = activeUser.email || "temp_user";
+  const userId = user?.email || "temp_user";
 
   // Fetch tutor progress dynamically
   useEffect(() => {

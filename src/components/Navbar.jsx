@@ -1,17 +1,20 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { supabase } from "../services/supabase";
+import { useAuth } from "../contexts/AuthContext";
 import logo from "../assets/logo.png";
 
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn");
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate("/login");
   };
 
-  const currentUser = JSON.parse(localStorage.getItem("user")) || { name: "Anatomy Learner" };
+  const displayName = user?.user_metadata?.full_name || user?.email || "Anatomy Learner";
 
   const navItems = [
     { label: "Dashboard", path: "/dashboard", icon: "🏠" },
@@ -152,7 +155,7 @@ function Navbar() {
 
       <div style={profileStyle}>
         <span style={userGreetingStyle}>
-          👋 Hi, <strong style={{ color: "#06B6D4" }}>{currentUser.name}</strong>
+          👋 Hi, <strong style={{ color: "#06B6D4" }}>{displayName}</strong>
         </span>
         <button
           onClick={handleLogout}

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { saveQuizResult } from "../../services/quizApi";
 import Navbar from "../../components/Navbar";
+import { useAuth } from "../../contexts/AuthContext";
 
 function ResultPage({
   score,
@@ -12,13 +13,13 @@ function ResultPage({
   onNextLevel,   // (nextDifficulty) => void  -- start medium/hard
   onHome,        // go to Other Topics
 }) {
+  const { user } = useAuth();
   const accuracy = totalQuestions
     ? Math.round((score / totalQuestions) * 100)
     : 0;
 
   useEffect(() => {
-    const activeUser = JSON.parse(localStorage.getItem("user"));
-    const email = activeUser?.email || "temp_user";
+    const email = user?.email || "temp_user";
 
     saveQuizResult({
       userId: email,
