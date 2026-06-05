@@ -141,11 +141,8 @@ function AITutor() {
           <button style={tabBtnStyle(activeTab === "voice")} onClick={() => setActiveTab("voice")}>
             🎙️ Voice AI Tutor
           </button>
-          <button style={tabBtnStyle(activeTab === "progress")} onClick={() => setActiveTab("progress")}>
-            📊 Tutor Progress
-          </button>
 
-          <div style={{ marginTop: "40px", padding: "16px", borderRadius: "14px", background: "rgba(6, 182, 212, 0.05)", border: "1px solid rgba(6, 182, 212, 0.15)" }}>
+            <div style={{ marginTop: "40px", padding: "16px", borderRadius: "14px", background: "rgba(6, 182, 212, 0.05)", border: "1px solid rgba(6, 182, 212, 0.15)" }}>
             <h4 style={{ color: "#06B6D4", margin: "0 0 8px 0", fontSize: "13px" }}>🔥 Study Tip</h4>
             <p style={{ color: "#94A3B8", fontSize: "12px", lineHeight: "1.5", margin: 0 }}>
               Ask the tutor to explain concepts using analogies like: "Explain heart valves like doors."
