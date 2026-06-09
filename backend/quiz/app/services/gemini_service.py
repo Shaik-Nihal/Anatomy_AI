@@ -174,11 +174,13 @@ For image questions:
         gsk = GEMINI_API_KEY
 
     if use_groq:
-        openai.api_key = gsk
-        openai.api_base = "https://api.groq.com/openai/v1"
+        client = openai.OpenAI(
+            api_key=gsk,
+            base_url="https://api.groq.com/openai/v1"
+        )
         try:
             print("Generating quiz using Groq...")
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[
                     {"role": "user", "content": prompt}

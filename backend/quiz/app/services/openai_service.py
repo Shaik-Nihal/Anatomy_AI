@@ -17,19 +17,21 @@ def generate_answer(question: str) -> str:
     if not GROQ_API_KEY:
         return 'Groq/OpenAI API key is missing. Add GROQ_API_KEY to your backend/quiz/.env.'
 
-    openai.api_key = GROQ_API_KEY
-    
-    # Configure Groq endpoint compatibility if GROQ_API_KEY starts with gsk_ or if specified
     is_groq = GROQ_API_KEY.startswith("gsk_")
     if is_groq:
-        openai.api_base = "https://api.groq.com/openai/v1"
+        base_url = "https://api.groq.com/openai/v1"
         model_name = "llama-3.3-70b-versatile"
     else:
-        openai.api_base = "https://api.openai.com/v1"
+        base_url = "https://api.openai.com/v1"
         model_name = "gpt-3.5-turbo"
 
+    client = openai.OpenAI(
+        api_key=GROQ_API_KEY,
+        base_url=base_url
+    )
+
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model=model_name,
             messages=[
                 {'role': 'system', 'content': SYSTEM_PROMPT},
@@ -46,8 +48,11 @@ def generate_answer(question: str) -> str:
         if is_groq:
             return f'Groq request failed: {error}'
         try:
-            openai.api_base = "https://api.openai.com/v1"
-            response = openai.ChatCompletion.create(
+            fallback_client = openai.OpenAI(
+                api_key=GROQ_API_KEY,
+                base_url="https://api.openai.com/v1"
+            )
+            response = fallback_client.chat.completions.create(
                 model='gpt-3.5-turbo',
                 messages=[
                     {'role': 'system', 'content': SYSTEM_PROMPT},
