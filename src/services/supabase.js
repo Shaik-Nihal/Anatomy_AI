@@ -1,5 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
+console.log("URL =", import.meta.env.VITE_SUPABASE_URL);
+console.log("KEY =", import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 let supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 let supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
@@ -8,9 +11,9 @@ supabaseUrl = supabaseUrl.replace(/['"]/g, '').trim();
 supabaseAnonKey = supabaseAnonKey.replace(/['"]/g, '').trim();
 
 // Check if it's a placeholder or invalid
-const isPlaceholder = !supabaseUrl || 
-                      supabaseUrl.includes('YOUR_SUPABASE_URL') || 
-                      !supabaseUrl.startsWith('http');
+const isPlaceholder = !supabaseUrl ||
+    supabaseUrl.includes('YOUR_SUPABASE_URL') ||
+    !supabaseUrl.startsWith('http');
 
 const finalUrl = isPlaceholder ? 'https://placeholder.supabase.co' : supabaseUrl;
 const finalKey = isPlaceholder ? 'placeholder' : supabaseAnonKey;

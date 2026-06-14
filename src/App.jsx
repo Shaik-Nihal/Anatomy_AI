@@ -10,6 +10,7 @@ import ARViewer from "./pages/ARViewer/ARViewer";
 import LearningProgress from "./pages/LearningProgress/LearningProgress";
 import Quiz from "./pages/Quiz/Quiz";
 import AITutor from "./pages/AITutor/AITutor";
+import Settings from "./pages/Settings/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
@@ -65,6 +66,14 @@ function App() {
         element={
           <ProtectedRoute>
             <AITutor />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         }
       />
