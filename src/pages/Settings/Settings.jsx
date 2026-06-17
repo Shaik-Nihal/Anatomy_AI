@@ -202,17 +202,6 @@ function Settings() {
                 </button>
               ))}
             </div>
-
-            {/* Logout warning button on Left Panel Bottom */}
-            <div style={{ marginTop: "auto", paddingTop: "20px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <button
-                onClick={() => setShowLogoutModal(true)}
-                className="logout-warning-btn"
-              >
-                <FiLogOut />
-                <span>Log Out</span>
-              </button>
-            </div>
           </div>
 
           {/* Right Content Panels */}
@@ -324,6 +313,39 @@ function Settings() {
                 <button type="submit" disabled={loading} className="settings-action-btn primary" style={{ width: "fit-content", marginTop: "10px" }}>
                   {loading ? "Updating..." : "Update Password"}
                 </button>
+
+                {/* Relocated Logout Option inside Danger Zone */}
+                <div style={{ marginTop: "30px", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "20px" }}>
+                  <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#EF4444", margin: "0 0 8px 0" }}>Danger Zone</h3>
+                  <p style={{ fontSize: "13px", color: "#94A3B8", margin: "0 0 16px 0", lineHeight: "1.5" }}>
+                    Sign out of your AR AnatomyAI account on this device.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowLogoutModal(true)}
+                    className="settings-action-btn"
+                    style={{
+                      background: "rgba(239, 68, 68, 0.1)",
+                      border: "1px solid rgba(239, 68, 68, 0.2)",
+                      color: "#EF4444",
+                      fontSize: "13px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      width: "fit-content"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#EF4444";
+                      e.currentTarget.style.color = "#FFF";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+                      e.currentTarget.style.color = "#EF4444";
+                    }}
+                  >
+                    Log Out
+                  </button>
+                </div>
               </form>
             )}
 
@@ -684,7 +706,7 @@ function Settings() {
             </h3>
             
             <p style={{ color: "#94A3B8", fontSize: "14px", margin: "0 0 24px", lineHeight: 1.5 }}>
-              Are you sure you want to log out of your AR AnatomyAI account? You will need to enter your password next time.
+              Are you sure you want to log out?
             </p>
 
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { getUserProgress } from "../../services/quizApi";
-import { FiHeart, FiActivity, FiTrendingUp, FiCpu, FiCamera, FiSettings } from "react-icons/fi";
+import { FiHeart, FiActivity, FiTrendingUp, FiCpu, FiCamera, FiRepeat } from "react-icons/fi";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -293,19 +293,19 @@ function Dashboard() {
                 </p>
               </div>
 
-              {/* Settings */}
+              {/* Comparison */}
               <div
                 className="glass-card-new clickable active-purple"
-                onClick={() => navigate("/settings")}
+                onClick={() => navigate("/comparison")}
               >
                 <div className="icon-box-new">
-                  <FiSettings style={{ color: "#A78BFA", fontSize: "18px" }} />
+                  <FiRepeat style={{ color: "#A78BFA", fontSize: "18px" }} />
                 </div>
                 <h3 style={{ color: "#A78BFA", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
-                  Settings
+                  Comparison
                 </h3>
                 <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
-                  Manage account profile and set dark mode preferences.
+                  Compare anatomical structures across different body conditions and genders.
                 </p>
               </div>
 

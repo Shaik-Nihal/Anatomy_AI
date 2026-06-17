@@ -11,6 +11,7 @@ import LearningProgress from "./pages/LearningProgress/LearningProgress";
 import Quiz from "./pages/Quiz/Quiz";
 import AITutor from "./pages/AITutor/AITutor";
 import Settings from "./pages/Settings/Settings";
+import Comparison from "./pages/Comparison/Comparison";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
@@ -74,6 +75,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/comparison"
+        element={
+          <ProtectedRoute>
+            <Comparison />
           </ProtectedRoute>
         }
       />
