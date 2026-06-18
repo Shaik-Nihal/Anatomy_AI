@@ -93,6 +93,8 @@ function LearningProgress() {
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState([]);
   const [error, setError] = useState(null);
+  const [showAllOrgans, setShowAllOrgans] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useAuth();
 
   const email = user?.email || "temp_user";
@@ -181,22 +183,39 @@ function LearningProgress() {
     }
   });
 
-  const organList = ["Heart", "Brain", "Lungs", "Liver"];
+  const organList = ["Heart", "Brain", "Lungs", "Liver","Kidney","Eye","Ear","Stomach","Bones","Muscles","Intestines"];
   const latestAttempts = Object.values(latestByOrgan);
   const masterySum = latestAttempts.reduce((acc, q) => acc + q.percentage, 0);
   const overallMastery = latestAttempts.length > 0 ? Math.round(masterySum / organList.length) : 0;
 
-  // Chart data
-  const masteryData = [...progressData]
-    .sort((a, b) => new Date(a.attempted_at) - new Date(b.attempted_at))
-    .map((attempt) => {
-      const dateObj = new Date(attempt.attempted_at);
-      const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      return {
-        date: dateStr,
-        value: Math.round(attempt.percentage),
-      };
-    });
+ // Mastery chart data (grouped by date)
+const groupedData = {};
+
+progressData.forEach((attempt) => {
+  const dateObj = new Date(attempt.attempted_at);
+
+  const dateStr = dateObj.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  if (!groupedData[dateStr]) {
+    groupedData[dateStr] = {
+      total: 0,
+      count: 0,
+    };
+  }
+
+  groupedData[dateStr].total += attempt.percentage;
+  groupedData[dateStr].count += 1;
+});
+
+const masteryData = Object.entries(groupedData).map(
+  ([date, data]) => ({
+    date,
+    value: Math.round(data.total / data.count),
+  })
+);
 
   // Topics list
   const topicData = [
@@ -204,23 +223,53 @@ function LearningProgress() {
     { name: "Brain",  icon: "🧠",  pct: latestByOrgan["Brain"] ? Math.round(latestByOrgan["Brain"].percentage) : 0, color: "#a78bfa" },
     { name: "Lungs",  icon: "🫁",  pct: latestByOrgan["Lungs"] ? Math.round(latestByOrgan["Lungs"].percentage) : 0, color: "#06b6d4" },
     { name: "Liver",  icon: "🟤",  pct: latestByOrgan["Liver"] ? Math.round(latestByOrgan["Liver"].percentage) : 0, color: "#f97316" },
+     { name: "Kidney", icon: "🫘", pct: latestByOrgan["Kidney"] ? Math.round(latestByOrgan["Kidney"].percentage) : 0, color: "#ef4444" },
+    { name: "Eye", icon: "👁️", pct: latestByOrgan["Eye"] ? Math.round(latestByOrgan["Eye"].percentage) : 0, color: "#ef4444" },
+    { name: "Ear", icon: "👂",  pct: latestByOrgan["Ear"] ? Math.round(latestByOrgan["Ear"].percentage) : 0, color: "#ef4444" },
+    { name: "Stomach", icon: "🫃",  pct: latestByOrgan["Stomach"] ? Math.round(latestByOrgan["Stomach"].percentage) : 0, color: "#ef4444" },
+    { name: "Bones", icon: "🦴",  pct: latestByOrgan["Bones"] ? Math.round(latestByOrgan["Bones"].percentage) : 0, color: "#ef4444" },
+    { name: "Muscles", icon: "💪",  pct: latestByOrgan["Muscles"] ? Math.round(latestByOrgan["Muscles"].percentage) : 0, color: "#ef4444" },
+    {name: "Intestines", image: "/organs/intestines.png", pct: latestByOrgan["Intestines"] ? Math.round(latestByOrgan["Intestines"].percentage) : 0, color: "#ef4444" },
   ];
+  const filteredTopics = topicData.filter((topic) =>
+  topic.name.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+const displayedTopics = showAllOrgans
+  ? filteredTopics
+  : filteredTopics.slice(0, 4);
 
   // Recent Quizzes list
-  const recentQuizzes = [...progressData]
-    .sort((a, b) => new Date(b.attempted_at) - new Date(a.attempted_at))
-    .slice(0, 4)
-    .map((q) => {
-      const dateObj = new Date(q.attempted_at);
-      const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-      return {
-        name: `${q.organ} (${q.difficulty})`,
-        score: Math.round(q.percentage),
-        time: `${q.score}/${q.total_questions}`,
-        date: dateStr
-      };
+  const uniqueQuizzes = [];
+
+[...progressData]
+  .sort((a, b) => new Date(b.attempted_at) - new Date(a.attempted_at))
+  .forEach((q) => {
+    const key = `${q.organ}-${q.difficulty}`;
+
+    if (!uniqueQuizzes.some(item => item.key === key)) {
+      uniqueQuizzes.push({ key, ...q });
+    }
+  });
+
+const recentQuizzes = uniqueQuizzes
+  .slice(0, 4)
+  .map((q) => {
+    const dateObj = new Date(q.attempted_at);
+    const dateStr = dateObj.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
 
+    return {
+      name: `${q.organ} (${q.difficulty})`,
+      score: Math.round(q.percentage),
+      time: `${q.score}/${q.total_questions}`,
+      date: dateStr,
+    };
+  });
+ 
   // Strengths & Weaknesses Pie Calculation
   const strengthsList = [];
   const weaknessesList = [];
@@ -355,25 +404,6 @@ function LearningProgress() {
         
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontSize: 22 }}>📈</span>
-              <h1 style={{ margin: 0, fontWeight: 700, fontSize: 24, color: "#fff" }}>Learning Progress</h1>
-            </div>
-            <p style={{ margin: "4px 0 0 32px", color: "#64748b", fontSize: 13 }}>
-              Track your mastery across all topics dynamically loaded from your quiz history
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button style={btn} onClick={() => navigate("/quiz")}>✍ Take A Quiz</button>
-            <button style={{
-              ...btn,
-              background: "linear-gradient(135deg,#06b6d4,#7c3aed)",
-              border: "none",
-              color: "#fff",
-              fontWeight: 600,
-            }} onClick={() => navigate("/dashboard")}>🏠 Dashboard</button>
-          </div>
         </div>
 
         {/* ── EMPTY STATE IF NO QUIZZES YET ── */}
@@ -417,45 +447,141 @@ function LearningProgress() {
           </div>
         ) : (
           <>
-            {/* ── Row 1: Stats ── */}
-            <div className="progress-container-grid">
-              {/* Overall Mastery */}
-              <div style={{ ...card, display: "flex", flexDirection: "column" }}>
-                <span style={{ color: "#94a3b8", fontSize: 12, fontWeight: 600, marginBottom: 8 }}>
-                  Overall Mastery
-                </span>
-                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                  <CircularProgress value={overallMastery} />
-                  <div>
-                    <div style={{ color: "#06b6d4", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
-                      {overallMastery >= 85 ? "Expert" : overallMastery >= 60 ? "Intermediate" : "Beginner"}
-                    </div>
-                    <div style={{ color: "#64748b", fontSize: 11, lineHeight: 1.6 }}>
-                      {overallMastery >= 85 ? "Superb work! Maintain this high level." : "Keep practicing! You are getting closer."}
-                    </div>
-                  </div>
-                </div>
-              </div>
+{/* ── Row 1: Stats ── */}
+{/* ── Row 1: Stats ── */}
+<div
+  className="progress-container-grid"
+  style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(5, 1fr)",
+    gap: "20px",
+    alignItems: "stretch",
+    marginBottom: "24px",
+  }}
+>
+  {/* Overall Mastery */}
+  <div
+    style={{
+      ...card,
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+    }}
+  >
+    <span
+      style={{
+        color: "#94a3b8",
+        fontSize: 12,
+        fontWeight: 600,
+        marginBottom: 8,
+      }}
+    >
+      Overall Mastery
+    </span>
 
-              {/* Stat cards */}
-              {statCards.map((s) => (
-                <div key={s.label} style={{ ...card, display: "flex", flexDirection: "column", gap: 8 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ color: "#94a3b8", fontSize: 12 }}>{s.label}</span>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: 8,
-                      background: s.iconBg + "33",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 16,
-                    }}>{s.icon}</div>
-                  </div>
-                  <div style={{ fontSize: 26, fontWeight: 700, color: "#fff", lineHeight: 1 }}>{s.value}</div>
-                  <div style={{ fontSize: 12, color: s.subColor }}>{s.sub}</div>
-                </div>
-              ))}
-            </div>
+    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <CircularProgress value={overallMastery} />
 
-            {/* ── Row 2: Charts ── */}
+      <div>
+        <div
+          style={{
+            color: "#06b6d4",
+            fontSize: 18,
+            fontWeight: 700,
+            marginBottom: 6,
+          }}
+        >
+          {overallMastery >= 85
+            ? "Expert"
+            : overallMastery >= 60
+            ? "Intermediate"
+            : "Beginner"}
+        </div>
+
+        <div
+          style={{
+            color: "#64748b",
+            fontSize: 13,
+            lineHeight: 1.6,
+          }}
+        >
+          {overallMastery >= 85
+            ? "Superb work! Maintain this high level."
+            : "Keep practicing! You are getting closer."}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Stat Cards */}
+  {statCards.map((s) => (
+    <div
+      key={s.label}
+      style={{
+        ...card,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <span
+          style={{
+            color: "#94a3b8",
+            fontSize: 12,
+          }}
+        >
+          {s.label}
+        </span>
+
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: s.iconBg + "33",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 16,
+          }}
+        >
+          {s.icon}
+        </div>
+      </div>
+
+      <div
+        style={{
+          fontSize: 28,
+          fontWeight: 700,
+          color: "#fff",
+        }}
+      >
+        {s.value}
+      </div>
+
+      <div
+        style={{
+          fontSize: 12,
+          color: s.subColor,
+        }}
+      >
+        {s.sub}
+      </div>
+    </div>
+  ))}
+</div>
+
+{/* Add this spacer */}
+<div style={{ height: "24px" }} />
+ {/* ── Row 2: Charts ── */}
             <div className="progress-charts-grid">
 
               {/* Mastery Over Time */}
@@ -505,33 +631,157 @@ function LearningProgress() {
               </div>
 
               {/* Topic Mastery */}
-              <div style={card}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-                  <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Topic Mastery</span>
-                  <span style={{ color: "#06b6d4", fontSize: 12 }}>4 Main Organs</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                  {topicData.map((t) => (
-                    <div key={t.name}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 16 }}>{t.icon}</span>
-                          <span style={{ color: "#cbd5e1", fontSize: 13 }}>{t.name}</span>
-                        </div>
-                        <span style={{ color: "#94a3b8", fontSize: 12 }}>{t.pct}%</span>
-                      </div>
-                      <div style={{ height: 6, background: "#1e293b", borderRadius: 4, overflow: "hidden" }}>
-                        <div style={{
-                          width: `${t.pct}%`, height: "100%",
-                          background: t.color, borderRadius: 4,
-                          transition: "width 0.5s ease",
-                        }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+              
+            {/* Topic Mastery */}
+            
+<div style={card}>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      marginBottom: 16.5,
+    }}
+  >
+    <span
+      style={{
+        fontWeight: 600,
+        color: "#e2e8f0",
+      }}
+    >
+      Topic Mastery
+    </span>
+
+    <span
+      style={{
+        color: "#06b6d4",
+        fontSize: 12,
+      }}
+    >
+      {topicData.length} Organs
+    </span>
+  </div>
+
+  {/* Search Bar */}
+  <input
+    type="text"
+    placeholder="🔍 Search organ..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    style={{
+      width: "100%",
+      padding: "10px",
+      marginBottom: "15px",
+      borderRadius: "8px",
+      border: "1px solid #334155",
+      background: "#0f172a",
+      color: "#fff",
+      outline: "none",
+      boxSizing: "border-box",
+    }}
+  />
+
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 14,
+    }}
+  >
+    {displayedTopics.map((t) => (
+      <div key={t.name}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 6,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            {t.image ? (
+              <img
+                src={t.image}
+                alt={t.name}
+                style={{
+                  width: 20,
+                  height: 20,
+                  objectFit: "contain",
+                }}
+              />
+            ) : (
+              <span style={{ fontSize: 16 }}>{t.icon}</span>
+            )}
+
+            <span
+              style={{
+                color: "#cbd5e1",
+                fontSize: 13,
+              }}
+            >
+              {t.name}
+            </span>
+          </div>
+
+          <span
+            style={{
+              color: "#94a3b8",
+              fontSize: 12,
+            }}
+          >
+            {t.pct}%
+          </span>
+        </div>
+
+        <div
+          style={{
+            height: 6,
+            background: "#1e293b",
+            borderRadius: 4,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              width: `${t.pct}%`,
+              height: "100%",
+              background: t.color,
+              borderRadius: 4,
+              transition: "width 0.5s ease",
+            }}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {filteredTopics.length > 4 && (
+    <button
+      onClick={() => setShowAllOrgans(!showAllOrgans)}
+      style={{
+        width: "100%",
+        marginTop: "16px",
+        padding: "10px",
+        borderRadius: "8px",
+        border: "1px solid #334155",
+        background: "#1e293b",
+        color: "#06b6d4",
+        cursor: "pointer",
+        fontWeight: 600,
+      }}
+    >
+      {showAllOrgans
+        ? "Show Less"
+        : `Show More (${filteredTopics.length - 4})`}
+    </button>
+  )}
+</div>
+</div>
 
             {/* ── Row 3: Quizzes / Donut / Milestone ── */}
             <div className="progress-details-grid">
