@@ -13,11 +13,13 @@ def transcribe_audio(file_path: Path, language: str = 'en') -> str:
     if not OPENAI_API_KEY:
         return 'OpenAI key is missing for voice transcription. Please set OPENAI_API_KEY in .env'
 
-    openai.api_key = OPENAI_API_KEY
-    openai.api_base = "https://api.openai.com/v1"
+    client = openai.OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url="https://api.openai.com/v1"
+    )
     try:
         with open(file_path, 'rb') as audio_file:
-            transcript = openai.Audio.transcribe(
+            transcript = client.audio.transcriptions.create(
                 model='whisper-1',
                 file=audio_file,
                 prompt=f'Transcribe the audio in {language}',

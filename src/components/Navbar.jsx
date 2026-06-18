@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "../services/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import logo from "../assets/logo.png";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiSettings } from "react-icons/fi";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -11,15 +10,9 @@ function Navbar() {
   const { user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
-
-  const displayName = user?.user_metadata?.full_name || user?.email || "Anatomy Learner";
+  const isDashboard = location.pathname === "/dashboard";
 
   const navItems = [
-    { label: "Dashboard", path: "/dashboard", icon: "🏠" },
     { label: "3D Anatomy", path: "/body-selection", icon: "🫀" },
     { label: "Quizzes", path: "/quiz", icon: "🧬" },
     { label: "AI Tutor", path: "/ai-tutor", icon: "🤖" },
@@ -29,40 +22,19 @@ function Navbar() {
   const linkStyle = (isActive) => ({
     color: isActive ? "#06B6D4" : "#94A3B8",
     textDecoration: "none",
-    fontSize: "15px",
-    fontWeight: "600",
-    padding: "8px 16px",
-    borderRadius: "12px",
+    fontSize: "14px",
+    fontWeight: "700",
+    padding: "8px 14px",
+    borderRadius: "10px",
     background: isActive ? "rgba(6, 182, 212, 0.1)" : "transparent",
     border: "1px solid " + (isActive ? "rgba(6, 182, 212, 0.2)" : "transparent"),
     display: "flex",
     alignItems: "center",
-    gap: "8px",
+    gap: "6px",
     cursor: "pointer",
     transition: "all 0.3s ease",
-    width: "100%",
-    boxSizing: "border-box",
+    whiteSpace: "nowrap"
   });
-
-  const userGreetingStyle = {
-    color: "#E2E8F0",
-    fontSize: "14px",
-    fontWeight: "500",
-  };
-
-  const logoutButtonStyle = {
-    padding: "10px 18px",
-    border: "none",
-    borderRadius: "12px",
-    background: "linear-gradient(135deg, #EF4444, #DC2626)",
-    color: "white",
-    fontWeight: "600",
-    cursor: "pointer",
-    fontSize: "14px",
-    boxShadow: "0 4px 15px rgba(239, 68, 68, 0.25)",
-    transition: "all 0.3s ease",
-    width: "fit-content",
-  };
 
   return (
     <header className="nav-header">
@@ -71,73 +43,120 @@ function Navbar() {
           src={logo}
           alt="AR AnatomyAI Logo"
           style={{
-            width: "48px",
-            height: "48px",
+            width: "42px",
+            height: "42px",
             objectFit: "contain",
             filter: "drop-shadow(0 0 10px rgba(6, 182, 212, 0.5))",
           }}
         />
-        <h1 className="nav-title">AR AnatomyAI</h1>
+        <h1 className="nav-title" style={{ fontSize: "20px", fontWeight: "800", letterSpacing: "0.5px", margin: 0 }}>
+          AR AnatomyAI
+        </h1>
       </div>
 
-      <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
-        {menuOpen ? <FiX /> : <FiMenu />}
-      </button>
+      {!isDashboard && (
+        <nav className={`nav-menu-container ${menuOpen ? "open" : ""}`}>
+          <ul className="nav-menu-list">
+            <li>
+              <span
+                onClick={() => {
+                  navigate("/dashboard");
+                  setMenuOpen(false);
+                }}
+                style={{
+                  ...linkStyle(false),
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#E2E8F0";
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#94A3B8";
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.03)";
+                }}
+              >
+                <span>←</span>
+                <span>Dashboard</span>
+              </span>
+            </li>
 
-      <nav className={`nav-list ${menuOpen ? "open" : ""}`} style={{ flex: 1, display: menuOpen ? "flex" : undefined, justifyContent: "center" }}>
-        <ul className={`nav-list ${menuOpen ? "open" : ""}`}>
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path || 
-              (item.path === "/body-selection" && 
-                (location.pathname === "/organ-selection" || location.pathname === "/ar-viewer"));
-            return (
-              <li key={item.path} style={{ width: menuOpen ? "100%" : "auto" }}>
-                <span
-                  onClick={() => {
-                    navigate(item.path);
-                    setMenuOpen(false);
-                  }}
-                  style={linkStyle(isActive)}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = "#E2E8F0";
-                      e.currentTarget.style.background = "rgba(255, 255, 255, 0.03)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = "#94A3B8";
-                      e.currentTarget.style.background = "transparent";
-                    }
-                  }}
-                >
-                  <span>{item.icon}</span>
-                  {item.label}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+            {navItems.map((item) => {
+              const isActive = location.pathname === item.path || 
+                (item.path === "/body-selection" && 
+                  (location.pathname === "/organ-selection" || location.pathname === "/ar-viewer"));
+              return (
+                <li key={item.path} style={{ width: menuOpen ? "100%" : "auto" }}>
+                  <span
+                    onClick={() => {
+                      navigate(item.path);
+                      setMenuOpen(false);
+                    }}
+                    style={linkStyle(isActive)}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.color = "#E2E8F0";
+                        e.currentTarget.style.background = "rgba(255, 255, 255, 0.03)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.color = "#94A3B8";
+                        e.currentTarget.style.background = "transparent";
+                      }
+                    }}
+                  >
+                    <span style={{ display: "inline-flex", alignItems: "center" }}>{item.icon}</span>
+                    <span>{item.label}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      )}
 
-      <div className={`nav-profile ${menuOpen ? "open" : ""}`}>
-        <span style={userGreetingStyle}>
-          👋 Hi, <strong style={{ color: "#06B6D4" }}>{displayName}</strong>
-        </span>
-        <button
-          onClick={handleLogout}
-          style={logoutButtonStyle}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow = "0 6px 20px rgba(239, 68, 68, 0.4)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0px)";
-            e.currentTarget.style.boxShadow = "0 4px 15px rgba(239, 68, 68, 0.25)";
-          }}
-        >
-          Logout
-        </button>
+      <div className="nav-actions">
+        {user && (
+          <button
+            onClick={() => navigate("/settings")}
+            className="nav-settings-btn"
+            style={{
+              background: "rgba(6, 182, 212, 0.1)",
+              border: "1px solid rgba(6, 182, 212, 0.2)",
+              borderRadius: "10px",
+              padding: "8px 16px",
+              color: "#06B6D4",
+              fontSize: "13px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#06B6D4";
+              e.currentTarget.style.color = "#0F172A";
+              e.currentTarget.style.boxShadow = "0 0 15px rgba(6, 182, 212, 0.4)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(6, 182, 212, 0.1)";
+              e.currentTarget.style.color = "#06B6D4";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            <FiSettings style={{ fontSize: "16px" }} />
+            <span>Settings</span>
+          </button>
+        )}
+
+        {!isDashboard && (
+          <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <FiX /> : <FiMenu />}
+          </button>
+        )}
       </div>
     </header>
   );
