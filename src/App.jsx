@@ -12,6 +12,7 @@ import Quiz from "./pages/Quiz/Quiz";
 import AITutor from "./pages/AITutor/AITutor";
 import Settings from "./pages/Settings/Settings";
 import Comparison from "./pages/Comparison/Comparison";
+import OrganRecognition from "./pages/OrganRecognition/OrganRecognition";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 
@@ -83,6 +84,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Comparison />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/organ-recognition"
+        element={
+          <ProtectedRoute>
+            <OrganRecognition />
           </ProtectedRoute>
         }
       />

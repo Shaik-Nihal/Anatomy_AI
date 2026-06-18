@@ -5,6 +5,7 @@ from app.routes.quiz import router as quiz_router
 from app.routes.progress import router as progress_router
 from app.routes.tutor import router as tutor_router
 from app.routes.voice import router as voice_router
+from app.routes.vision import router as vision_router
 from app.database import get_connection
 
 # Initialize database tables on startup
@@ -56,6 +57,10 @@ app.include_router(
 )
 app.include_router(
     voice_router,
+    prefix="/api"
+)
+app.include_router(
+    vision_router,
     prefix="/api"
 )
 

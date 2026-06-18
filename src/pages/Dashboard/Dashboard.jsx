@@ -277,18 +277,18 @@ function Dashboard() {
                 </p>
               </div>
 
-              {/* Organ Recognition (Soon) */}
+              {/* Organ Recognition (Active) */}
               <div
-                className="glass-card-new disabled"
-                onClick={() => alert("Organ Recognition feature is coming soon!")}
+                className="glass-card-new clickable active-cyan"
+                onClick={() => navigate("/organ-recognition")}
               >
                 <div className="icon-box-new">
-                  <FiCamera style={{ color: "#94A3B8", fontSize: "18px" }} />
+                  <FiCamera style={{ color: "#06B6D4", fontSize: "18px" }} />
                 </div>
-                <h3 style={{ color: "#94A3B8", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
-                  Organ Recognition <span className="badge-soon">SOON</span>
+                <h3 style={{ color: "#06B6D4", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                  Organ Recognition
                 </h3>
-                <p style={{ color: "#94A3B8", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
                   Identify organs from real physical models using AI cameras.
                 </p>
               </div>

@@ -1,26 +1,23 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 import openai
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 # Check for keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 
-# Configure Gemini key if it seems like a Gemini key
+# Configure Gemini Client if it seems like a Gemini key
 if GEMINI_API_KEY and not GEMINI_API_KEY.startswith("gsk_"):
-    genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    gemini_client = genai.Client(api_key=GEMINI_API_KEY)
 else:
-    model = None
-
-
+    gemini_client = None
 
 def generate_quiz(organ, difficulty):
-
     prompt = f"""
 Generate exactly 10 anatomy quiz questions about the human {organ}.
 
@@ -195,13 +192,86 @@ For image questions:
             print(f"Quiz generation with Groq failed: {e}. Falling back to Gemini...")
 
     # Fallback to Gemini
-    if model is None:
+    if gemini_client is None:
         raise Exception("No valid API keys configured. Set GEMINI_API_KEY or GROQ_API_KEY in your .env.")
 
-    response = model.generate_content(prompt)
+    response = gemini_client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=prompt
+    )
     text = response.text.strip()
 
     if text.startswith("```json"):
         text = text.replace("```json", "").replace("```", "").strip()
     print(text)
     return json.loads(text)
+
+def identify_organ(image_bytes: bytes, mime_type: str):
+    prompt = """
+    You are an expert anatomy identification AI strictly built for an Anatomy learning project.
+    Analyze the provided image and determine if it shows a human body organ (e.g., Heart, Brain, Lungs, Liver, Kidneys, Stomach, etc.). It might be a physical model, a diagram, or a real image.
+    
+    CRITICAL RULE: If the image is anything OTHER than a human body organ (for example: an animal, a car, a whole human body without focus on a specific organ, a random object, a plant, etc.), you MUST reject it.
+    If you reject it or if you are unsure, return EXACTLY this JSON:
+    { "error": "This is not a body organ. Please upload an image of a human body organ to proceed." }
+
+    If it IS clearly a human body organ, identify it and return a strictly valid JSON object in this exact format:
+    {
+        "organ_name": "Heart", // The standard name of the organ
+        "description": "A brief 2-3 sentence medical description of the organ and its primary function.",
+        "confidence": "High" // High, Medium, Low
+    }
+    """
+    
+    # Try Gemini first if we have a client
+    if gemini_client is not None:
+        try:
+            response = gemini_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=[
+                    types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                    prompt
+                ]
+            )
+            
+            text = response.text.strip()
+            if text.startswith("```json"):
+                text = text.replace("```json", "").replace("```", "").strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"Gemini Vision failed: {e}. Falling back to OpenAI if available...")
+
+    # Fallback to OpenAI Vision
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    if OPENAI_API_KEY.startswith("sk-"):
+        client = openai.OpenAI(api_key=OPENAI_API_KEY)
+        import base64
+        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+        image_url = f"data:{mime_type};base64,{base64_image}"
+        
+        try:
+            print("Generating vision response using OpenAI gpt-4o...")
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": image_url}
+                            }
+                        ]
+                    }
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.3
+            )
+            text = response.choices[0].message.content.strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"OpenAI Vision failed: {e}")
+            raise Exception("Vision analysis failed on both Gemini and OpenAI.")
+
+    raise Exception("No valid API keys configured. Please set a valid GEMINI_API_KEY or OPENAI_API_KEY.")
