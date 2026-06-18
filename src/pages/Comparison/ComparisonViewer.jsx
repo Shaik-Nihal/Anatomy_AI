@@ -65,6 +65,13 @@ function ComparativeModel({
         } else if (t >= 0.3 && t < 0.55) {
           offset = Math.sin(((t - 0.3) / 0.25) * Math.PI) * 0.09; // Dub
         }
+      } else if (heartRateType === "fast") {
+        const t = (elapsed * 2.2) % 2.0;
+        if (t < 0.2) {
+          offset = Math.sin((t / 0.2) * Math.PI) * 0.06;
+        } else if (t >= 0.25 && t < 0.45) {
+          offset = Math.sin(((t - 0.25) / 0.2) * Math.PI) * 0.09;
+        }
       } else if (heartRateType === "arrhythmia") {
         // Irregular beats
         const t = (elapsed * 2.2) % 2.5;
@@ -98,7 +105,7 @@ function ComparativeModel({
 }
 
 function ComparisonViewer({ organName, onBack, hideHeader = false }) {
-  const [activeTab, setActiveTab] = useState("gender"); // "gender" | "condition"
+  const [activeTab, setActiveTab] = useState("gender"); // "gender" | "condition" | "age"
   const [leftMaximized, setLeftMaximized] = useState(false);
   const [rightMaximized, setRightMaximized] = useState(false);
 
@@ -109,9 +116,9 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
 
   if (!data) {
     return (
-      <div style={{ padding: "40px", color: "white", textAlign: "center" }}>
+      <div className="no-results">
         <h3>Organ data not found for: {organName}</h3>
-        {onBack && <button onClick={onBack} style={{ marginTop: "20px" }}>Back</button>}
+        {onBack && <button onClick={onBack} className="back-btn" style={{ margin: "20px auto 0" }}>← Back</button>}
       </div>
     );
   }
@@ -119,141 +126,80 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
   const modelPath = data.maleModel;
   const isHeart = organName === "Heart";
   const isBrain = organName === "Brain";
-  const currentTab = activeTab === "gender" ? data.genderComparison : data.conditionComparison;
+  const currentTab = activeTab === "gender" ? data.genderComparison : (activeTab === "condition" ? data.conditionComparison : data.ageComparison);
 
   // Base scales
   const baseScale = isBrain ? 1.8 : 2.2;
   const leftScale = baseScale;
-  const rightScale = activeTab === "gender" ? baseScale * 0.85 : baseScale;
+  const rightScale = activeTab === "gender" ? baseScale * 0.85 : (activeTab === "age" ? baseScale * 0.65 : baseScale);
 
   // Independent Zoom & Reset Handlers
   const handleZoomInLeft = () => {
     if (leftControlsRef.current) {
-      const controls = leftControlsRef.current;
-      controls.object.position.multiplyScalar(0.85); // 15% closer
-      controls.update();
+      leftControlsRef.current.object.position.multiplyScalar(0.85);
+      leftControlsRef.current.update();
     }
   };
-
   const handleZoomOutLeft = () => {
     if (leftControlsRef.current) {
-      const controls = leftControlsRef.current;
-      controls.object.position.multiplyScalar(1.15); // 15% further
-      controls.update();
+      leftControlsRef.current.object.position.multiplyScalar(1.15);
+      leftControlsRef.current.update();
     }
   };
-
   const handleResetLeft = () => {
-    if (leftControlsRef.current) {
-      leftControlsRef.current.reset();
-    }
+    if (leftControlsRef.current) leftControlsRef.current.reset();
   };
 
   const handleZoomInRight = () => {
     if (rightControlsRef.current) {
-      const controls = rightControlsRef.current;
-      controls.object.position.multiplyScalar(0.85);
-      controls.update();
+      rightControlsRef.current.object.position.multiplyScalar(0.85);
+      rightControlsRef.current.update();
     }
   };
-
   const handleZoomOutRight = () => {
     if (rightControlsRef.current) {
-      const controls = rightControlsRef.current;
-      controls.object.position.multiplyScalar(1.15);
-      controls.update();
+      rightControlsRef.current.object.position.multiplyScalar(1.15);
+      rightControlsRef.current.update();
     }
   };
-
   const handleResetRight = () => {
-    if (rightControlsRef.current) {
-      rightControlsRef.current.reset();
-    }
-  };
-
-  const controlBtnStyle = {
-    background: "rgba(255, 255, 255, 0.06)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: "6px",
-    padding: "6px 12px",
-    color: "#E2E8F0",
-    fontSize: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    transition: "all 0.2s ease",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "4px"
+    if (rightControlsRef.current) rightControlsRef.current.reset();
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
       {/* Viewer Header */}
       {!hideHeader && (
-        <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "20px",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          paddingBottom: "16px"
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            {onBack && (
-              <button
-                onClick={onBack}
-                style={{
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  borderRadius: "10px",
-                  padding: "8px 16px",
-                  color: "#94A3B8",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  transition: "all 0.2s"
-                }}
-                onMouseEnter={(e) => e.target.style.color = "white"}
-                onMouseLeave={(e) => e.target.style.color = "#94A3B8"}
-              >
-                ← Back
-              </button>
-            )}
-            <h2 style={{ margin: 0, fontSize: "24px", color: "#FFF" }}>
-              {data.icon} {data.organName} Comparison View
-            </h2>
+        <div className="viewer-header">
+          {onBack ? (
+            <button onClick={onBack} className="back-btn">
+              <span style={{ fontSize: "18px", marginBottom: "2px" }}>←</span> Back to Organs
+            </button>
+          ) : <div style={{ width: "160px" }}></div>}
+          
+          <div className="viewer-title-center">
+            <div className="viewer-organ-icon">
+              {data.icon}
+            </div>
+            <div className="viewer-title-wrapper">
+              <h2 className="viewer-title">{data.organName} Comparison</h2>
+              <span className="viewer-subtitle">Interactive 3D View</span>
+            </div>
           </div>
+
+          <div style={{ width: "160px" }}></div>
         </div>
       )}
 
       {/* Comparison Tab Selector */}
-      <div style={{
-        display: "flex",
-        background: "rgba(10, 15, 30, 0.5)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        borderRadius: "14px",
-        padding: "4px",
-        gap: "4px",
-        alignSelf: "center",
-        marginBottom: "20px",
-        zIndex: 5
-      }}>
+            <div className="tab-selector">
         <button
           onClick={() => {
             setActiveTab("gender");
             setLeftMaximized(false);
             setRightMaximized(false);
           }}
-          style={{
-            background: activeTab === "gender" ? "rgba(6, 182, 212, 0.15)" : "transparent",
-            border: activeTab === "gender" ? "1px solid rgba(6, 182, 212, 0.3)" : "1px solid transparent",
-            color: activeTab === "gender" ? "#06B6D4" : "#94A3B8",
-            padding: "8px 20px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            fontWeight: "700",
-            fontSize: "14px",
-            transition: "all 0.3s"
-          }}
+          className={`tab-btn ${activeTab === "gender" ? "active-gender" : ""}`}
         >
           Male vs Female
         </button>
@@ -263,73 +209,41 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
             setLeftMaximized(false);
             setRightMaximized(false);
           }}
-          style={{
-            background: activeTab === "condition" ? "rgba(239, 68, 68, 0.12)" : "transparent",
-            border: activeTab === "condition" ? "1px solid rgba(239, 68, 68, 0.25)" : "1px solid transparent",
-            color: activeTab === "condition" ? "#EF4444" : "#94A3B8",
-            padding: "8px 20px",
-            borderRadius: "10px",
-            cursor: "pointer",
-            fontWeight: "700",
-            fontSize: "14px",
-            transition: "all 0.3s"
-          }}
+          className={`tab-btn ${activeTab === "condition" ? "active-condition" : ""}`}
         >
           Healthy vs Diseased
+        </button>
+        <button
+          onClick={() => {
+            setActiveTab("age");
+            setLeftMaximized(false);
+            setRightMaximized(false);
+          }}
+          className={`tab-btn ${activeTab === "age" ? "active-age" : ""}`}
+        >
+          Adult vs Child
         </button>
       </div>
 
       {/* Side-by-Side 3D Viewer Layout */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: leftMaximized || rightMaximized ? "1fr" : "1fr 1fr",
-        gap: "20px",
-        flex: 1,
-        minHeight: "400px",
-        marginBottom: "20px"
-      }}>
-        {/* Left Viewport (Male / Healthy) */}
+      <div className="canvas-grid" style={{ gridTemplateColumns: leftMaximized || rightMaximized ? "1fr" : "1fr 1fr" }}>
+        {/* Left Viewport */}
         {!rightMaximized && (
-          <div style={{
-            position: "relative",
-            background: "rgba(15, 23, 42, 0.3)",
-            border: "1px solid rgba(255, 255, 255, 0.05)",
-            borderRadius: "20px",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            {/* Control Toolbar */}
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              background: "rgba(10, 15, 30, 0.6)",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
-              padding: "10px 16px",
-              zIndex: 6
-            }}>
-              <span style={{
-                background: activeTab === "gender" ? "rgba(59, 130, 246, 0.2)" : "rgba(16, 185, 129, 0.15)",
-                border: activeTab === "gender" ? "1px solid rgba(59, 130, 246, 0.4)" : "1px solid rgba(16, 185, 129, 0.3)",
-                color: activeTab === "gender" ? "#60A5FA" : "#34D399",
-                padding: "4px 12px",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: "700"
-              }}>{currentTab.leftTitle}</span>
-
-              <div style={{ display: "flex", gap: "6px" }}>
-                <button onClick={handleZoomInLeft} style={controlBtnStyle} title="Zoom In">➕</button>
-                <button onClick={handleZoomOutLeft} style={controlBtnStyle} title="Zoom Out">➖</button>
-                <button onClick={handleResetLeft} style={controlBtnStyle} title="Reset camera position">🔄 Reset</button>
-                <button onClick={() => setLeftMaximized(!leftMaximized)} style={controlBtnStyle} title="Toggle Maximize">
+          <div className="viewport-card">
+            <div className="viewport-toolbar">
+              <span className={`viewport-badge ${activeTab === "gender" ? "badge-male" : (activeTab === "condition" ? "badge-healthy" : "badge-adult")}`}>
+                {currentTab.leftTitle}
+              </span>
+              <div className="toolbar-controls">
+                <button onClick={handleZoomInLeft} className="toolbar-btn" title="Zoom In">➕</button>
+                <button onClick={handleZoomOutLeft} className="toolbar-btn" title="Zoom Out">➖</button>
+                <button onClick={handleResetLeft} className="toolbar-btn" title="Reset camera">🔄 Reset</button>
+                <button onClick={() => setLeftMaximized(!leftMaximized)} className="toolbar-btn" title="Toggle Maximize">
                   {leftMaximized ? "🗖 Restore" : "🗗 Maximize"}
                 </button>
               </div>
             </div>
-
-            <div style={{ flex: 1, position: "relative" }}>
+            <div className="canvas-container">
               <Canvas camera={{ position: [0, 0, 5] }}>
                 <ambientLight intensity={3.5} />
                 <directionalLight position={[2, 2, 2]} intensity={3.5} />
@@ -347,48 +261,23 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
           </div>
         )}
 
-        {/* Right Viewport (Female / Diseased) */}
+        {/* Right Viewport */}
         {!leftMaximized && (
-          <div style={{
-            position: "relative",
-            background: "rgba(15, 23, 42, 0.3)",
-            border: "1px solid rgba(255, 255, 255, 0.05)",
-            borderRadius: "20px",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column"
-          }}>
-            {/* Control Toolbar */}
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              background: "rgba(10, 15, 30, 0.6)",
-              borderBottom: "1px solid rgba(255,255,255,0.06)",
-              padding: "10px 16px",
-              zIndex: 6
-            }}>
-              <span style={{
-                background: activeTab === "gender" ? "rgba(244, 114, 182, 0.2)" : "rgba(239, 68, 68, 0.15)",
-                border: activeTab === "gender" ? "1px solid rgba(244, 114, 182, 0.4)" : "1px solid rgba(239, 68, 68, 0.3)",
-                color: activeTab === "gender" ? "#F472B6" : "#F87171",
-                padding: "4px 12px",
-                borderRadius: "8px",
-                fontSize: "12px",
-                fontWeight: "700"
-              }}>{currentTab.rightTitle}</span>
-
-              <div style={{ display: "flex", gap: "6px" }}>
-                <button onClick={handleZoomInRight} style={controlBtnStyle} title="Zoom In">➕</button>
-                <button onClick={handleZoomOutRight} style={controlBtnStyle} title="Zoom Out">➖</button>
-                <button onClick={handleResetRight} style={controlBtnStyle} title="Reset camera position">🔄 Reset</button>
-                <button onClick={() => setRightMaximized(!rightMaximized)} style={controlBtnStyle} title="Toggle Maximize">
+          <div className="viewport-card">
+            <div className="viewport-toolbar">
+              <span className={`viewport-badge ${activeTab === "gender" ? "badge-female" : (activeTab === "condition" ? "badge-diseased" : "badge-child")}`}>
+                {currentTab.rightTitle}
+              </span>
+              <div className="toolbar-controls">
+                <button onClick={handleZoomInRight} className="toolbar-btn" title="Zoom In">➕</button>
+                <button onClick={handleZoomOutRight} className="toolbar-btn" title="Zoom Out">➖</button>
+                <button onClick={handleResetRight} className="toolbar-btn" title="Reset camera">🔄 Reset</button>
+                <button onClick={() => setRightMaximized(!rightMaximized)} className="toolbar-btn" title="Toggle Maximize">
                   {rightMaximized ? "🗖 Restore" : "🗗 Maximize"}
                 </button>
               </div>
             </div>
-
-            <div style={{ flex: 1, position: "relative" }}>
+            <div className="canvas-container">
               <Canvas camera={{ position: [0, 0, 5] }}>
                 <ambientLight intensity={3.5} />
                 <directionalLight position={[2, 2, 2]} intensity={3.5} />
@@ -397,7 +286,7 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
                   organName={organName}
                   scale={rightScale}
                   animateHeartbeat={isHeart}
-                  heartRateType={activeTab === "gender" ? "normal" : "arrhythmia"}
+                  heartRateType={activeTab === "gender" ? "normal" : (activeTab === "condition" ? "arrhythmia" : "fast")}
                   isDiseased={activeTab === "condition"}
                   highlightRegion={activeTab === "condition"}
                 />
@@ -409,75 +298,50 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
       </div>
 
       {/* Comparative Notes & Statistics Grid */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "20px",
-        marginBottom: "20px"
-      }}>
+      <div className="stats-grid">
         {/* Left Side Info */}
-        <div className="glass-card-new" style={{ padding: "20px" }}>
-          <h4 style={{ margin: "0 0 12px 0", color: activeTab === "gender" ? "#60A5FA" : "#34D399", fontSize: "16px", fontWeight: "700" }}>
+        <div className="stats-card">
+          <h4 className={`stats-card-title ${activeTab === "gender" ? "stats-title-left-gender" : (activeTab === "condition" ? "stats-title-left-condition" : "stats-title-left-age")}`}>
             {currentTab.leftTitle} Specifications
           </h4>
-          
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", marginBottom: "16px" }}>
+          <table className="stats-table">
             <tbody>
               {Object.entries(currentTab.leftStats).map(([key, val]) => (
-                <tr key={key} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <td style={{ padding: "8px 0", color: "#94A3B8", textTransform: "capitalize", fontWeight: "600" }}>
-                    {key.replace(/([A-Z])/g, ' $1')}
-                  </td>
-                  <td style={{ padding: "8px 0", color: "white", textAlign: "right", fontWeight: "700" }}>
-                    {val}
-                  </td>
+                <tr key={key}>
+                  <td className="stats-label">{key.replace(/([A-Z])/g, ' $1')}</td>
+                  <td className="stats-value">{val}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          <p style={{ color: "#CBD5E1", fontSize: "13px", lineHeight: "1.6", margin: 0 }}>
-            {currentTab.leftNotes}
-          </p>
+          <p className="stats-notes">{currentTab.leftNotes}</p>
         </div>
 
         {/* Right Side Info */}
-        <div className="glass-card-new" style={{ padding: "20px" }}>
-          <h4 style={{ margin: "0 0 12px 0", color: activeTab === "gender" ? "#F472B6" : "#F87171", fontSize: "16px", fontWeight: "700" }}>
+        <div className="stats-card">
+          <h4 className={`stats-card-title ${activeTab === "gender" ? "stats-title-right-gender" : (activeTab === "condition" ? "stats-title-right-condition" : "stats-title-right-age")}`}>
             {currentTab.rightTitle} Specifications
           </h4>
-
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", marginBottom: "16px" }}>
+          <table className="stats-table">
             <tbody>
               {Object.entries(currentTab.rightStats).map(([key, val]) => (
-                <tr key={key} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <td style={{ padding: "8px 0", color: "#94A3B8", textTransform: "capitalize", fontWeight: "600" }}>
-                    {key.replace(/([A-Z])/g, ' $1')}
-                  </td>
-                  <td style={{ padding: "8px 0", color: "white", textAlign: "right", fontWeight: "700" }}>
-                    {val}
-                  </td>
+                <tr key={key}>
+                  <td className="stats-label">{key.replace(/([A-Z])/g, ' $1')}</td>
+                  <td className="stats-value">{val}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-
-          <p style={{ color: "#CBD5E1", fontSize: "13px", lineHeight: "1.6", margin: 0 }}>
-            {currentTab.rightNotes}
-          </p>
+          <p className="stats-notes">{currentTab.rightNotes}</p>
         </div>
       </div>
 
       {/* Comparison Summary Panel */}
-      <div className="glass-card-new" style={{ padding: "24px" }}>
-        <h4 style={{ margin: "0 0 12px 0", color: "#06B6D4", fontSize: "18px", fontWeight: "700", display: "flex", alignItems: "center", gap: "8px" }}>
-          📋 Key Anatomical Differences
-        </h4>
-        <ul style={{ margin: 0, paddingLeft: "20px", display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div className="summary-panel">
+        <h4 className="summary-title">📋 Key Anatomical Differences</h4>
+        <ul className="summary-list">
           {currentTab.differences.map((diff, index) => (
-            <li key={index} style={{ color: "#E2E8F0", fontSize: "14px", lineHeight: "1.6" }}>
-              {diff}
-            </li>
+            <li key={index}>{diff}</li>
           ))}
         </ul>
       </div>
