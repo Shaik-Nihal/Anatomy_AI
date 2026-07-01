@@ -12,4 +12,4 @@ requests
 cryptography
 tqdm
 openai
-
+psycopg2-binary

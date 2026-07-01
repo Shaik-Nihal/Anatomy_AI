@@ -340,46 +340,20 @@ function LearningProgress() {
   ];
 
   return (
-    <div style={{
+    <div className="dashboard-container" style={{
       display: "flex",
       flexDirection: "column",
       minHeight: "100vh",
-      background: "#0b0f1a",
-      color: "#e2e8f0",
       fontFamily: "'Inter','Segoe UI',sans-serif",
       fontSize: 14,
     }}>
       <Navbar />
 
-      <main style={{ flex: 1, overflow: "auto", padding: "24px 28px" }}>
+      <main className="dashboard-content" style={{ flex: 1, padding: "32px 40px" }}>
         
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontSize: 22 }}>📈</span>
-              <h1 style={{ margin: 0, fontWeight: 700, fontSize: 24, color: "#fff" }}>Learning Progress</h1>
-            </div>
-            <p style={{ margin: "4px 0 0 32px", color: "#64748b", fontSize: 13 }}>
-              Track your mastery across all topics dynamically loaded from your quiz history
-            </p>
-          </div>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button style={btn} onClick={() => navigate("/quiz")}>✍ Take A Quiz</button>
-            <button style={{
-              ...btn,
-              background: "linear-gradient(135deg,#06b6d4,#7c3aed)",
-              border: "none",
-              color: "#fff",
-              fontWeight: 600,
-            }} onClick={() => navigate("/dashboard")}>🏠 Dashboard</button>
-          </div>
-        </div>
-
         {/* ── EMPTY STATE IF NO QUIZZES YET ── */}
         {quizzesCompleted === 0 ? (
-          <div style={{
-            ...card,
+          <div className="glass-card-new" style={{
             padding: "60px 40px",
             textAlign: "center",
             maxWidth: "680px",
@@ -420,7 +394,7 @@ function LearningProgress() {
             {/* ── Row 1: Stats ── */}
             <div className="progress-container-grid">
               {/* Overall Mastery */}
-              <div style={{ ...card, display: "flex", flexDirection: "column" }}>
+              <div className="glass-card-new active-cyan" style={{ display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <span style={{ color: "#94a3b8", fontSize: 12, fontWeight: 600, marginBottom: 8 }}>
                   Overall Mastery
                 </span>
@@ -439,7 +413,7 @@ function LearningProgress() {
 
               {/* Stat cards */}
               {statCards.map((s) => (
-                <div key={s.label} style={{ ...card, display: "flex", flexDirection: "column", gap: 8 }}>
+                <div key={s.label} className={`glass-card-new ${s.label === "Study Streak" ? "active-pink" : s.label === "Average Score" ? "active-purple" : "active-indigo"}`} style={{ display: "flex", flexDirection: "column", gap: 8, justifyContent: "space-between" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <span style={{ color: "#94a3b8", fontSize: 12 }}>{s.label}</span>
                     <div style={{
@@ -459,7 +433,7 @@ function LearningProgress() {
             <div className="progress-charts-grid">
 
               {/* Mastery Over Time */}
-              <div style={card}>
+              <div className="glass-card-new active-cyan">
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Mastery Over Time</span>
                   <span style={{ color: "#64748b", fontSize: 12 }}>Performance Score</span>
@@ -505,7 +479,7 @@ function LearningProgress() {
               </div>
 
               {/* Topic Mastery */}
-              <div style={card}>
+              <div className="glass-card-new active-purple">
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Topic Mastery</span>
                   <span style={{ color: "#06b6d4", fontSize: 12 }}>4 Main Organs</span>
@@ -537,7 +511,7 @@ function LearningProgress() {
             <div className="progress-details-grid">
 
               {/* Recent Quizzes */}
-              <div style={card}>
+              <div className="glass-card-new active-indigo">
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Recent Quizzes</span>
                   <span style={{ color: "#94a3b8", fontSize: 12 }}>Latest attempts</span>
@@ -550,7 +524,7 @@ function LearningProgress() {
                           textAlign: "left", color: "#475569",
                           fontSize: 11, fontWeight: 600,
                           paddingBottom: 8,
-                          borderBottom: "1px solid #1e293b",
+                          borderBottom: "1px solid rgba(255,255,255,0.06)",
                         }}>{h}</th>
                       ))}
                     </tr>
@@ -569,7 +543,7 @@ function LearningProgress() {
               </div>
 
               {/* Strengths & Weaknesses */}
-              <div style={{ ...card, display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div className="glass-card-new active-cyan" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between" }}>
                 <span style={{ fontWeight: 600, color: "#e2e8f0", alignSelf: "flex-start", marginBottom: 12 }}>
                   Strengths & Weaknesses
                 </span>
@@ -605,13 +579,13 @@ function LearningProgress() {
 
               {/* Next Milestone */}
               <div
+                className="glass-card-new active-pink"
                 style={{
-                  ...card,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  minHeight: 320,
+                  minHeight: 320
                 }}
               >
                 <span
@@ -690,7 +664,7 @@ function LearningProgress() {
             </div>
 
             {/* ── Row 4: Study Insights ── */}
-            <div style={card} className="progress-insights-grid">
+            <div className="glass-card-new active-purple progress-insights-grid" style={{ gridColumn: "1 / -1", padding: "28px" }}>
               <div style={{ gridColumn: "1 / -1", fontWeight: 600, color: "#e2e8f0", fontSize: 14 }}>
                 Study Insights
               </div>

@@ -270,29 +270,29 @@ body {
 /* Learning Progress Responsive Layout */
 .progress-container-grid {
   display: grid;
-  grid-template-columns: 220px repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  grid-template-columns: 1.4fr repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .progress-charts-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 12px;
-  margin-bottom: 16px;
+  grid-template-columns: 2fr 1.1fr;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .progress-details-grid {
   display: grid;
-  grid-template-columns: 1fr 240px 220px;
-  gap: 12px;
-  margin-bottom: 16px;
+  grid-template-columns: 2fr 1.1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .progress-insights-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 24px;
   align-items: start;
 }
 

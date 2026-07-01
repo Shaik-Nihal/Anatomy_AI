@@ -6,27 +6,47 @@ from app.routes.progress import router as progress_router
 from app.routes.tutor import router as tutor_router
 from app.routes.voice import router as voice_router
 from app.routes.vision import router as vision_router
-from app.database import get_connection
+from app.database import get_connection, DATABASE_URL
 
 # Initialize database tables on startup
 try:
-    conn = get_connection()
-    conn.execute("""
-    CREATE TABLE IF NOT EXISTS quiz_attempts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT,
-        organ TEXT,
-        difficulty TEXT,
-        score INTEGER,
-        total_questions INTEGER,
-        percentage REAL,
-        weak_areas TEXT,
-        attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    conn.commit()
-    conn.close()
-    print("Database tables initialized successfully.")
+    if not DATABASE_URL:
+        conn = get_connection()
+        conn.execute("""
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT,
+            organ TEXT,
+            difficulty TEXT,
+            score INTEGER,
+            total_questions INTEGER,
+            percentage REAL,
+            weak_areas TEXT,
+            attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        conn.commit()
+        conn.close()
+        print("Local SQLite database tables initialized successfully.")
+    else:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS quiz_attempts (
+            id SERIAL PRIMARY KEY,
+            user_id TEXT,
+            organ TEXT,
+            difficulty TEXT,
+            score INTEGER,
+            total_questions INTEGER,
+            percentage REAL,
+            weak_areas TEXT,
+            attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        conn.commit()
+        conn.close()
+        print("Cloud Supabase PostgreSQL database tables verified/initialized successfully.")
 except Exception as e:
     print(f"Error initializing database on startup: {e}")
 
