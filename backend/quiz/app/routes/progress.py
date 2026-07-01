@@ -91,3 +91,17 @@ def get_tutor_progress(user_id: str):
         "clarity": avg_score,
         "topics": topics
     }
+
+@router.delete("/user/{user_id}")
+def delete_user_progress(user_id: str):
+    conn = get_connection()
+    conn.execute(
+        "DELETE FROM quiz_attempts WHERE user_id=?",
+        (user_id,)
+    )
+    conn.commit()
+    conn.close()
+    return {
+        "success": True,
+        "message": "User quiz progress deleted successfully."
+    }

@@ -6,7 +6,7 @@ import openai
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
-
+# Trigger reload to pick up new key
 # Check for keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
@@ -223,6 +223,7 @@ def identify_organ(image_bytes: bytes, mime_type: str):
     }
     """
     
+    gemini_error = None
     # Try Gemini first if we have a client
     if gemini_client is not None:
         try:
@@ -239,7 +240,10 @@ def identify_organ(image_bytes: bytes, mime_type: str):
                 text = text.replace("```json", "").replace("```", "").strip()
             return json.loads(text)
         except Exception as e:
+            gemini_error = str(e)
             print(f"Gemini Vision failed: {e}. Falling back to OpenAI if available...")
+    else:
+        gemini_error = "Gemini client not initialized (missing or invalid key prefix)"
 
     # Fallback to OpenAI Vision
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
@@ -272,6 +276,6 @@ def identify_organ(image_bytes: bytes, mime_type: str):
             return json.loads(text)
         except Exception as e:
             print(f"OpenAI Vision failed: {e}")
-            raise Exception("Vision analysis failed on both Gemini and OpenAI.")
+            raise Exception(f"Vision analysis failed. Gemini: {gemini_error}. OpenAI: {e}")
 
-    raise Exception("No valid API keys configured. Please set a valid GEMINI_API_KEY or OPENAI_API_KEY.")
+    raise Exception(f"Vision analysis failed. Gemini: {gemini_error}. OpenAI: API Key missing or invalid.")

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../services/supabase";
+import { getUserProgress, resetUserProgress } from "../../services/quizApi";
 import {
   FiUser,
   FiLock,
@@ -38,7 +39,6 @@ function Settings() {
   const [fontSize, setFontSize] = useState("medium");
   
   // Learning preferences state
-  const [quizDifficulty, setQuizDifficulty] = useState("Medium");
   const [dailyGoal, setDailyGoal] = useState("30"); // in minutes
   const [remindersEnabled, setRemindersEnabled] = useState(true);
   
@@ -47,21 +47,110 @@ function Settings() {
   const [notifResults, setNotifResults] = useState(true);
   const [notifProgress, setNotifProgress] = useState(false);
   
-  // Privacy / Security states
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  
   // System states
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState("success"); // success | error | info
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Load preferences from localStorage on mount
   useEffect(() => {
     if (user) {
       setFullName(user.user_metadata?.full_name || "");
       setEmail(user.email || "");
     }
+
+    const storedDarkMode = localStorage.getItem("settings_dark_mode");
+    if (storedDarkMode !== null) {
+      setIsDarkMode(storedDarkMode === "true");
+    }
+    
+    const storedThemeColor = localStorage.getItem("settings_theme_color");
+    if (storedThemeColor) {
+      setThemeColor(storedThemeColor);
+    }
+    
+    const storedFontSize = localStorage.getItem("settings_font_size");
+    if (storedFontSize) {
+      setFontSize(storedFontSize);
+    }
+    
+    const storedDailyGoal = localStorage.getItem("settings_daily_goal");
+    if (storedDailyGoal) {
+      setDailyGoal(storedDailyGoal);
+    }
+    
+    const storedReminders = localStorage.getItem("settings_reminders_enabled");
+    if (storedReminders !== null) {
+      setRemindersEnabled(storedReminders === "true");
+    }
+
+    const storedNotifEmail = localStorage.getItem("settings_notif_email");
+    if (storedNotifEmail !== null) setNotifEmail(storedNotifEmail === "true");
+
+    const storedNotifResults = localStorage.getItem("settings_notif_results");
+    if (storedNotifResults !== null) setNotifResults(storedNotifResults === "true");
+
+    const storedNotifProgress = localStorage.getItem("settings_notif_progress");
+    if (storedNotifProgress !== null) setNotifProgress(storedNotifProgress === "true");
   }, [user]);
+
+  // Apply Dark/Light Mode
+  useEffect(() => {
+    localStorage.setItem("settings_dark_mode", isDarkMode);
+    if (isDarkMode) {
+      document.documentElement.classList.remove("light-mode");
+      document.body.classList.remove("light-mode");
+    } else {
+      document.documentElement.classList.add("light-mode");
+      document.body.classList.add("light-mode");
+    }
+  }, [isDarkMode]);
+
+  // Apply Theme Accent Color
+  useEffect(() => {
+    localStorage.setItem("settings_theme_color", themeColor);
+    const hexColor = 
+      themeColor === "cyan" ? "#06B6D4" : 
+      themeColor === "purple" ? "#A78BFA" : 
+      themeColor === "pink" ? "#F472B6" : 
+      themeColor === "green" ? "#10B981" : 
+      "#3B82F6";
+    document.documentElement.style.setProperty("--accent-color", hexColor);
+  }, [themeColor]);
+
+  // Apply Font Size
+  useEffect(() => {
+    localStorage.setItem("settings_font_size", fontSize);
+    const sizeMap = {
+      small: "13px",
+      medium: "14px",
+      large: "16px"
+    };
+    document.documentElement.style.setProperty("--base-font-size", sizeMap[fontSize] || "14px");
+  }, [fontSize]);
+
+  // Persist Learning & Notifications Settings
+
+  useEffect(() => {
+    localStorage.setItem("settings_daily_goal", dailyGoal);
+  }, [dailyGoal]);
+
+  useEffect(() => {
+    localStorage.setItem("settings_reminders_enabled", remindersEnabled);
+  }, [remindersEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem("settings_notif_email", notifEmail);
+  }, [notifEmail]);
+
+  useEffect(() => {
+    localStorage.setItem("settings_notif_results", notifResults);
+  }, [notifResults]);
+
+  useEffect(() => {
+    localStorage.setItem("settings_notif_progress", notifProgress);
+  }, [notifProgress]);
 
   // Trigger Toast Notification
   const showToast = (message, type = "success") => {
@@ -123,19 +212,90 @@ function Settings() {
     navigate("/login");
   };
 
-  // Mock handlers
-  const handleExportProgress = () => {
-    showToast("Preparing your progress report export... Download will begin shortly.", "info");
+  // Terminate concurrently running other sessions
+  const handleRevokeSession = async () => {
+    try {
+      const { error } = await supabase.auth.signOut({ scope: "others" });
+      if (error) throw error;
+      showToast("Successfully terminated all other active client logins.", "success");
+    } catch (err) {
+      showToast("Failed to revoke session: " + err.message, "error");
+    }
   };
 
-  const handleDownloadQuizzes = () => {
-    showToast("Compiling quiz result archives... Starting download.", "info");
+  // Functional Data Exporters
+  const handleExportProgress = async () => {
+    if (!email) return;
+    showToast("Preparing your progress report export...", "info");
+    try {
+      const progress = await getUserProgress(email);
+      if (!progress || progress.length === 0) {
+        showToast("No progress records found to export.", "error");
+        return;
+      }
+      const headers = ["Attempt ID", "Organ", "Difficulty", "Score", "Total Questions", "Percentage", "Weak Areas", "Attempted At"];
+      const rows = progress.map(item => [
+        item.id,
+        item.organ,
+        item.difficulty,
+        item.score,
+        item.total_questions,
+        `${Math.round(item.percentage)}%`,
+        (item.weak_areas || "").replace(/,/g, ";"),
+        item.attempted_at
+      ]);
+      const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `ARAnatomy_Progress_${email.split('@')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("CSV progress file downloaded successfully!", "success");
+    } catch (err) {
+      showToast("Failed to export progress report: " + err.message, "error");
+    }
   };
 
-  const handleResetProgress = () => {
+  const handleDownloadQuizzes = async () => {
+    if (!email) return;
+    showToast("Compiling quiz result archives...", "info");
+    try {
+      const progress = await getUserProgress(email);
+      if (!progress || progress.length === 0) {
+        showToast("No quiz results found to download.", "error");
+        return;
+      }
+      const jsonString = JSON.stringify(progress, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `ARAnatomy_Quizzes_${email.split('@')[0]}.json`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("JSON results file downloaded successfully!", "success");
+    } catch (err) {
+      showToast("Failed to download quiz results: " + err.message, "error");
+    }
+  };
+
+  const handleResetProgress = async () => {
+    if (!email) return;
     const confirmReset = window.confirm("WARNING: Are you sure you want to permanently delete all learning history? This action cannot be undone.");
-    if (confirmReset) {
-      showToast("Learning history and quiz records have been reset.", "success");
+    if (!confirmReset) return;
+    
+    setLoading(true);
+    try {
+      await resetUserProgress(email);
+      showToast("All learning history and quiz records have been reset.", "success");
+    } catch (err) {
+      showToast("Failed to reset progress: " + err.message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -431,22 +591,7 @@ function Settings() {
                 <h2 className="panel-title">Learning Preferences</h2>
                 <p className="panel-desc">Configure default training modules and goals.</p>
 
-                <div className="form-group-new">
-                  <label>Preferred Quiz Difficulty</label>
-                  <div style={{ display: "flex", gap: "10px", marginTop: "6px" }}>
-                    {["Easy", "Medium", "Hard"].map((diff) => (
-                      <button
-                        key={diff}
-                        type="button"
-                        onClick={() => setQuizDifficulty(diff)}
-                        className={`settings-tab-btn theme-select ${quizDifficulty === diff ? "active" : ""}`}
-                        style={{ padding: "8px 16px", width: "auto" }}
-                      >
-                        {diff}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+
 
                 <div className="form-group-new">
                   <label>Daily Study Goal ({dailyGoal} Minutes)</label>
@@ -536,22 +681,7 @@ function Settings() {
                 <h2 className="panel-title">Privacy & Sessions</h2>
                 <p className="panel-desc">Manage authentication nodes and concurrent login points.</p>
 
-                {/* 2FA UI Toggle */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "14px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)", marginBottom: "20px" }}>
-                  <div>
-                    <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Two-Factor Authentication (2FA)</div>
-                    <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Require verification codes during auth sessions.</div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={twoFactorEnabled}
-                    onChange={(e) => {
-                      setTwoFactorEnabled(e.target.checked);
-                      showToast(e.target.checked ? "2FA Setup Initialized! Verification required next login." : "2FA deactivated.", "info");
-                    }}
-                    style={{ width: "20px", height: "20px", accentColor: "#06B6D4", cursor: "pointer" }}
-                  />
-                </div>
+
 
                 <div className="form-group-new">
                   <label>Session Management</label>
@@ -573,7 +703,7 @@ function Settings() {
                       </div>
                       <button
                         type="button"
-                        onClick={() => showToast("Terminated mobile login session.", "success")}
+                        onClick={handleRevokeSession}
                         style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444", fontSize: "10px", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontWeight: 600 }}
                       >
                         REVOKE

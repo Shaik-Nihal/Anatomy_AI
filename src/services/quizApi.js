@@ -51,3 +51,8 @@ export const getTutorProgress = async (userId) => {
   return response.data;
 };
 
+export const resetUserProgress = async (userId) => {
+  const response = await axios.delete(`${PROGRESS_API_URL}/user/${userId}`);
+  return response.data;
+};
+

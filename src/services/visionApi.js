@@ -11,7 +11,14 @@ export const identifyOrgan = async (imageFile) => {
     });
     
     if (!response.ok) {
-      throw new Error("Failed to identify organ. Server responded with an error.");
+      let errorMsg = "Failed to identify organ. Server responded with an error.";
+      try {
+        const errJson = await response.json();
+        if (errJson && errJson.detail) {
+          errorMsg = errJson.detail;
+        }
+      } catch (e) {}
+      throw new Error(errorMsg);
     }
     
     const result = await response.json();

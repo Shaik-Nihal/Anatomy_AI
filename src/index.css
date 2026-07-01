@@ -581,51 +581,42 @@ body {
 
 @media (min-width: 1024px) {
   .dashboard-content {
-    height: calc(100vh - 80px);
-    overflow: hidden;
+    min-height: calc(100vh - 80px);
+    overflow: visible;
     box-sizing: border-box;
-    padding: 16px 20px;
+    padding: 32px 40px;
   }
 
   .dashboard-layout-new {
-    grid-template-columns: 1.75fr 1fr;
-    height: calc(100vh - 112px); /* Navbar 80px + Padding 32px */
-    overflow: hidden;
+    grid-template-columns: 2.2fr 1fr;
+    height: auto;
+    overflow: visible;
+    gap: 30px;
   }
 
   .dashboard-left-section {
-    max-height: 100%;
-    height: 100%;
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .dashboard-left-section::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
   }
 
   .dashboard-right-section {
-    max-height: 100%;
-    height: 100%;
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .dashboard-right-section::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    max-height: none;
+    height: auto;
+    overflow-y: visible;
   }
 }
 
 .dashboard-left-section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 .dashboard-right-section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 /* Floating animation for banner graphics */
@@ -657,17 +648,17 @@ body {
 
 /* Glassmorphism Cards */
 .glass-card-new {
-  background: rgba(10, 15, 30, 0.45);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(30, 41, 59, 0.3) 100%);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: 24px;
-  padding: 24px;
+  padding: 28px;
   color: white;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
 
 .glass-card-new.clickable {
@@ -676,26 +667,30 @@ body {
 
 .glass-card-new.active-cyan:hover {
   transform: translateY(-5px);
-  border-color: rgba(6, 182, 212, 0.3);
-  box-shadow: 0 12px 35px rgba(6, 182, 212, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(6, 182, 212, 0.4);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-card-new.active-purple:hover {
   transform: translateY(-5px);
-  border-color: rgba(167, 139, 250, 0.3);
-  box-shadow: 0 12px 35px rgba(167, 139, 250, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(167, 139, 250, 0.4);
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(167, 139, 250, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-card-new.active-pink:hover {
   transform: translateY(-5px);
-  border-color: rgba(244, 114, 182, 0.3);
-  box-shadow: 0 12px 35px rgba(244, 114, 182, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(244, 114, 182, 0.4);
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(244, 114, 182, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-card-new.active-indigo:hover {
   transform: translateY(-5px);
-  border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 12px 35px rgba(99, 102, 241, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .glass-card-new.disabled {
@@ -879,15 +874,19 @@ body {
 
 .features-grid-new {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
 }
 
 @media (min-width: 1024px) {
   .features-grid-new {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .features-grid-new {
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 1fr 1fr;
-    flex: 1;
   }
 }
 
@@ -898,15 +897,14 @@ body {
 
 @media (min-width: 1024px) {
   .right-card-activity {
-    flex: 1.35;
+    flex: 1.2;
   }
   
   .right-card-activity .timeline-new {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    margin-top: 10px;
+    gap: 20px;
+    margin-top: 20px;
   }
   
   .right-card-activity .timeline-item-new {
@@ -917,6 +915,7 @@ body {
 .right-card-progress {
   display: flex;
   flex-direction: column;
+  gap: 24px;
 }
 
 @media (min-width: 1024px) {
@@ -924,7 +923,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 24px;
   }
 }
 
@@ -1234,5 +1233,96 @@ body {
     order: 3;
     padding: 20px;
   }
+}
+
+/* ==========================================
+   Light Mode & Variable Custom Overrides
+   ========================================== */
+
+:root {
+  --accent-color: #06B6D4;
+  --base-font-size: 14px;
+}
+
+body {
+  font-size: var(--base-font-size) !important;
+}
+
+.light-mode {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.light-mode .dashboard-container {
+  background: linear-gradient(to bottom right, #f8fafc, #f1f5f9, #e2e8f0) !important;
+  color: #0f172a !important;
+}
+
+.light-mode .glass-card-new {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+}
+
+.light-mode .panel-title,
+.light-mode .panel-desc,
+.light-mode label,
+.light-mode h1,
+.light-mode h2,
+.light-mode h3,
+.light-mode h4,
+.light-mode td,
+.light-mode th {
+  color: #0f172a !important;
+}
+
+.light-mode p,
+.light-mode small {
+  color: #475569 !important;
+}
+
+.light-mode .form-input-field {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-mode .form-input-field:focus {
+  border-color: var(--accent-color) !important;
+  outline: none;
+}
+
+.light-mode .settings-tab-btn {
+  color: #475569 !important;
+}
+
+.light-mode .settings-tab-btn:hover {
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.light-mode .settings-tab-btn.active {
+  background: rgba(6, 182, 212, 0.1) !important;
+  color: #06B6D4 !important;
+  border-color: rgba(6, 182, 212, 0.2) !important;
+}
+
+.light-mode .settings-tab-btn.active .tab-icon {
+  color: var(--accent-color) !important;
+}
+
+/* Custom global accent bindings */
+.settings-tab-btn.active {
+  color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+.settings-tab-btn.active .tab-icon {
+  color: var(--accent-color) !important;
+}
+.settings-action-btn.primary {
+  background: var(--accent-color) !important;
+}
+.form-input-field:focus {
+  border-color: var(--accent-color) !important;
 }
 

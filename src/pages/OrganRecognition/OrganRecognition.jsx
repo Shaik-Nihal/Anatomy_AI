@@ -122,7 +122,7 @@ const OrganRecognition = () => {
         setError(res.message || "Failed to analyze the image.");
       }
     } catch (err) {
-      setError("An error occurred during analysis. Please try again.");
+      setError(err.message || "An error occurred during analysis. Please try again.");
     } finally {
       setLoading(false);
     }
