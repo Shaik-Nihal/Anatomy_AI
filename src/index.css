@@ -249,12 +249,71 @@ body {
 /* AI Tutor Split Layout */
 .tutor-grid {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 260px 1.2fr 1fr;
   gap: 28px;
   padding: 35px;
   flex: 1;
   height: calc(100vh - 80px);
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .tutor-grid {
+    grid-template-columns: 260px 1fr;
+  }
+  .tutor-3d-visualizer {
+    display: none !important;
+  }
+}
+
+.tutor-chat-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 22px;
+  padding: 30px;
+  color: white;
+}
+
+.tutor-message-history {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tutor-3d-visualizer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 22px;
+  padding: 30px;
+  color: white;
+}
+
+.tutor-canvas-container {
+  flex: 1;
+  position: relative;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .tutor-sidebar {
@@ -1325,4 +1384,34 @@ body {
 .form-input-field:focus {
   border-color: var(--accent-color) !important;
 }
+
+/* Custom Premium Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.5); /* Accent cyan glow */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* For Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
 

@@ -20,3 +20,14 @@ async def transcribe_voice(language: str = Form('en'), audio: UploadFile = File(
 
     transcript = transcribe_audio(target_file, language)
     return {'transcript': transcript}
+
+@router.post('/speak')
+async def speak_text(text: str = Form(...), voice: str = Form('alloy')):
+    from app.services.voice_service import generate_speech
+    from fastapi.responses import Response
+    try:
+        audio_content = generate_speech(text, voice)
+        return Response(content=audio_content, media_type='audio/mpeg')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+

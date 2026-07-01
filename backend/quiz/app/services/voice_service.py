@@ -27,3 +27,20 @@ def transcribe_audio(file_path: Path, language: str = 'en') -> str:
         return transcript.text.strip()
     except Exception as error:
         return f'Error transcribing audio: {error}'
+
+def generate_speech(text: str, voice: str = 'alloy') -> bytes:
+    if not OPENAI_API_KEY:
+        raise ValueError('OpenAI key is missing for voice synthesis. Please configure OPENAI_API_KEY.')
+
+    client = openai.OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url="https://api.openai.com/v1"
+    )
+    
+    response = client.audio.speech.create(
+        model='tts-1',
+        voice=voice,
+        input=text
+    )
+    return response.content
+

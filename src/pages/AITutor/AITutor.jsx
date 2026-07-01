@@ -1,8 +1,137 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Navbar from "../../components/Navbar";
-import { sendTutorQuestion } from "../../services/quizApi";
+import { sendTutorQuestion, getTutorSpeech } from "../../services/quizApi";
 import { useAuth } from "../../contexts/AuthContext";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import * as THREE from "three";
 
+// ─── Browser TTS Speech Fallback Helper ────────────────────────────────────
+const speakWithBrowserTTS = (text, onStart, onEnd) => {
+  if (!window.speechSynthesis) {
+    onEnd();
+    return;
+  }
+  
+  try {
+    window.speechSynthesis.cancel();
+    
+    // Remove markdown asterisks
+    const cleanText = text.replace(/\*\*/g, "");
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.onstart = onStart;
+    utterance.onend = onEnd;
+    utterance.onerror = onEnd;
+    
+    const voices = window.speechSynthesis.getVoices();
+    const naturalVoice = voices.find(v => v.lang.startsWith("en") && v.name.includes("Google")) || voices.find(v => v.lang.startsWith("en"));
+    if (naturalVoice) {
+      utterance.voice = naturalVoice;
+    }
+    
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    console.error("Browser speech synthesis error:", err);
+    onEnd();
+  }
+};
+
+// ─── 3D Model Mapping Helpers ────────────────────────────────────────────────
+function getRegionFromMeshName(meshName, organ) {
+  if (!meshName) return null;
+  const nameLower = meshName.toLowerCase();
+  
+  if (organ === "Heart") {
+    if (nameLower.includes("aorta")) return "Aorta";
+    if (nameLower.includes("left_ventricle") || nameLower.includes("lv") || (nameLower.includes("ventricle") && nameLower.includes("left"))) return "Left Ventricle";
+    if (nameLower.includes("right_ventricle") || nameLower.includes("rv") || (nameLower.includes("ventricle") && nameLower.includes("right"))) return "Right Ventricle";
+    if (nameLower.includes("left_atrium") || nameLower.includes("la") || (nameLower.includes("atrium") && nameLower.includes("left"))) return "Left Atrium";
+    if (nameLower.includes("right_atrium") || nameLower.includes("ra") || (nameLower.includes("atrium") && nameLower.includes("right"))) return "Right Atrium";
+    if (nameLower.includes("pulmonary") || nameLower.includes("artery")) return "Pulmonary Artery";
+    return "Myocardium / Heart Wall";
+  } else if (organ === "Brain") {
+    if (nameLower.includes("cerebellum")) return "Cerebellum";
+    if (nameLower.includes("stem") || nameLower.includes("medulla") || nameLower.includes("pons") || nameLower.includes("spinal")) return "Brainstem";
+    if (nameLower.includes("frontal")) return "Frontal Lobe";
+    if (nameLower.includes("parietal")) return "Parietal Lobe";
+    if (nameLower.includes("occipital")) return "Occipital Lobe";
+    if (nameLower.includes("temporal")) return "Temporal Lobe";
+    if (nameLower.includes("cortex") || nameLower.includes("cerebrum") || nameLower.includes("hemisphere")) return "Cerebral Cortex";
+    return "Cerebral Hemisphere Region";
+  }
+  return meshName.replace(/_/g, " ");
+}
+
+function OrganModel({ organ, selectedRegion }) {
+  // If the selected organ is not Brain or Heart, default it to Heart (Heart1.glb)
+  let actualOrgan = organ;
+  if (organ !== "Brain" && organ !== "Heart") {
+    actualOrgan = "Heart";
+  }
+
+  let modelPath = "/src/models/Heart1.glb";
+  if (actualOrgan === "Brain") {
+    modelPath = "/src/models/Brain.glb";
+  }
+
+  const { scene } = useGLTF(modelPath);
+  const originalMaterials = useRef(new Map());
+
+  // Back up original material settings to allow non-destructive glow tinting
+  useEffect(() => {
+    if (!scene) return;
+    originalMaterials.current.clear();
+    scene.traverse((node) => {
+      if (node.isMesh && node.material) {
+        originalMaterials.current.set(node.uuid, {
+          color: node.material.color ? node.material.color.clone() : null,
+          emissive: node.material.emissive ? node.material.emissive.clone() : null,
+          emissiveIntensity: node.material.emissiveIntensity !== undefined ? node.material.emissiveIntensity : 0,
+        });
+      }
+    });
+  }, [scene]);
+
+  // Handle color & glow updates when selectedRegion changes
+  useEffect(() => {
+    if (!scene) return;
+    scene.traverse((node) => {
+      if (node.isMesh && node.material) {
+        const orig = originalMaterials.current.get(node.uuid);
+        if (!orig) return;
+
+        const nodeRegion = getRegionFromMeshName(node.name, actualOrgan);
+        const isSelected = selectedRegion && nodeRegion.toLowerCase() === selectedRegion.toLowerCase();
+
+        if (isSelected) {
+          if (node.material.color) node.material.color.setHex(0xa78bfa); // Glowing Purple
+          if (node.material.emissive) {
+            node.material.emissive.setHex(0xa78bfa);
+            node.material.emissiveIntensity = 2.0;
+          }
+        } else {
+          // Reset to initial settings
+          if (node.material.color && orig.color) node.material.color.copy(orig.color);
+          if (node.material.emissive && orig.emissive) {
+            node.material.emissive.copy(orig.emissive);
+            node.material.emissiveIntensity = orig.emissiveIntensity;
+          }
+        }
+      }
+    });
+  }, [scene, selectedRegion, actualOrgan]);
+
+  return (
+    <primitive
+      object={scene}
+      scale={actualOrgan === "Brain" ? 1.0 : 1.25}
+      position={actualOrgan === "Brain" ? [0, -0.1, 0] : [0, -0.3, 0]}
+    />
+  );
+}
+
+// ─── Main Component ──────────────────────────────────────────────────────────
 function AITutor() {
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([
@@ -12,15 +141,26 @@ function AITutor() {
 
   const { user } = useAuth();
 
-  // Speech Recognition states & ref
+  // Speech recognition states & ref
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
+  
+  // MediaRecorder refs for Whisper fallback
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
   const userId = user?.email || "temp_user";
 
   // Chat History & Multiple Conversations states
   const [conversations, setConversations] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
+
+  // 3D Canvas and Highlights states
+  const [selectedOrgan, setSelectedOrgan] = useState("Heart");
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   // Load chat history from localStorage on mount or when userId changes
   useEffect(() => {
@@ -43,11 +183,21 @@ function AITutor() {
     ]);
   }, [userId]);
 
-  // Voice recognition cleanup
+  // Cleanup mic & audio on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
       }
     };
   }, []);
@@ -58,6 +208,15 @@ function AITutor() {
       { role: "assistant", text: "Hello! I am your AI Anatomy Tutor. Ask me any question about human organs, systems, or study recommendations." },
     ]);
     setChatInput("");
+    setSelectedRegion(null);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setAudioPlaying(false);
+    }
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
   };
 
   const handleSelectConversation = (id) => {
@@ -65,6 +224,15 @@ function AITutor() {
     if (chat) {
       setCurrentChatId(id);
       setChatMessages(chat.messages);
+      setSelectedRegion(null);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+        setAudioPlaying(false);
+      }
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
     }
   };
 
@@ -79,19 +247,81 @@ function AITutor() {
     }
   };
 
+  // Whisper MediaRecorder audio recording fallback
+  const toggleWhisperRecording = async () => {
+    if (isListening) {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      setIsListening(false);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunksRef.current = [];
+        
+        const recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            audioChunksRef.current.push(e.data);
+          }
+        };
+        
+        recorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+          
+          // Stop stream tracks to release microphone icon
+          stream.getTracks().forEach(track => track.stop());
+          
+          setChatLoading(true);
+          try {
+            const formData = new FormData();
+            formData.append("audio", audioBlob, "recording.webm");
+            formData.append("language", "en");
+            
+            const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/voice/transcribe`, {
+              method: "POST",
+              body: formData
+            });
+            
+            const data = await response.json();
+            if (data && data.transcript) {
+              const text = data.transcript;
+              setChatInput((prev) => (prev ? prev + " " + text : text));
+            }
+          } catch (err) {
+            console.error("Transcribe error:", err);
+            alert("Failed to transcribe audio. Verify that the backend server is running.");
+          } finally {
+            setChatLoading(false);
+          }
+        };
+        
+        mediaRecorderRef.current = recorder;
+        recorder.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error("Microphone access failed:", err);
+        alert("Could not access microphone: " + err.message);
+      }
+    }
+  };
+
   const toggleListening = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    // If the browser doesn't support Web Speech API natively (e.g. Brave blocks it),
+    // we use our MediaRecorder + Whisper server fallback!
+    if (!SpeechRecognition) {
+      toggleWhisperRecording();
+      return;
+    }
+
     if (isListening) {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
       setIsListening(false);
     } else {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert("Speech recognition is not supported in this browser. Please try Chrome or Edge.");
-        return;
-      }
-
       const rec = new SpeechRecognition();
       rec.continuous = false;
       rec.lang = "en-US";
@@ -120,6 +350,57 @@ function AITutor() {
     }
   };
 
+  // Scans answer text for anatomical region and organ keywords
+  const scanTextForAnatomicalRegions = (text) => {
+    if (!text) return { region: null, organ: null };
+    const textLower = text.toLowerCase();
+
+    // Check Brain keywords specifically (avoiding general words like "lobe" on its own)
+    if (
+      textLower.includes("brain") ||
+      textLower.includes("cerebellum") ||
+      textLower.includes("cerebrum") ||
+      textLower.includes("cortex") ||
+      textLower.includes("hemisphere") ||
+      textLower.includes("brainstem") ||
+      textLower.includes("frontal lobe") ||
+      textLower.includes("parietal lobe") ||
+      textLower.includes("occipital lobe") ||
+      textLower.includes("temporal lobe")
+    ) {
+      let region = null;
+      if (textLower.includes("cerebellum")) region = "Cerebellum";
+      else if (textLower.includes("brainstem") || textLower.includes("stem")) region = "Brainstem";
+      else if (textLower.includes("frontal")) region = "Frontal Lobe";
+      else if (textLower.includes("parietal")) region = "Parietal Lobe";
+      else if (textLower.includes("occipital")) region = "Occipital Lobe";
+      else if (textLower.includes("temporal")) region = "Temporal Lobe";
+      else if (textLower.includes("cortex") || textLower.includes("cerebrum")) region = "Cerebral Cortex";
+      return { region, organ: "Brain" };
+    }
+
+    // Check Heart keywords
+    if (
+      textLower.includes("heart") ||
+      textLower.includes("aorta") ||
+      textLower.includes("ventricle") ||
+      textLower.includes("atrium") ||
+      textLower.includes("myocardium") ||
+      textLower.includes("pulmonary")
+    ) {
+      let region = null;
+      if (textLower.includes("aorta")) region = "Aorta";
+      else if (textLower.includes("left ventricle") || (textLower.includes("ventricle") && textLower.includes("left"))) region = "Left Ventricle";
+      else if (textLower.includes("right ventricle") || (textLower.includes("ventricle") && textLower.includes("right"))) region = "Right Ventricle";
+      else if (textLower.includes("left atrium") || (textLower.includes("atrium") && textLower.includes("left"))) region = "Left Atrium";
+      else if (textLower.includes("right atrium") || (textLower.includes("atrium") && textLower.includes("right"))) region = "Right Atrium";
+      else if (textLower.includes("pulmonary") || textLower.includes("artery")) region = "Pulmonary Artery";
+      return { region, organ: "Heart" };
+    }
+
+    return { region: null, organ: null };
+  };
+
   const handleChatSubmit = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
@@ -128,6 +409,17 @@ function AITutor() {
     const newUserMsg = { role: "user", text: query };
     setChatInput("");
     setChatLoading(true);
+    setSelectedRegion(null);
+
+    // Stop currently playing voice speech
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+      setAudioPlaying(false);
+    }
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
 
     let activeId = currentChatId;
     let baseMessages = [];
@@ -175,6 +467,54 @@ function AITutor() {
         localStorage.setItem(`anatomy_ai_tutor_history_${userId}`, JSON.stringify(next));
         return next;
       });
+
+      // ── TRIGGER ANATOMICAL SCANNING & VOICE HIGHLIGHTS ──
+      const { region, organ } = scanTextForAnatomicalRegions(res.answer);
+      if (organ) {
+        setSelectedOrgan(organ);
+      }
+
+      if (voiceEnabled) {
+        try {
+          if (region) {
+            setSelectedRegion(region);
+          }
+          const audioBlob = await getTutorSpeech(res.answer);
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audioRef.current = audio;
+
+          audio.onplay = () => setAudioPlaying(true);
+          audio.onended = () => {
+            setAudioPlaying(false);
+            setSelectedRegion(null);
+          };
+          audio.onerror = () => {
+            setAudioPlaying(false);
+            setSelectedRegion(null);
+          };
+
+          audio.play();
+        } catch (speechErr) {
+          console.warn("OpenAI TTS synthesis failed, falling back to browser Speech Synthesis:", speechErr);
+          speakWithBrowserTTS(
+            res.answer,
+            () => setAudioPlaying(true),
+            () => {
+              setAudioPlaying(false);
+              setSelectedRegion(null);
+            }
+          );
+        }
+      } else {
+        // If voice is muted, flash the region highlight for 5 seconds
+        if (region) {
+          setSelectedRegion(region);
+          setTimeout(() => {
+            setSelectedRegion(null);
+          }, 5000);
+        }
+      }
     } catch (err) {
       console.error(err);
       const errMsg = { role: "assistant", text: "I'm sorry, I was unable to retrieve an explanation. Please make sure the backend server is running." };
@@ -245,20 +585,10 @@ function AITutor() {
     marginBottom: "12px",
   });
 
-  const cardStyle = {
-    background: "rgba(30, 41, 59, 0.45)",
-    border: "1px solid rgba(255, 255, 255, 0.08)",
-    backdropFilter: "blur(15px)",
-    WebkitBackdropFilter: "blur(15px)",
-    borderRadius: "22px",
-    padding: "30px",
-    color: "white",
-  };
-
   return (
     <div
       style={{
-        minHeight: "100vh",
+        height: "100vh",
         background: "linear-gradient(to bottom right, #020617, #0F172A, #111827)",
         color: "white",
         fontFamily: "'Inter', sans-serif",
@@ -333,31 +663,31 @@ function AITutor() {
               ) : (
                 conversations.map((chat) => (
                   <div
-                    key={chat.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "8px 12px",
-                      borderRadius: "10px",
-                      background: currentChatId === chat.id ? "rgba(6, 182, 212, 0.1)" : "transparent",
-                      border: "1px solid " + (currentChatId === chat.id ? "rgba(6, 182, 212, 0.25)" : "transparent"),
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                    }}
-                    onClick={() => handleSelectConversation(chat.id)}
-                    onMouseEnter={(e) => {
-                      if (currentChatId !== chat.id) {
-                        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (currentChatId !== chat.id) {
-                        e.currentTarget.style.background = "transparent";
-                        e.currentTarget.style.borderColor = "transparent";
-                      }
-                    }}
+                     key={chat.id}
+                     style={{
+                       display: "flex",
+                       alignItems: "center",
+                       justifyContent: "space-between",
+                       padding: "8px 12px",
+                       borderRadius: "10px",
+                       background: currentChatId === chat.id ? "rgba(6, 182, 212, 0.1)" : "transparent",
+                       border: "1px solid " + (currentChatId === chat.id ? "rgba(6, 182, 212, 0.25)" : "transparent"),
+                       cursor: "pointer",
+                       transition: "all 0.2s ease",
+                     }}
+                     onClick={() => handleSelectConversation(chat.id)}
+                     onMouseEnter={(e) => {
+                       if (currentChatId !== chat.id) {
+                         e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+                         e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
+                       }
+                     }}
+                     onMouseLeave={(e) => {
+                       if (currentChatId !== chat.id) {
+                         e.currentTarget.style.background = "transparent";
+                         e.currentTarget.style.borderColor = "transparent";
+                       }
+                     }}
                   >
                     <span
                       style={{
@@ -416,156 +746,224 @@ function AITutor() {
           </div>
         </aside>
 
-        {/* Right Content Panel */}
-        <main style={{ height: "100%", overflow: "hidden" }}>
-          <div style={{ ...cardStyle, display: "flex", flexDirection: "column", height: "100%", boxSizing: "border-box" }}>
-            <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "15px", marginBottom: "15px" }}>
-              <h2 style={{ fontSize: "24px", color: "#fff", fontWeight: "700" }}>AnatoMind Chat</h2>
+        {/* Column 2: Chat Panel */}
+        <div className="tutor-chat-box">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "15px", marginBottom: "15px" }}>
+            <div>
+              <h2 style={{ fontSize: "24px", color: "#fff", fontWeight: "700", margin: 0 }}>AnatoMind Chat</h2>
               <p style={{ color: "#94A3B8", fontSize: "14px", margin: "4px 0 0 0" }}>Type your academic question and get a simple explanation.</p>
             </div>
-
-            {/* Suggestions */}
-            <div style={{ marginBottom: "15px" }}>
-              <span style={{ color: "#E2E8F0", fontSize: "13px", fontWeight: "600", marginRight: "10px" }}>Suggested Topics:</span>
-              {[
-                { text: "Heart blood flow", q: "Explain the path of blood through the heart simply." },
-                { text: "Brain lobes", q: "What do the four lobes of the brain do?" },
-                { text: "Lungs gas exchange", q: "Explain how oxygen enters the blood in the lungs." },
-              ].map((s) => (
-                <button
-                  key={s.text}
-                  onClick={() => suggestTopic(s.q)}
-                  style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "10px",
-                    color: "#06B6D4",
-                    padding: "6px 12px",
-                    fontSize: "12px",
-                    marginRight: "8px",
-                    cursor: "pointer",
-                    transition: "0.2s"
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(6, 182, 212, 0.1)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
-                >
-                  {s.text}
-                </button>
-              ))}
-            </div>
-
-            {/* Message History */}
-            <div
+            <button
+              type="button"
+              onClick={() => {
+                const nextVal = !voiceEnabled;
+                setVoiceEnabled(nextVal);
+                if (!nextVal && audioRef.current) {
+                  audioRef.current.pause();
+                  audioRef.current = null;
+                  setAudioPlaying(false);
+                  setSelectedRegion(null);
+                }
+                if (!nextVal && window.speechSynthesis) {
+                  window.speechSynthesis.cancel();
+                }
+              }}
+              title={voiceEnabled ? "Mute Voice Speech" : "Speak Voice Speech"}
               style={{
-                flex: 1,
-                overflowY: "auto",
-                paddingRight: "10px",
-                marginBottom: "20px",
+                background: "rgba(255, 255, 255, 0.03)",
+                border: "1px solid " + (voiceEnabled ? "#06B6D4" : "rgba(255,255,255,0.08)"),
+                color: voiceEnabled ? "#06B6D4" : "#64748B",
+                padding: "10px 14px",
+                borderRadius: "12px",
+                fontSize: "16px",
+                cursor: "pointer",
                 display: "flex",
-                flexDirection: "column",
-                gap: "14px",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.3s ease"
               }}
             >
-              {chatMessages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                    maxWidth: "75%",
-                    background: msg.role === "user" ? "rgba(30, 41, 59, 0.9)" : "rgba(6, 182, 212, 0.08)",
-                    border: "1px solid " + (msg.role === "user" ? "rgba(255,255,255,0.08)" : "rgba(6, 182, 212, 0.25)"),
-                    borderRadius: msg.role === "user" ? "18px 18px 2px 18px" : "18px 18px 18px 2px",
-                    padding: "16px",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <div style={{ fontSize: "11px", fontWeight: "600", color: msg.role === "user" ? "#CBD5E1" : "#06B6D4", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                    {msg.role === "user" ? "You" : "Anatomy Tutor"}
-                  </div>
-                  <div style={{ color: "#E2E8F0", fontSize: "14px", lineHeight: "1.6" }}>
-                    {renderMessageText(msg.text)}
-                  </div>
-                </div>
-              ))}
-              {chatLoading && (
-                <div style={{ alignSelf: "flex-start", background: "rgba(6, 182, 212, 0.04)", border: "1px solid rgba(6, 182, 212, 0.15)", borderRadius: "18px 18px 18px 2px", padding: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div style={{ width: "8px", height: "8px", background: "#06B6D4", borderRadius: "50%", animation: "spin 1s infinite alternate" }}></div>
-                  <span style={{ color: "#06B6D4", fontSize: "13px", fontWeight: "600" }}>Tutor is thinking...</span>
-                </div>
-              )}
-            </div>
-
-            {/* Form Input */}
-            <form onSubmit={handleChatSubmit} style={{ display: "flex", gap: "12px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "15px", alignItems: "center" }}>
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask a question like 'Explain liver function simply'..."
-                style={{
-                  flex: 1,
-                  padding: "14px 18px",
-                  borderRadius: "14px",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  background: "rgba(255,255,255,0.03)",
-                  color: "white",
-                  fontSize: "14px",
-                  outline: "none",
-                }}
-                disabled={chatLoading}
-              />
-
-              {/* Voice Input Mic Button */}
-              <button
-                type="button"
-                onClick={toggleListening}
-                title={isListening ? "Listening... Click to stop" : "Speak your question"}
-                className={isListening ? "mic-button listening" : "mic-button"}
-                style={{
-                  padding: "14px",
-                  borderRadius: "14px",
-                  background: isListening
-                    ? "rgba(239, 68, 68, 0.2)"
-                    : "rgba(255, 255, 255, 0.03)",
-                  border: isListening
-                    ? "1px solid #EF4444"
-                    : "1px solid rgba(255, 255, 255, 0.08)",
-                  color: isListening ? "#EF4444" : "#06B6D4",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                  <line x1="12" x2="12" y1="19" y2="22" />
-                </svg>
-              </button>
-
-              <button
-                type="submit"
-                disabled={chatLoading || !chatInput.trim()}
-                style={{
-                  padding: "14px 28px",
-                  borderRadius: "14px",
-                  background: "linear-gradient(135deg, #06B6D4, #2563EB)",
-                  border: "none",
-                  color: "white",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 15px rgba(6, 182, 212, 0.3)",
-                  transition: "all 0.3s ease",
-                  whiteSpace: "nowrap"
-                }}
-              >
-                Send
-              </button>
-            </form>
+              {voiceEnabled ? "🔊" : "🔇"}
+            </button>
           </div>
-        </main>
+
+          {/* Suggestions */}
+          <div style={{ marginBottom: "15px" }}>
+            <span style={{ color: "#E2E8F0", fontSize: "13px", fontWeight: "600", marginRight: "10px" }}>Suggested Topics:</span>
+            {[
+              { text: "Heart blood flow", q: "Explain the path of blood through the heart simply." },
+              { text: "Brain lobes", q: "What do the four lobes of the brain do?" },
+              { text: "Lungs gas exchange", q: "Explain how oxygen enters the blood in the lungs." },
+            ].map((s) => (
+              <button
+                key={s.text}
+                onClick={() => suggestTopic(s.q)}
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: "10px",
+                  color: "#06B6D4",
+                  padding: "6px 12px",
+                  fontSize: "12px",
+                  marginRight: "8px",
+                  cursor: "pointer",
+                  transition: "0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(6, 182, 212, 0.1)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+              >
+                {s.text}
+              </button>
+            ))}
+          </div>
+
+          {/* Message History */}
+          <div className="tutor-message-history">
+            {chatMessages.map((msg, idx) => (
+              <div
+                key={idx}
+                style={{
+                  alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
+                  maxWidth: "75%",
+                  background: msg.role === "user" ? "rgba(30, 41, 59, 0.9)" : "rgba(6, 182, 212, 0.08)",
+                  border: "1px solid " + (msg.role === "user" ? "rgba(255,255,255,0.08)" : "rgba(6, 182, 212, 0.25)"),
+                  borderRadius: msg.role === "user" ? "18px 18px 2px 18px" : "18px 18px 18px 2px",
+                  padding: "16px",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                }}
+              >
+                <div style={{ fontSize: "11px", fontWeight: "600", color: msg.role === "user" ? "#CBD5E1" : "#06B6D4", marginBottom: "4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {msg.role === "user" ? "You" : "Anatomy Tutor"}
+                </div>
+                <div style={{ color: "#E2E8F0", fontSize: "14px", lineHeight: "1.6" }}>
+                  {renderMessageText(msg.text)}
+                </div>
+              </div>
+            ))}
+            {chatLoading && (
+              <div style={{ alignSelf: "flex-start", background: "rgba(6, 182, 212, 0.04)", border: "1px solid rgba(6, 182, 212, 0.15)", borderRadius: "18px 18px 18px 2px", padding: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <div style={{ width: "8px", height: "8px", background: "#06B6D4", borderRadius: "50%", animation: "spin 1s infinite alternate" }}></div>
+                <span style={{ color: "#06B6D4", fontSize: "13px", fontWeight: "600" }}>Tutor is thinking...</span>
+              </div>
+            )}
+          </div>
+
+          {/* Form Input */}
+          <form onSubmit={handleChatSubmit} style={{ display: "flex", gap: "12px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "15px", alignItems: "center" }}>
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Ask a question like 'Explain liver function simply'..."
+              style={{
+                flex: 1,
+                padding: "14px 18px",
+                borderRadius: "14px",
+                border: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(255, 255, 255, 0.03)",
+                color: "white",
+                fontSize: "14px",
+                outline: "none",
+              }}
+              disabled={chatLoading}
+            />
+
+            {/* Voice Input Mic Button */}
+            <button
+              type="button"
+              onClick={toggleListening}
+              title={isListening ? "Listening... Click to stop" : "Speak your question"}
+              className={isListening ? "mic-button listening" : "mic-button"}
+              style={{
+                padding: "14px",
+                borderRadius: "14px",
+                background: isListening
+                  ? "rgba(239, 68, 68, 0.2)"
+                  : "rgba(255, 255, 255, 0.03)",
+                border: isListening
+                  ? "1px solid #EF4444"
+                  : "1px solid rgba(255, 255, 255, 0.08)",
+                color: isListening ? "#EF4444" : "#06B6D4",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" x2="12" y1="19" y2="22" />
+              </svg>
+            </button>
+
+            <button
+              type="submit"
+              disabled={chatLoading || !chatInput.trim()}
+              style={{
+                padding: "14px 28px",
+                borderRadius: "14px",
+                background: "linear-gradient(135deg, #06B6D4, #2563EB)",
+                border: "none",
+                color: "white",
+                fontWeight: "600",
+                cursor: "pointer",
+                boxShadow: "0 4px 15px rgba(6, 182, 212, 0.3)",
+                transition: "all 0.3s ease",
+                whiteSpace: "nowrap"
+              }}
+            >
+              Send
+            </button>
+          </form>
+        </div>
+
+        {/* Column 3: 3D Visualizer */}
+        <div className="tutor-3d-visualizer">
+          <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "15px", marginBottom: "15px" }}>
+            <h3 style={{ fontSize: "18px", color: "#fff", fontWeight: "700", margin: 0 }}>Interactive 3D Visualizer</h3>
+            <p style={{ color: "#94A3B8", fontSize: "12px", margin: "4px 0 0 0" }}>Active Model: <strong style={{ color: "#06B6D4" }}>{selectedOrgan}</strong></p>
+          </div>
+          
+          <div className="tutor-canvas-container">
+            <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+              <ambientLight intensity={1.5} />
+              <directionalLight position={[2, 2, 2]} intensity={2.0} />
+              <pointLight position={[-2, -2, -2]} intensity={1.0} />
+              
+              <OrganModel 
+                organ={selectedOrgan} 
+                selectedRegion={selectedRegion} 
+              />
+              
+              <OrbitControls enableZoom={true} />
+            </Canvas>
+
+            {/* Highlight Indicator Overlay */}
+            {selectedRegion && (
+              <div style={{
+                position: "absolute",
+                bottom: "20px",
+                left: "20px",
+                background: "rgba(167, 139, 250, 0.95)",
+                color: "white",
+                padding: "8px 16px",
+                borderRadius: "10px",
+                fontSize: "12px",
+                fontWeight: "600",
+                boxShadow: "0 4px 15px rgba(167, 139, 250, 0.4)",
+                backdropFilter: "blur(5px)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
+              }}>
+                <span>✨ Speaking of:</span>
+                <strong style={{ textDecoration: "underline" }}>{selectedRegion}</strong>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

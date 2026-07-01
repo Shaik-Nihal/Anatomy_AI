@@ -56,3 +56,14 @@ export const resetUserProgress = async (userId) => {
   return response.data;
 };
 
+export const getTutorSpeech = async (text, voice = "alloy") => {
+  const formData = new FormData();
+  formData.append("text", text);
+  formData.append("voice", voice);
+  
+  const response = await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/voice/speak`, formData, {
+    responseType: "blob"
+  });
+  return response.data;
+};
+
