@@ -119,10 +119,10 @@ export const comparisonData = {
     organName: "Lungs",
     icon: "🫁",
     description: "Compare pulmonary volumes, capacities, and airway diameters.",
-    maleModel: "/src/models/Heart1.glb",
-    femaleModel: "/src/models/Heart1.glb",
-    healthyModel: "/src/models/Heart1.glb",
-    diseasedModel: "/src/models/Heart1.glb",
+    maleModel: "/models/respiratory_system.glb",
+    femaleModel: "/models/respiratory_system.glb",
+    healthyModel: "/models/respiratory_system.glb",
+    diseasedModel: "/models/respiratory_system.glb",
     genderComparison: {
       leftTitle: "Male Lungs",
       rightTitle: "Female Lungs",
@@ -171,10 +171,10 @@ export const comparisonData = {
     organName: "Eye",
     icon: "👁️",
     description: "Compare axial length, corneal curve, and ocular structures.",
-    maleModel: "/src/models/Heart1.glb",
-    femaleModel: "/src/models/Heart1.glb",
-    healthyModel: "/src/models/Heart1.glb",
-    diseasedModel: "/src/models/Heart1.glb",
+    maleModel: "",
+    femaleModel: "",
+    healthyModel: "",
+    diseasedModel: "",
     genderComparison: {
       leftTitle: "Male Eye",
       rightTitle: "Female Eye",
@@ -223,10 +223,10 @@ export const comparisonData = {
     organName: "Skeleton",
     icon: "🦴",
     description: "Compare bone density, pelvic shape, and structural integrity.",
-    maleModel: "/src/models/Heart1.glb",
-    femaleModel: "/src/models/Heart1.glb",
-    healthyModel: "/src/models/Heart1.glb",
-    diseasedModel: "/src/models/Heart1.glb",
+    maleModel: "/models/ecorche_-_anatomy_study.glb",
+    femaleModel: "/models/ecorche_-_anatomy_study.glb",
+    healthyModel: "/models/ecorche_-_anatomy_study.glb",
+    diseasedModel: "/models/ecorche_-_anatomy_study.glb",
     genderComparison: {
       leftTitle: "Male Skeleton",
       rightTitle: "Female Skeleton",
@@ -273,12 +273,12 @@ export const comparisonData = {
   },
   Liver: {
     organName: "Liver",
-    icon: "🩺",
+    icon: "/icons/liver.png",
     description: "Compare metabolic clearance rates, liver weight, and fibrotic status.",
-    maleModel: "/src/models/Heart1.glb",
-    femaleModel: "/src/models/Heart1.glb",
-    healthyModel: "/src/models/Heart1.glb",
-    diseasedModel: "/src/models/Heart1.glb",
+    maleModel: "",
+    femaleModel: "",
+    healthyModel: "",
+    diseasedModel: "",
     genderComparison: {
       leftTitle: "Male Liver",
       rightTitle: "Female Liver",
@@ -325,12 +325,12 @@ export const comparisonData = {
   },
   Kidney: {
     organName: "Kidney",
-    icon: "🩸",
+    icon: "/icons/kidney.png",
     description: "Compare nephron numbers, glomerular size, and cystic structures.",
-    maleModel: "/src/models/Heart1.glb",
-    femaleModel: "/src/models/Heart1.glb",
-    healthyModel: "/src/models/Heart1.glb",
-    diseasedModel: "/src/models/Heart1.glb",
+    maleModel: "/models/kidney.glb",
+    femaleModel: "/models/kidney.glb",
+    healthyModel: "/models/kidney.glb",
+    diseasedModel: "/models/kidney.glb",
     genderComparison: {
       leftTitle: "Male Kidney",
       rightTitle: "Female Kidney",
@@ -375,4 +375,95 @@ export const comparisonData = {
       highlights: []
     }
   }
+,
+
+  Stomach: {
+    organName: "Stomach",
+    icon: "/icons/stomach.png",
+    description: "Compare stomach structures and gastric conditions.",
+    maleModel: "/models/realistic_human_stomach.glb",
+    femaleModel: "/models/realistic_human_stomach.glb",
+    healthyModel: "/models/realistic_human_stomach.glb",
+    diseasedModel: "/models/realistic_human_stomach.glb",
+    conditionComparison: {
+      leftTitle: "Healthy Stomach",
+      rightTitle: "Diseased Stomach (Ulcer)",
+      leftStats: { pH: "1.5 - 3.5", mucosalLining: "Intact", digestion: "Normal" },
+      rightStats: { pH: "Altered", mucosalLining: "Damaged", digestion: "Painful/Impaired" },
+      leftNotes: "Thick mucous layer protects the stomach lining from its own acid.",
+      rightNotes: "Breakdown of the mucosal barrier leading to an ulcer, often caused by H. pylori.",
+      differences: [
+        "Mucosal Barrier: Damaged in the diseased state.",
+        "Tissue Inflammation: Present around the ulcer site."
+      ],
+      highlights: []
+    }
+  },
+  Intestines: {
+    organName: "Intestines",
+    icon: "/icons/intestines.png",
+    description: "Compare intestinal health and conditions.",
+    maleModel: "/models/small_and_large_intestine.glb",
+    femaleModel: "/models/small_and_large_intestine.glb",
+    healthyModel: "/models/small_and_large_intestine.glb",
+    diseasedModel: "/models/small_and_large_intestine.glb",
+    conditionComparison: {
+      leftTitle: "Healthy Intestines",
+      rightTitle: "Diseased Intestines (Inflammation)",
+      leftStats: { villi: "Intact", absorption: "High", lining: "Healthy" },
+      rightStats: { villi: "Flattened", absorption: "Low", lining: "Inflamed" },
+      leftNotes: "Maximal surface area for nutrient absorption.",
+      rightNotes: "Inflammatory bowel conditions can damage the lining and impair absorption.",
+      differences: [
+        "Lining: Inflamed and damaged.",
+        "Nutrient Absorption: Significantly reduced."
+      ],
+      highlights: []
+    }
+  },
+  Skull: {
+    organName: "Skull",
+    icon: "💀",
+    description: "Compare skull anatomy.",
+    maleModel: "/models/human_male_skull.glb",
+    femaleModel: "/models/human_male_skull.glb",
+    healthyModel: "/models/human_male_skull.glb",
+    diseasedModel: "/models/human_male_skull.glb",
+    genderComparison: {
+      leftTitle: "Male Skull",
+      rightTitle: "Female Skull",
+      leftStats: { size: "Larger", supraorbitalRidges: "Prominent", jawAngle: "Squarer" },
+      rightStats: { size: "Smaller", supraorbitalRidges: "Smoother", jawAngle: "More Obtuse" },
+      leftNotes: "Generally larger and more robust.",
+      rightNotes: "Generally smaller and more gracile.",
+      differences: [
+        "Overall Robustness: Male skulls are typically more robust.",
+        "Brow Ridges: More prominent in males."
+      ],
+      highlights: []
+    }
+  },
+  "Human Anatomy": {
+    organName: "Human Anatomy",
+    icon: "/icons/human.png",
+    description: "Full body anatomy overview.",
+    maleModel: "/models/male_full_body_ecorche.glb",
+    femaleModel: "/models/male_full_body_ecorche.glb",
+    healthyModel: "/models/male_full_body_ecorche.glb",
+    diseasedModel: "/models/male_full_body_ecorche.glb",
+    conditionComparison: {
+      leftTitle: "Healthy Anatomy",
+      rightTitle: "Muscular Atrophy",
+      leftStats: { muscleMass: "Normal", boneDensity: "Normal", posture: "Upright" },
+      rightStats: { muscleMass: "Reduced", boneDensity: "Reduced", posture: "Weakened" },
+      leftNotes: "Normal muscle tone and mass.",
+      rightNotes: "Loss of muscle mass due to disuse or disease.",
+      differences: [
+        "Muscle Volume: Significantly reduced.",
+        "Strength: Impaired."
+      ],
+      highlights: []
+    }
+  }
+
 };

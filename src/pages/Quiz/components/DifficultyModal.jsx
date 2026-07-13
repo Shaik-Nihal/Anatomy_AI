@@ -40,14 +40,17 @@ function DifficultyModal({
     Brain: "🧠",
     Heart: "🫀",
     Lungs: "🫁",
-    Liver: "/organs/liver.png",
-    Kidney: "🫘",
+    Liver: "/icons/liver.png",
+    Kidney: "/icons/kidney.png",
     Eye: "👁️",
     Ear: "👂",
-    Stomach: "🫃",
+    Stomach: "/icons/stomach.png",
     Bones: "🦴",
     Muscles: "💪",
-    Intestines: "/organs/intestines.png",
+    Intestines: "/icons/intestines.png",
+    "Human Anatomy": "/icons/human.png",
+    Skeleton: "🦴",
+    Skull: "💀",
   };
 
   return (

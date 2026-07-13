@@ -181,7 +181,7 @@ function LearningProgress() {
     }
   });
 
-  const organList = ["Heart", "Brain", "Lungs", "Liver"];
+  const organList = ["Heart", "Brain", "Lungs", "Liver", "Kidney", "Stomach", "Intestines", "Human Anatomy", "Skeleton", "Skull", "Eye"];
   const latestAttempts = Object.values(latestByOrgan);
   const masterySum = latestAttempts.reduce((acc, q) => acc + q.percentage, 0);
   const overallMastery = latestAttempts.length > 0 ? Math.round(masterySum / organList.length) : 0;
@@ -200,10 +200,17 @@ function LearningProgress() {
 
   // Topics list
   const topicData = [
-    { name: "Heart",  icon: "❤️",  pct: latestByOrgan["Heart"] ? Math.round(latestByOrgan["Heart"].percentage) : 0, color: "#ef4444" },
+    { name: "Heart",  icon: "🫀",  pct: latestByOrgan["Heart"] ? Math.round(latestByOrgan["Heart"].percentage) : 0, color: "#ef4444" },
     { name: "Brain",  icon: "🧠",  pct: latestByOrgan["Brain"] ? Math.round(latestByOrgan["Brain"].percentage) : 0, color: "#a78bfa" },
     { name: "Lungs",  icon: "🫁",  pct: latestByOrgan["Lungs"] ? Math.round(latestByOrgan["Lungs"].percentage) : 0, color: "#06b6d4" },
-    { name: "Liver",  icon: "🟤",  pct: latestByOrgan["Liver"] ? Math.round(latestByOrgan["Liver"].percentage) : 0, color: "#f97316" },
+    { name: "Liver",  icon: "/icons/liver.png",  pct: latestByOrgan["Liver"] ? Math.round(latestByOrgan["Liver"].percentage) : 0, color: "#f97316" },
+    { name: "Kidney", icon: "/icons/kidney.png", pct: latestByOrgan["Kidney"] ? Math.round(latestByOrgan["Kidney"].percentage) : 0, color: "#ef4444" },
+    { name: "Stomach",icon: "/icons/stomach.png",pct: latestByOrgan["Stomach"] ? Math.round(latestByOrgan["Stomach"].percentage) : 0, color: "#10b981" },
+    { name: "Intestines",icon:"/icons/intestines.png",pct: latestByOrgan["Intestines"] ? Math.round(latestByOrgan["Intestines"].percentage) : 0, color: "#a78bfa" },
+    { name: "Human Anatomy", icon: "/icons/human.png", pct: latestByOrgan["Human Anatomy"] ? Math.round(latestByOrgan["Human Anatomy"].percentage) : 0, color: "#3b82f6" },
+    { name: "Skeleton", icon: "🦴", pct: latestByOrgan["Skeleton"] ? Math.round(latestByOrgan["Skeleton"].percentage) : 0, color: "#f1f5f9" },
+    { name: "Skull", icon: "💀", pct: latestByOrgan["Skull"] ? Math.round(latestByOrgan["Skull"].percentage) : 0, color: "#cbd5e1" },
+    { name: "Eye", icon: "👁️", pct: latestByOrgan["Eye"] ? Math.round(latestByOrgan["Eye"].percentage) : 0, color: "#38bdf8" },
   ];
 
   // Recent Quizzes list
@@ -489,7 +496,9 @@ function LearningProgress() {
                     <div key={t.name}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 16 }}>{t.icon}</span>
+                          <span style={{ fontSize: 16 }}>
+                            {t.icon.includes(".png") ? <img src={t.icon} alt={t.name} style={{ width: "20px", height: "20px", objectFit: "contain" }} /> : t.icon}
+                          </span>
                           <span style={{ color: "#cbd5e1", fontSize: 13 }}>{t.name}</span>
                         </div>
                         <span style={{ color: "#94a3b8", fontSize: 12 }}>{t.pct}%</span>

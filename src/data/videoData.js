@@ -76,5 +76,46 @@ export const videoData = {
       youtubeUrl: "https://www.youtube.com/watch?v=rDGqkMHPDq0",
       desc: "Detailed analysis of bone growth, cortical structures, axial vs appendicular skeletons, and osteoporosis."
     }
+  ],
+  Stomach: [
+    {
+      id: "Q-n_Q0NCGjc",
+      title: "Stomach Anatomy & Digestion Physiology",
+      duration: "11:45",
+      thumbnail: "https://img.youtube.com/vi/Q-n_Q0NCGjc/hqdefault.jpg",
+      youtubeUrl: "https://www.youtube.com/watch?v=Q-n_Q0NCGjc",
+      desc: "Detailed look at gastric regions, mucosal layers, parietal cells, and the production of hydrochloric acid."
+    }
+  ],
+  Intestines: [
+    {
+      id: "p1Fvw3P_XKw",
+      title: "Small & Large Intestine: Digestion & Absorption",
+      duration: "13:20",
+      thumbnail: "https://img.youtube.com/vi/p1Fvw3P_XKw/hqdefault.jpg",
+      youtubeUrl: "https://www.youtube.com/watch?v=p1Fvw3P_XKw",
+      desc: "Explore the duodenum, jejunum, ileum, and colon. Learn how villi maximize surface area for nutrient uptake."
+    }
+  ],
+  Skull: [
+    {
+      id: "Vf_E7j1y8k4",
+      title: "Human Skull Anatomy: Cranial & Facial Bones",
+      duration: "15:10",
+      thumbnail: "https://img.youtube.com/vi/Vf_E7j1y8k4/hqdefault.jpg",
+      youtubeUrl: "https://www.youtube.com/watch?v=Vf_E7j1y8k4",
+      desc: "A complete guide to the neurocranium, viscerocranium, sutures, foramina, and the structural integrity of the skull."
+    }
+  ],
+  "Human Anatomy": [
+    {
+      id: "uBGl2B17KXc",
+      title: "Introduction to Human Anatomy: Body Systems",
+      duration: "28:30",
+      thumbnail: "https://img.youtube.com/vi/uBGl2B17KXc/hqdefault.jpg",
+      youtubeUrl: "https://www.youtube.com/watch?v=uBGl2B17KXc",
+      desc: "A comprehensive overview of the macroscopic structures and functional interplay between major body systems."
+    }
   ]
+
 };

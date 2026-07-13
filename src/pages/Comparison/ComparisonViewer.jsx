@@ -28,6 +28,33 @@ function ComparativeModel({
     return clone;
   }, [scene]);
 
+  // Auto-center and normalize scale
+  useEffect(() => {
+    if (!clonedScene) return;
+    
+    // Reset to measure correctly
+    clonedScene.scale.set(1, 1, 1);
+    clonedScene.position.set(0, 0, 0);
+    
+    const box = new THREE.Box3().setFromObject(clonedScene);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    
+    if (maxDim > 0) {
+      let targetSize = 3.5; 
+      if (organName === "Human Anatomy" || organName === "Skeleton") targetSize = 5.0; 
+      
+      const normScale = targetSize / maxDim;
+      clonedScene.scale.set(normScale, normScale, normScale);
+      clonedScene.position.set(
+        -center.x * normScale,
+        -center.y * normScale,
+        -center.z * normScale
+      );
+    }
+  }, [clonedScene, organName]);
+
   // Apply visual styling for diseased state
   useEffect(() => {
     if (isDiseased && clonedScene) {
@@ -93,10 +120,10 @@ function ComparativeModel({
 
   return (
     <group ref={modelRef}>
-      <primitive object={clonedScene} position={[0, -0.6, 0]} />
+      <primitive object={clonedScene} />
       {isDiseased && highlightRegion && (
-        <mesh position={organName === "Brain" ? [0.6, 0, 0.4] : [0, -0.4, 0.3]}>
-          <sphereGeometry args={[0.15, 16, 16]} />
+        <mesh position={[0, 0, 0.4]}>
+          <sphereGeometry args={[0.2, 16, 16]} />
           <meshBasicMaterial color="#ef4444" transparent opacity={0.8} />
         </mesh>
       )}
@@ -128,8 +155,8 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
   const isBrain = organName === "Brain";
   const currentTab = activeTab === "gender" ? data.genderComparison : (activeTab === "condition" ? data.conditionComparison : data.ageComparison);
 
-  // Base scales
-  const baseScale = isBrain ? 1.8 : 2.2;
+  // Base scales (normalized to 1.0 since ComparativeModel auto-scales)
+  const baseScale = 1.0;
   const leftScale = baseScale;
   const rightScale = activeTab === "gender" ? baseScale * 0.85 : (activeTab === "age" ? baseScale * 0.65 : baseScale);
 
@@ -179,7 +206,11 @@ function ComparisonViewer({ organName, onBack, hideHeader = false }) {
           
           <div className="viewer-title-center">
             <div className="viewer-organ-icon">
-              {data.icon}
+              {data.icon.includes(".png") ? (
+                <img src={data.icon} alt={data.organName} style={{ width: "32px", height: "32px", objectFit: "contain" }} />
+              ) : (
+                data.icon
+              )}
             </div>
             <div className="viewer-title-wrapper">
               <h2 className="viewer-title">{data.organName} Comparison</h2>

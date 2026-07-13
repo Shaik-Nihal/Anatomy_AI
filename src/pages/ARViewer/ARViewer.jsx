@@ -358,13 +358,177 @@ const educationalContent = {
       video: "mGPz-hBw_Ds"
     }
   }
+  ,
+
+  Lungs: {
+    general: {
+      anatomy: "The lungs are paired, spongy, cone-shaped organs located in the thoracic cavity. The right lung is larger and divided into three lobes, while the left lung has two lobes and a cardiac notch to accommodate the heart. They are surrounded by the pleural membrane and are responsible for pulmonary ventilation and gas exchange.",
+      module: {
+        title: "Respiratory Mechanics & Gas Exchange",
+        sections: [
+          {
+            heading: "The Alveolar-Capillary Membrane",
+            text: "Gas exchange occurs across this extremely thin membrane (less than 1 micrometer thick) located in millions of alveoli. Oxygen diffuses down its concentration gradient into the blood, while carbon dioxide diffuses into the alveolar space."
+          },
+          {
+            heading: "Pulmonary Surfactant",
+            text: "Type II alveolar cells secrete surfactant, a complex mixture of lipids and proteins. This fluid reduces surface tension, preventing alveolar collapse during exhalation and significantly decreasing the work of breathing."
+          },
+          {
+            heading: "Clinical Correlation: Pneumonia",
+            text: "An acute inflammation of the alveoli, usually caused by infection. The alveolar sacs fill with fluid and cellular debris, severely impairing oxygen diffusion and leading to hypoxemia."
+          }
+        ]
+      },
+      video: "mOKmjYwfDFA"
+    }
+  },
+  Kidney: {
+    general: {
+      anatomy: "The kidneys are paired, retroperitoneal, bean-shaped organs that receive about 20% of the cardiac output. Each kidney contains approximately one million functional units called nephrons, which filter blood plasma, reabsorb essential nutrients, and secrete waste products to form urine.",
+      module: {
+        title: "Renal Physiology & Hemodynamics",
+        sections: [
+          {
+            heading: "Glomerular Filtration Rate (GFR)",
+            text: "Blood enters the glomerulus under high hydrostatic pressure, forcing water and solutes through the filtration membrane into Bowman's capsule. Normal GFR is about 125 mL/min, reflecting overall renal health."
+          },
+          {
+            heading: "Tubular Reabsorption",
+            text: "As the filtrate passes through the proximal convoluted tubule, loop of Henle, and distal tubule, over 99% of filtered water, glucose, and essential electrolytes are actively reabsorbed back into the peritubular capillaries."
+          },
+          {
+            heading: "Endocrine Functions",
+            text: "Beyond filtration, kidneys produce erythropoietin (stimulating red blood cell production), release renin (regulating blood pressure via the RAAS system), and synthesize active Vitamin D."
+          }
+        ]
+      },
+      video: "cc8sUsg9ccg"
+    }
+  },
+  Stomach: {
+    general: {
+      anatomy: "The stomach is a J-shaped muscular pouch located in the upper left quadrant of the abdomen. It acts as a mixing chamber and temporary reservoir, mechanically churning food and chemically breaking it down using highly acidic gastric juices to form chyme.",
+      module: {
+        title: "Gastric Digestion & Mucosal Integrity",
+        sections: [
+          {
+            heading: "Parietal Cells & Hydrochloric Acid",
+            text: "Parietal cells in the gastric glands secrete HCl, creating a highly acidic environment (pH 1.5 - 3.5). This acidity denatures dietary proteins, kills ingested pathogens, and converts inactive pepsinogen into the active enzyme pepsin."
+          },
+          {
+            heading: "The Mucosal Bicarbonate Barrier",
+            text: "To prevent the stomach from digesting itself, surface mucous cells secrete a thick, alkaline mucus layer containing bicarbonate ions. This protective barrier neutralizes acid at the mucosal surface."
+          },
+          {
+            heading: "Peptic Ulcer Disease",
+            text: "If the mucosal barrier is compromised—often due to Helicobacter pylori infection or chronic NSAID use—gastric acid erodes the underlying tissue, causing painful and potentially bleeding ulcers."
+          }
+        ]
+      },
+      video: "Q-n_Q0NCGjc"
+    }
+  },
+  Intestines: {
+    general: {
+      anatomy: "The intestines comprise the highly coiled small intestine (duodenum, jejunum, ileum) and the wider, segmented large intestine (colon). They are the primary sites for enzymatic digestion, massive nutrient absorption, and final water conservation.",
+      module: {
+        title: "Enteric Absorption & Microbiome",
+        sections: [
+          {
+            heading: "Villi and Microvilli (Brush Border)",
+            text: "The inner lining of the small intestine features finger-like projections (villi), which themselves possess microscopic extensions (microvilli). This structural design exponentially increases the surface area for maximum nutrient absorption."
+          },
+          {
+            heading: "The Gut Microbiome",
+            text: "The large intestine houses trillions of symbiotic bacteria that ferment indigestible carbohydrates, synthesize essential vitamins (like Vitamin K and Biotin), and play a critical role in immune system modulation."
+          },
+          {
+            heading: "Celiac Disease",
+            text: "An autoimmune condition triggered by gluten ingestion, leading to severe inflammation and blunting of the intestinal villi, resulting in profound malabsorption and systemic malnutrition."
+          }
+        ]
+      },
+      video: "p1Fvw3P_XKw"
+    }
+  },
+  Skull: {
+    general: {
+      anatomy: "The human skull is a complex bony structure consisting of 22 fused bones (excluding the ossicles). It is divided into the neurocranium, which forms a protective vault around the brain, and the viscerocranium, which provides the structural framework for the face and jaw.",
+      module: {
+        title: "Cranial Osteology & Sutures",
+        sections: [
+          {
+            heading: "Cranial Sutures and Fontanelles",
+            text: "In adults, cranial bones are rigidly fused by fibrous joints called sutures (coronal, sagittal, lambdoid). In infants, these areas contain flexible connective tissue (fontanelles) allowing the skull to compress during birth and expand as the brain grows."
+          },
+          {
+            heading: "Foramen Magnum & Cranial Nerves",
+            text: "The base of the skull features numerous openings (foramina). The largest, the foramen magnum, allows the spinal cord to connect to the brainstem. Smaller foramina serve as exit pathways for the 12 pairs of cranial nerves."
+          },
+          {
+            heading: "Sinus Cavities",
+            text: "The skull contains paranasal sinuses—air-filled spaces lined with mucous membranes. They lighten the skull's overall weight, act as resonance chambers for the voice, and help warm and humidify inhaled air."
+          }
+        ]
+      },
+      video: "Vf_E7j1y8k4"
+    }
+  },
+  Skeleton: {
+    general: {
+      anatomy: "The adult human skeleton consists of 206 bones, forming the internal structural framework of the body. It is divided into the axial skeleton (skull, vertebral column, rib cage) providing core protection, and the appendicular skeleton (limbs, girdles) facilitating highly articulated movement.",
+      module: {
+        title: "Osteology & Bone Remodeling",
+        sections: [
+          {
+            heading: "Cortical vs. Cancellous Bone",
+            text: "Bone tissue exists in two forms: Cortical (compact) bone provides a dense, solid outer shell for structural strength, while Cancellous (spongy) bone contains a porous trabecular network housing bone marrow and reducing overall weight."
+          },
+          {
+            heading: "Dynamic Bone Remodeling",
+            text: "The skeleton is not a static structure; it undergoes constant remodeling. Osteoclasts continuously break down old bone tissue to release calcium into the blood, while osteoblasts synthesize new bone matrix to maintain structural integrity."
+          },
+          {
+            heading: "Osteoporosis",
+            text: "A metabolic bone disease where osteoclastic resorption outpaces osteoblastic formation. This leads to a severe loss of bone density, thinning of trabeculae, and a highly increased risk of pathological fractures."
+          }
+        ]
+      },
+      video: "rDGqkMHPDq0"
+    }
+  },
+  "Human Anatomy": {
+    general: {
+      anatomy: "Human anatomy is the comprehensive scientific study of the morphology of the human body. It explores the intricate spatial and functional relationships between macroscopic organ systems, exploring how they collectively establish and maintain physiological homeostasis.",
+      module: {
+        title: "Systemic Integration & Homeostasis",
+        sections: [
+          {
+            heading: "Cardiopulmonary Coupling",
+            text: "The cardiovascular and respiratory systems are anatomically and functionally coupled. The heart's right ventricle pumps deoxygenated blood strictly to the pulmonary circulation, perfectly matching perfusion to alveolar ventilation."
+          },
+          {
+            heading: "Neuroendocrine Control Axis",
+            text: "The nervous system provides rapid electrochemical signaling, while the endocrine system releases hormones for sustained metabolic regulation. Together via the hypothalamus-pituitary axis, they control virtually all physiological responses."
+          },
+          {
+            heading: "Musculoskeletal Biomechanics",
+            text: "Skeletal muscles span synovial joints and anchor to bones via tendons. Driven by motor neurons, muscular contraction exerts mechanical force across the skeletal levers, resulting in complex, coordinated physical movement."
+          }
+        ]
+      },
+      video: "uBGl2B17KXc"
+    }
+  }
+
 };
 
 // Region name helper maps mesh/node names to educational terms
 function getRegionFromMeshName(meshName, organ) {
   if (!meshName) return null;
   const nameLower = meshName.toLowerCase();
-  
+
   if (organ === "Heart" || organ === "Human Anatomy") {
     if (nameLower.includes("aorta")) return "Aorta";
     if (nameLower.includes("left_ventricle") || nameLower.includes("lv") || (nameLower.includes("ventricle") && nameLower.includes("left"))) return "Left Ventricle";
@@ -391,7 +555,7 @@ const getRegionCenter = (scene, regionName, organ) => {
   if (!scene) return null;
   const box = new THREE.Box3();
   let hasMesh = false;
-  
+
   scene.traverse((node) => {
     if (node.isMesh) {
       const nodeRegion = getRegionFromMeshName(node.name, organ);
@@ -405,7 +569,7 @@ const getRegionCenter = (scene, regionName, organ) => {
       }
     }
   });
-  
+
   if (hasMesh) {
     const center = new THREE.Vector3();
     box.getCenter(center);
@@ -512,24 +676,24 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
 
   useEffect(() => {
     if (!scene || !groupRef.current) return;
-    
+
     // Reset group transforms to measure raw scene
     groupRef.current.scale.set(1, 1, 1);
     groupRef.current.position.set(0, 0, 0);
-    
+
     const box = new THREE.Box3().setFromObject(scene);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
-    
+
     if (maxDim > 0) {
       // Auto-scale all models to fit uniformly
       let targetSize = 4.0;
-      if (organ === "Human Anatomy" || organ === "Skeleton") targetSize = 5.5; 
-      
+      if (organ === "Human Anatomy" || organ === "Skeleton") targetSize = 5.5;
+
       const scale = targetSize / maxDim;
       groupRef.current.scale.set(scale, scale, scale);
-      
+
       // Auto-center exactly in the middle of the screen
       groupRef.current.position.set(
         -center.x * scale,
@@ -544,28 +708,28 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
       <primitive
         object={scene}
         onClick={(e) => {
-        e.stopPropagation();
-        const meshName = e.object.name || "";
-        const regionName = getRegionFromMeshName(meshName, organ);
-        if (regionName) {
-          onSelectPart({ label: regionName, point: e.point, meshName });
-        }
-      }}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        const meshName = e.object.name || "";
-        const regionName = getRegionFromMeshName(meshName, organ);
-        if (regionName) {
-          document.body.style.cursor = "pointer";
-          onHoverRegion(regionName);
-        }
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        document.body.style.cursor = "default";
-        onHoverRegion(null);
-      }}
-    />
+          e.stopPropagation();
+          const meshName = e.object.name || "";
+          const regionName = getRegionFromMeshName(meshName, organ);
+          if (regionName) {
+            onSelectPart({ label: regionName, point: e.point, meshName });
+          }
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          const meshName = e.object.name || "";
+          const regionName = getRegionFromMeshName(meshName, organ);
+          if (regionName) {
+            document.body.style.cursor = "pointer";
+            onHoverRegion(regionName);
+          }
+        }}
+        onPointerOut={(e) => {
+          e.stopPropagation();
+          document.body.style.cursor = "default";
+          onHoverRegion(null);
+        }}
+      />
     </group>
   );
 }
@@ -809,7 +973,7 @@ function ARViewer() {
     if (videoData[key]) {
       return videoData[key];
     }
-    
+
     const defaultVideoId = activeContent.video;
     if (defaultVideoId) {
       return [
@@ -863,6 +1027,7 @@ function ARViewer() {
                     style={{
                       background: "transparent",
                       border: "none",
+
                       color: "#94A3B8",
                       fontSize: "13px",
                       cursor: "pointer",
@@ -923,8 +1088,8 @@ function ARViewer() {
                   intensity={3.5}
                 />
 
-                <OrganModel 
-                  organ={selectedOrgan} 
+                <OrganModel
+                  organ={selectedOrgan}
                   onLoadScene={setLoadedScene}
                 />
 
@@ -970,13 +1135,13 @@ function ARViewer() {
 
                 {activePanel === "overview" && (
                   <>
-                    <h2 style={{ 
-                      background: "linear-gradient(90deg, #22D3EE, #818CF8)", 
-                      WebkitBackgroundClip: "text", 
-                      WebkitTextFillColor: "transparent", 
-                      marginBottom: "16px", 
-                      fontSize: "26px", 
-                      fontWeight: "800", 
+                    <h2 style={{
+                      background: "linear-gradient(90deg, #22D3EE, #818CF8)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      marginBottom: "16px",
+                      fontSize: "26px",
+                      fontWeight: "800",
                       letterSpacing: "0.5px",
                       marginTop: "10px"
                     }}>
@@ -985,8 +1150,8 @@ function ARViewer() {
                     <p style={{ lineHeight: "1.8", color: "#94A3B8", fontSize: "14px", margin: "0 0 16px 0" }}>
                       {educationalContent[selectedOrgan]?.general?.anatomy || `Detailed overview and diagnostic models for ${selectedOrgan.toLowerCase()} functions.`}
                     </p>
-                    
-                    <div style={{ 
+
+                    <div style={{
                       height: "1px",
                       background: "linear-gradient(90deg, rgba(34,211,238,0.5) 0%, transparent 100%)",
                       marginBottom: "20px"
@@ -1013,13 +1178,13 @@ function ARViewer() {
 
                 {activePanel === "anatomy" && (
                   <>
-                    <h2 style={{ 
-                      background: "linear-gradient(90deg, #22D3EE, #818CF8)", 
-                      WebkitBackgroundClip: "text", 
-                      WebkitTextFillColor: "transparent", 
-                      marginBottom: "16px", 
-                      fontSize: "26px", 
-                      fontWeight: "800", 
+                    <h2 style={{
+                      background: "linear-gradient(90deg, #22D3EE, #818CF8)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      marginBottom: "16px",
+                      fontSize: "26px",
+                      fontWeight: "800",
                       letterSpacing: "0.5px",
                       marginTop: "10px"
                     }}>
@@ -1031,7 +1196,7 @@ function ARViewer() {
                     <p style={{ lineHeight: "1.8", color: "#94A3B8", fontSize: "14px", marginTop: 0 }}>
                       {activeContent.anatomy}
                     </p>
-                    
+
                     <div style={{ marginTop: "30px", padding: "18px", background: "rgba(6, 182, 212, 0.05)", borderRadius: "12px", border: "1px solid rgba(6, 182, 212, 0.15)" }}>
                       <h4 style={{ color: "#06B6D4", margin: "0 0 8px 0", fontSize: "14px", fontWeight: "600" }}>Quick Tip</h4>
                       <p style={{ color: "#94A3B8", fontSize: "13px", lineHeight: "1.6", margin: 0 }}>
@@ -1043,19 +1208,19 @@ function ARViewer() {
 
                 {activePanel === "quiz" && (
                   <div>
-                    <h2 style={{ 
-                      background: "linear-gradient(90deg, #22D3EE, #818CF8)", 
-                      WebkitBackgroundClip: "text", 
-                      WebkitTextFillColor: "transparent", 
-                      marginBottom: "16px", 
-                      fontSize: "26px", 
-                      fontWeight: "800", 
+                    <h2 style={{
+                      background: "linear-gradient(90deg, #22D3EE, #818CF8)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      marginBottom: "16px",
+                      fontSize: "26px",
+                      fontWeight: "800",
                       letterSpacing: "0.5px",
                       marginTop: "10px"
                     }}>
                       Organ Assessment
                     </h2>
-                    
+
                     {quizLoading ? (
                       <div style={{ textAlign: "center", padding: "40px 0" }}>
                         <div className="spinner" style={{ margin: "0 auto 15px auto" }}></div>
@@ -1067,7 +1232,7 @@ function ARViewer() {
                         <p style={{ fontSize: "16px", color: "#CBD5E1", margin: "10px 0" }}>
                           You scored <strong style={{ color: "#00f2fe", fontSize: "24px" }}>{quizScore}</strong> out of <strong>{quizQuestions.length}</strong>
                         </p>
-                        
+
                         <div style={{
                           background: "rgba(255, 255, 255, 0.02)",
                           border: "1px solid rgba(255, 255, 255, 0.06)",
@@ -1190,7 +1355,7 @@ function ARViewer() {
                     <h3 style={{ color: "#E2E8F0", fontSize: "18px", marginBottom: "15px" }}>
                       Visual Lectures: {selectedPart ? selectedPart.label : selectedOrgan}
                     </h3>
-                    
+
                     <div style={{ display: "flex", flexDirection: "column", gap: "25px" }}>
                       {getVideosForOrgan(selectedOrgan, selectedPart).map((vid) => (
                         <div key={vid.id} style={{
@@ -1240,7 +1405,7 @@ function ARViewer() {
                               ></iframe>
                             </div>
                           ) : (
-                            <div 
+                            <div
                               onClick={() => setPlayingVideoId(vid.id)}
                               style={{
                                 position: "relative",
@@ -1264,8 +1429,8 @@ function ARViewer() {
                                 background: "rgba(0, 0, 0, 0.25)",
                                 transition: "all 0.3s ease"
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0, 0, 0, 0.1)"}
-                              onMouseLeave={(e) => e.currentTarget.style.background = "rgba(0, 0, 0, 0.25)"}
+                                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0, 0, 0, 0.1)"}
+                                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(0, 0, 0, 0.25)"}
                               >
                                 <div style={{
                                   width: "48px",
@@ -1281,8 +1446,8 @@ function ARViewer() {
                                   paddingLeft: "3px",
                                   transition: "all 0.2s ease"
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.1)"}
+                                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                                 >
                                   ▶
                                 </div>
@@ -1345,32 +1510,32 @@ function ARViewer() {
             {/* Premium Floating Dock */}
             {!isFullscreen && (
               <div className="floating-dock">
-              {[
-                { id: "overview", label: "Overview", icon: "📋" },
-                { id: "anatomy", label: "Anatomy", icon: "🧬" },
-                { id: "quiz", label: "Quiz", icon: "📝" },
-                { id: "comparison", label: "Comparison", icon: "🔄" },
-                { id: "videos", label: "Video Guide", icon: "🎥" }
-              ].map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      if (tab.id === "comparison") {
-                        setActivePanel(null);
-                      } else {
-                        setActivePanel(tab.id);
-                      }
-                    }}
-                    className={`floating-dock-button ${isActive ? "active" : ""}`}
-                  >
-                    <span className="icon">{tab.icon}</span>
-                    <span className="label">{tab.label}</span>
-                  </button>
-                );
-              })}
+                {[
+                  { id: "overview", label: "Overview", icon: "📋" },
+                  { id: "anatomy", label: "Anatomy", icon: "🧬" },
+                  { id: "quiz", label: "Quiz", icon: "📝" },
+                  { id: "comparison", label: "Comparison", icon: "🔄" },
+                  { id: "videos", label: "Video Guide", icon: "🎥" }
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        if (tab.id === "comparison") {
+                          setActivePanel(null);
+                        } else {
+                          setActivePanel(tab.id);
+                        }
+                      }}
+                      className={`floating-dock-button ${isActive ? "active" : ""}`}
+                    >
+                      <span className="icon">{tab.icon}</span>
+                      <span className="label">{tab.label}</span>
+                    </button>
+                  );
+                })}
                 <div style={{ width: "1px", height: "24px", background: "rgba(255, 255, 255, 0.1)", margin: "0 8px" }} />
                 <button
                   onClick={() => setIsFullscreen(true)}

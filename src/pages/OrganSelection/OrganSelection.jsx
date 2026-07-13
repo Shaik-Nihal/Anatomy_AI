@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 
@@ -22,17 +23,17 @@ function OrganSelection() {
     },
     {
       name: "Liver",
-      icon: "🧪",
+      icon: "/icons/liver.png",
       description: "Explore digestive organ structures.",
     },
     {
       name: "Human Anatomy",
-      icon: "🧍‍♂️",
+      icon: "/icons/human.png",
       description: "Explore the complete human body and all organ systems in 3D.",
     },
     {
       name: "Kidney",
-      icon: "💧",
+      icon: "/icons/kidney.png",
       description: "Learn excretory system anatomy in 3D.",
     },
     {
@@ -42,7 +43,7 @@ function OrganSelection() {
     },
     {
       name: "Stomach",
-      icon: "🍲",
+      icon: "/icons/stomach.png",
       description: "Explore digestive functions and anatomy.",
     },
     {
@@ -57,7 +58,7 @@ function OrganSelection() {
     },
     {
       name: "Intestines",
-      icon: "🪢",
+      icon: "/icons/intestines.png",
       description: "Explore the small and large intestines.",
     },
   ];
@@ -148,7 +149,13 @@ function OrganSelection() {
                 })
               }
             >
-              <div style={{ fontSize: "80px" }}>{organ.icon}</div>
+              <div style={{ fontSize: "80px", display: "flex", justifyContent: "center", alignItems: "center", height: "96px" }}>
+                {organ.icon.includes(".png") ? (
+                  <img src={organ.icon} alt={organ.name} style={{ width: "90px", height: "90px", objectFit: "contain", filter: "drop-shadow(0px 8px 16px rgba(0,0,0,0.4))" }} />
+                ) : (
+                  organ.icon
+                )}
+              </div>
 
               <h2
                 style={{

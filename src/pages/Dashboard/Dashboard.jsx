@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useGamification } from "../../contexts/GamificationContext";
 import { getUserProgress } from "../../services/quizApi";
 import { FiHeart, FiActivity, FiTrendingUp, FiCpu, FiCamera, FiRepeat } from "react-icons/fi";
+import { comparisonData } from "../../data/comparisonData";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ function Dashboard() {
       latestByOrgan[organ] = attempt;
     }
   });
-  const organList = ["Heart", "Brain", "Lungs", "Liver"];
+  const organList = Object.keys(comparisonData);
   const latestAttempts = Object.values(latestByOrgan);
   const masterySum = latestAttempts.reduce((acc, q) => acc + q.percentage, 0);
   const overallMastery = progressData.length > 0 && latestAttempts.length > 0
@@ -96,8 +97,8 @@ function Dashboard() {
     const dynamicActivities = progressData
       .sort((a, b) => new Date(b.attempted_at) - new Date(a.attempted_at))
       .map((attempt, idx) => {
-        const organIcon = attempt.organ === "Heart" ? "🫀" : attempt.organ === "Brain" ? "🧠" : attempt.organ === "Lungs" ? "🫁" : "🧬";
-        const organColor = attempt.organ === "Heart" ? "#06B6D4" : attempt.organ === "Brain" ? "#3B82F6" : "#C084FC";
+        const organIcon = comparisonData[attempt.organ]?.icon || "🧬";
+        const organColor = comparisonData[attempt.organ]?.color || "#C084FC";
         return {
           id: `dynamic-${idx}`,
           title: `${attempt.organ} Assessment`,
@@ -116,7 +117,7 @@ function Dashboard() {
         desc: "Viewed 3D Card • 2 hours ago",
         type: "explored",
         tag: "EXPLORED",
-        icon: "🫀",
+        icon: comparisonData["Heart"]?.icon || "🫀",
         color: "#06B6D4"
       },
       {
@@ -125,16 +126,16 @@ function Dashboard() {
         desc: "Completed 3D rotation • Yesterday",
         type: "completed",
         tag: "COMPLETED",
-        icon: "🧠",
+        icon: comparisonData["Brain"]?.icon || "🧠",
         color: "#3B82F6"
       },
       {
         id: "default-3",
-        title: "Cardiovascular Assessment",
+        title: "Liver Assessment",
         desc: "Scored 85% in Quiz • 3 days ago",
         type: "score",
         tag: "SCORE 85%",
-        icon: "🧬",
+        icon: comparisonData["Liver"]?.icon || "🧬",
         color: "#C084FC"
       }
     ];
@@ -431,7 +432,7 @@ function Dashboard() {
                           justifyContent: "center",
                           fontSize: "16px"
                         }}>
-                          {activity.icon}
+                          {activity.icon?.includes(".png") ? <img src={activity.icon} alt="icon" style={{ width: "24px", height: "24px", objectFit: "contain" }} /> : activity.icon}
                         </div>
                         <div>
                           <div style={{ fontSize: "13px", fontWeight: "600", color: "white" }}>

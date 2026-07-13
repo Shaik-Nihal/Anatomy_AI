@@ -11,17 +11,17 @@ function QuizHome({ onStartQuiz }) {
     { name: "Lungs", icon: "🫁" },
     {
       name: "Liver",
-      image: "/organs/liver.png",
+      image: "/icons/liver.png",
     },
-    { name: "Kidney", icon: "🫘" },
+    { name: "Kidney", image: "/icons/kidney.png" },
     { name: "Eye", icon: "👁️" },
     { name: "Ear", icon: "👂" },
-    { name: "Stomach", icon: "🫃" },
+    { name: "Stomach", image: "/icons/stomach.png" },
     { name: "Bones", icon: "🦴" },
     { name: "Muscles", icon: "💪" },
     {
       name: "Intestines",
-      image: "/organs/intestines.png",
+      image: "/icons/intestines.png",
     },
   ];
   const filteredOrgans = organs.filter((organ) =>
