@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
+import { useGamification } from "../../contexts/GamificationContext";
 import { getUserProgress } from "../../services/quizApi";
 import { FiHeart, FiActivity, FiTrendingUp, FiCpu, FiCamera, FiRepeat } from "react-icons/fi";
 
 function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { xp, level, xpForNextLevel, currentLevelXp, streak, badges, availableBadges } = useGamification();
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -316,6 +318,81 @@ function Dashboard() {
           {/* Right Panel: Sidebar */}
           <div className="dashboard-right-section">
             
+            {/* Gamification Profile Card */}
+            <div className="glass-card-new right-card-progress" style={{ marginBottom: "20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <div style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "12px",
+                    background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "20px",
+                    fontWeight: "800",
+                    color: "white",
+                    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.3)"
+                  }}>
+                    {level}
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: "16px", fontWeight: "700", margin: 0, color: "white" }}>Level {level}</h3>
+                    <div style={{ fontSize: "12px", color: "#94A3B8" }}>{xp} Total XP</div>
+                  </div>
+                </div>
+                
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "rgba(245, 158, 11, 0.1)", padding: "6px 12px", borderRadius: "20px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+                  <span style={{ fontSize: "16px" }}>{streak >= 3 ? "🔥" : "⚡"}</span>
+                  <span style={{ fontSize: "14px", fontWeight: "800", color: "#F59E0B" }}>{streak} Day Streak</span>
+                </div>
+              </div>
+
+              {/* XP Progress Bar */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <span style={{ fontSize: "12px", fontWeight: "600", color: "#94A3B8" }}>XP to Level {level + 1}</span>
+                <span style={{ fontSize: "12px", fontWeight: "700", color: "#06B6D4" }}>{currentLevelXp} / 100</span>
+              </div>
+              <div style={{ width: "100%", height: "8px", background: "rgba(255, 255, 255, 0.05)", borderRadius: "4px", overflow: "hidden" }}>
+                <div style={{ width: `${(currentLevelXp / 100) * 100}%`, height: "100%", background: "linear-gradient(90deg, #06B6D4 0%, #3B82F6 100%)", borderRadius: "4px", transition: "width 1s ease-in-out" }} />
+              </div>
+
+              {/* Badges Display */}
+              <div style={{ marginTop: "20px" }}>
+                <div style={{ fontSize: "12px", fontWeight: "700", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "12px" }}>
+                  Achievements
+                </div>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {availableBadges.map((badge) => {
+                    const isUnlocked = badges.includes(badge.id);
+                    return (
+                      <div 
+                        key={badge.id}
+                        title={badge.description}
+                        style={{
+                          width: "45px",
+                          height: "45px",
+                          borderRadius: "12px",
+                          background: isUnlocked ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.02)",
+                          border: isUnlocked ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid rgba(255, 255, 255, 0.05)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "22px",
+                          filter: isUnlocked ? "none" : "grayscale(100%) opacity(0.3)",
+                          cursor: "help",
+                          transition: "all 0.3s ease"
+                        }}
+                      >
+                        {badge.icon}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
             {/* Recent Activity Card */}
             <div className="glass-card-new right-card-activity">
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>

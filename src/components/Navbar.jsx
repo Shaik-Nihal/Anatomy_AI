@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useGamification } from "../contexts/GamificationContext";
 import logo from "../assets/logo.png";
 import { FiMenu, FiX, FiSettings } from "react-icons/fi";
 
@@ -8,6 +9,7 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { level, streak } = useGamification();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isDashboard = location.pathname === "/dashboard";
@@ -117,7 +119,32 @@ function Navbar() {
         </nav>
       )}
 
-      <div className="nav-actions">
+      <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        {user && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '6px 12px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '14px', color: '#94A3B8', fontWeight: '600' }}>Lvl</span>
+              <span style={{ fontSize: '15px', color: '#06B6D4', fontWeight: '800' }}>{level}</span>
+            </div>
+            <div style={{ width: '1px', height: '14px', background: 'rgba(255, 255, 255, 0.1)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', title: `${streak} Day Streak!` }}>
+              <span style={{ fontSize: '15px', color: streak > 0 ? '#F59E0B' : '#64748B' }}>
+                {streak >= 3 ? '🔥' : '⚡'}
+              </span>
+              <span style={{ fontSize: '15px', color: streak > 0 ? '#F59E0B' : '#64748B', fontWeight: '800' }}>{streak}</span>
+            </div>
+          </div>
+        )}
+
         {user && (
           <button
             onClick={() => navigate("/settings")}

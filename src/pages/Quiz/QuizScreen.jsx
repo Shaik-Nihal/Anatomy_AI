@@ -1,5 +1,6 @@
 import ResultPage from "./ResultPage";
 import React, { useEffect, useState } from "react";
+import { useGamification } from "../../contexts/GamificationContext";
 
 function QuizScreen({
   organ,
@@ -15,6 +16,8 @@ function QuizScreen({
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
   const [weakAreas, setWeakAreas] = useState([]);
+  const { addXP } = useGamification();
+  const [xpAwarded, setXpAwarded] = useState(false);
 
   
 
@@ -42,6 +45,10 @@ function QuizScreen({
         setTimeLeft(getInitialTime());
         setFillAnswer("");
       } else {
+        if (!xpAwarded) {
+          addXP(score * 20, "Quiz Completed");
+          setXpAwarded(true);
+        }
         setCurrentQuestion(questions.length);
       }
       return;
@@ -127,6 +134,10 @@ if (question.type === "fill_blank_option") {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
+      if (!xpAwarded) {
+        addXP(score * 20, "Quiz Completed");
+        setXpAwarded(true);
+      }
       setCurrentQuestion(questions.length);
     }
 

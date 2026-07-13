@@ -4,6 +4,8 @@ import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../services/supabase";
 import { getUserProgress, resetUserProgress } from "../../services/quizApi";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   FiUser,
   FiLock,
@@ -259,27 +261,59 @@ function Settings() {
     }
   };
 
-  const handleDownloadQuizzes = async () => {
+  const handleDownloadPDF = async () => {
     if (!email) return;
-    showToast("Compiling quiz result archives...", "info");
+    showToast("Generating PDF report...", "info");
     try {
       const progress = await getUserProgress(email);
       if (!progress || progress.length === 0) {
         showToast("No quiz results found to download.", "error");
         return;
       }
-      const jsonString = JSON.stringify(progress, null, 2);
-      const blob = new Blob([jsonString], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `ARAnatomy_Quizzes_${email.split('@')[0]}.json`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast("JSON results file downloaded successfully!", "success");
+      
+      const doc = new jsPDF();
+      
+      // Title
+      doc.setFontSize(18);
+      doc.setTextColor(6, 182, 212); // #06B6D4
+      doc.text("AnatomyAI Quiz Progress Report", 14, 22);
+      
+      // Subtitle
+      doc.setFontSize(11);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Generated for: ${email}`, 14, 30);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 36);
+
+      // Table Data
+      const tableColumn = ["Date", "Organ", "Difficulty", "Score", "Accuracy", "Weak Areas"];
+      const tableRows = [];
+
+      progress.forEach(item => {
+        const rowData = [
+          new Date(item.attempted_at).toLocaleDateString(),
+          item.organ,
+          item.difficulty,
+          `${item.score}/${item.total_questions}`,
+          `${Math.round(item.percentage)}%`,
+          (item.weak_areas || "None").replace(/,/g, ", ")
+        ];
+        tableRows.push(rowData);
+      });
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 45,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 4 },
+        headStyles: { fillColor: [6, 182, 212], textColor: 255, fontStyle: 'bold' },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+      });
+
+      doc.save(`AnatomyAI_Progress_Report_${email.split('@')[0]}.pdf`);
+      showToast("PDF report downloaded successfully!", "success");
     } catch (err) {
-      showToast("Failed to download quiz results: " + err.message, "error");
+      showToast("Failed to generate PDF report: " + err.message, "error");
     }
   };
 
@@ -733,11 +767,11 @@ function Settings() {
 
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.01)", padding: "14px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.03)" }}>
                     <div>
-                      <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Download Quiz Results</div>
-                      <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Get a JSON format archive containing question sheets.</div>
+                      <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Download PDF Report</div>
+                      <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Get a formatted PDF document containing your quiz history.</div>
                     </div>
-                    <button type="button" onClick={handleDownloadQuizzes} className="settings-action-btn secondary">
-                      Download JSON
+                    <button type="button" onClick={handleDownloadPDF} className="settings-action-btn secondary">
+                      Download PDF
                     </button>
                   </div>
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Navbar from "../../components/Navbar";
 import { sendTutorQuestion, getTutorSpeech } from "../../services/quizApi";
 import { useAuth } from "../../contexts/AuthContext";
+import { useGamification } from "../../contexts/GamificationContext";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
@@ -140,6 +141,7 @@ function AITutor() {
   const [chatLoading, setChatLoading] = useState(false);
 
   const { user } = useAuth();
+  const { addXP, awardBadge } = useGamification();
 
   // Speech recognition states & ref
   const [isListening, setIsListening] = useState(false);
@@ -532,6 +534,10 @@ function AITutor() {
         localStorage.setItem(`anatomy_ai_tutor_history_${userId}`, JSON.stringify(next));
         return next;
       });
+
+      // Award XP for learning!
+      addXP(5, "AI Tutor Query");
+      awardBadge("tutor_chat");
 
       // ── TRIGGER ANATOMICAL SCANNING & VOICE HIGHLIGHTS ──
       const { region, organ } = scanTextForAnatomicalRegions(res.answer);

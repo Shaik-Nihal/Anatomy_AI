@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import { identifyOrgan, labelDiagram } from '../../services/visionApi';
 import { FiUploadCloud, FiCamera, FiCheckCircle, FiAlertCircle, FiArrowRight, FiX, FiInfo } from 'react-icons/fi';
+import { useGamification } from '../../contexts/GamificationContext';
 import './OrganRecognition.css';
 
 const OrganRecognition = () => {
   const navigate = useNavigate();
+  const { addXP, awardBadge } = useGamification();
   const [mode, setMode] = useState('identify'); // 'identify' or 'label'
   const [dragActive, setDragActive] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -126,6 +128,7 @@ const OrganRecognition = () => {
             setError(res.data.error);
           } else {
             setResult(res.data);
+            addXP(20, "Organ Identified");
           }
         } else {
           setError(res.message || "Failed to analyze the image.");
@@ -137,6 +140,8 @@ const OrganRecognition = () => {
             setError(res.data.error);
           } else if (Array.isArray(res.data)) {
             setLabels(res.data);
+            addXP(25, "Diagram Labeled");
+            awardBadge("vision_label");
           } else {
             setError("Unexpected data format from labeling service.");
           }
