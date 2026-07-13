@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { supabase } from "../services/supabase";
 
 const GamificationContext = createContext();
 
@@ -31,76 +32,113 @@ export const GamificationProvider = ({ children }) => {
     { id: "level_5", name: "Scholar", description: "Reached Level 5.", icon: "🏆" }
   ];
 
+  const [loading, setLoading] = useState(true);
+
+  // Helper to save updates to Supabase
+  const saveToSupabase = async (newXp, newStreak, newActiveDate, newBadges) => {
+    if (!userId || userId === "temp_user") return;
+    try {
+      const { error } = await supabase
+        .from('gamification_profiles')
+        .upsert({
+          user_id: userId,
+          xp: newXp,
+          streak: newStreak,
+          last_active_date: newActiveDate,
+          badges: newBadges
+        });
+      if (error) console.error("Error saving gamification profile to Supabase:", error);
+    } catch (err) {
+      console.error("Failed to save gamification profile:", err);
+    }
+  };
+
   useEffect(() => {
-    // Load from localStorage on mount or when user changes
-    const storageKey = `anatomy_ai_gamification_${userId}`;
-    const savedData = localStorage.getItem(storageKey);
-    
-    if (savedData) {
+    if (!userId || userId === "temp_user") {
+      setLoading(false);
+      return;
+    }
+
+    const loadProfile = async () => {
       try {
-        const parsed = JSON.parse(savedData);
-        setXp(parsed.xp || 0);
-        setBadges(parsed.badges || []);
+        const { data, error } = await supabase
+          .from('gamification_profiles')
+          .select('*')
+          .eq('user_id', userId)
+          .single();
         
-        // Handle Streak Logic
         const today = new Date().toISOString().split("T")[0];
-        const lastActive = parsed.lastActiveDate;
-        
-        if (lastActive) {
-          const lastDate = new Date(lastActive);
-          const currentDate = new Date(today);
-          const diffTime = Math.abs(currentDate - lastDate);
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+
+        if (error && error.code === 'PGRST116') {
+          // Row not found, create new profile
+          const initialProfile = {
+            user_id: userId,
+            xp: 0,
+            streak: 1,
+            last_active_date: today,
+            badges: []
+          };
           
-          if (diffDays === 1) {
-            // Consecutive day, increment streak
-            setStreak((parsed.streak || 0) + 1);
-            setLastActiveDate(today);
-          } else if (diffDays === 0) {
-            // Already active today, keep streak
-            setStreak(parsed.streak || 0);
-            setLastActiveDate(lastActive);
-          } else {
-            // Missed a day, reset streak to 1
-            setStreak(1);
-            setLastActiveDate(today);
-          }
-        } else {
+          await supabase.from('gamification_profiles').insert([initialProfile]);
+          setXp(0);
           setStreak(1);
           setLastActiveDate(today);
+          setBadges([]);
+        } else if (data) {
+          setXp(data.xp || 0);
+          setBadges(data.badges || []);
+          
+          // Handle Streak logic
+          const lastActive = data.last_active_date;
+          if (lastActive) {
+            const lastDate = new Date(lastActive);
+            const currentDate = new Date(today);
+            const diffTime = Math.abs(currentDate - lastDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            let finalStreak = data.streak || 0;
+            let finalActiveDate = lastActive;
+
+            if (diffDays === 1) {
+              finalStreak += 1;
+              finalActiveDate = today;
+              await supabase.from('gamification_profiles').update({ streak: finalStreak, last_active_date: today }).eq('user_id', userId);
+            } else if (diffDays > 1) {
+              finalStreak = 1;
+              finalActiveDate = today;
+              await supabase.from('gamification_profiles').update({ streak: 1, last_active_date: today }).eq('user_id', userId);
+            }
+            
+            setStreak(finalStreak);
+            setLastActiveDate(finalActiveDate);
+          } else {
+            setStreak(1);
+            setLastActiveDate(today);
+            await supabase.from('gamification_profiles').update({ streak: 1, last_active_date: today }).eq('user_id', userId);
+          }
         }
       } catch (e) {
-        console.error("Failed to parse gamification data:", e);
+        console.error("Error loading gamification profile:", e);
+      } finally {
+        setLoading(false);
       }
-    } else {
-      // First time user
-      setStreak(1);
-      setLastActiveDate(new Date().toISOString().split("T")[0]);
-    }
+    };
+
+    loadProfile();
   }, [userId]);
 
-  // Persist to local storage whenever state changes
-  useEffect(() => {
-    const storageKey = `anatomy_ai_gamification_${userId}`;
-    const dataToSave = {
-      xp,
-      streak,
-      lastActiveDate,
-      badges
-    };
-    localStorage.setItem(storageKey, JSON.stringify(dataToSave));
-  }, [xp, streak, lastActiveDate, badges, userId]);
-
-  const awardBadge = (badgeId) => {
+  const awardBadge = async (badgeId) => {
     setBadges((prev) => {
       if (!prev.includes(badgeId)) {
-        return [...prev, badgeId];
+        const nextBadges = [...prev, badgeId];
+        saveToSupabase(xp, streak, lastActiveDate, nextBadges);
+        return nextBadges;
       }
       return prev;
     });
   };
 
-  const addXP = (amount, reason) => {
+  const addXP = async (amount, reason) => {
     setXp((prevXp) => {
       const newXp = prevXp + amount;
       const oldLevel = Math.floor(prevXp / 100) + 1;
@@ -111,11 +149,13 @@ export const GamificationProvider = ({ children }) => {
         setTimeout(() => setLevelUpAlert(false), 4000);
       }
       
-      // Auto-unlock level 5 badge
-      if (newLevel >= 5) {
-        awardBadge("level_5");
+      let updatedBadges = [...badges];
+      if (newLevel >= 5 && !updatedBadges.includes("level_5")) {
+        updatedBadges.push("level_5");
+        setBadges(updatedBadges);
       }
       
+      saveToSupabase(newXp, streak, lastActiveDate, updatedBadges);
       return newXp;
     });
   };

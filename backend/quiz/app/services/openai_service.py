@@ -2,7 +2,8 @@ import os
 import openai
 from dotenv import load_dotenv
 
-load_dotenv()
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../.env"))
+load_dotenv(dotenv_path=env_path, override=True)
 
 # Use two keys: GEMINI_API_KEY for quiz generator, and GROQ_API_KEY for AITutor.
 # Support fallback to OPENAI_API_KEY if specified by the user.

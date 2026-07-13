@@ -5,7 +5,8 @@ from google.genai import types
 import openai
 from dotenv import load_dotenv
 
-load_dotenv(override=True)
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../.env"))
+load_dotenv(dotenv_path=env_path, override=True)
 # Trigger reload to pick up new key
 # Check for keys
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")

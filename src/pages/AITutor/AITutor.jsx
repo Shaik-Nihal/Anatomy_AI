@@ -71,9 +71,9 @@ function OrganModel({ organ, selectedRegion }) {
     actualOrgan = "Heart";
   }
 
-  let modelPath = "/src/models/Heart1.glb";
+  let modelPath = "/models/human_heart.glb";
   if (actualOrgan === "Brain") {
-    modelPath = "/src/models/Brain.glb";
+    modelPath = "/models/human_brain_cerebrum__brainstem.glb";
   }
 
   const { scene } = useGLTF(modelPath);

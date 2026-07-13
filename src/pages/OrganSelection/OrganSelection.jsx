@@ -22,17 +22,17 @@ function OrganSelection() {
     },
     {
       name: "Liver",
-      icon: "🩸",
+      icon: "🧪",
       description: "Explore digestive organ structures.",
     },
     {
       name: "Human Anatomy",
-      icon: "🧍",
+      icon: "🧍‍♂️",
       description: "Explore the complete human body and all organ systems in 3D.",
     },
     {
       name: "Kidney",
-      icon: "🫘",
+      icon: "💧",
       description: "Learn excretory system anatomy in 3D.",
     },
     {
@@ -42,13 +42,23 @@ function OrganSelection() {
     },
     {
       name: "Stomach",
-      icon: "🍽️",
+      icon: "🍲",
       description: "Explore digestive functions and anatomy.",
     },
     {
       name: "Skeleton",
       icon: "🦴",
       description: "Study the complete skeletal system.",
+    },
+    {
+      name: "Skull",
+      icon: "💀",
+      description: "Examine the detailed structure of the human skull.",
+    },
+    {
+      name: "Intestines",
+      icon: "🪢",
+      description: "Explore the small and large intestines.",
     },
   ];
 

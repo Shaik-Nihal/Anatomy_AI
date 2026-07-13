@@ -5,7 +5,8 @@ from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv(override=True)
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+load_dotenv(dotenv_path=env_path, override=True)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Store database files in a separate folder in the backend folder

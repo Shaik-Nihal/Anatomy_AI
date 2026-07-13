@@ -436,15 +436,16 @@ function FocusHandler({ targetPoint, controlsRef }) {
 }
 
 function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHoverRegion, onLoadScene }) {
-  let modelPath = "/src/models/Heart1.glb";
+  let modelPath = "/models/human_heart.glb"; // Default to Heart
 
-  if (organ === "Brain") {
-    modelPath = "/src/models/Brain.glb";
-  }
-
-  if (organ === "Human Anatomy") {
-    modelPath = "/src/models/HumanAnatomy.glb";
-  }
+  if (organ === "Brain") modelPath = "/models/human_brain_cerebrum__brainstem.glb";
+  else if (organ === "Human Anatomy") modelPath = "/models/male_full_body_ecorche.glb";
+  else if (organ === "Lungs") modelPath = "/models/respiratory_system.glb";
+  else if (organ === "Kidney") modelPath = "/models/kidney.glb";
+  else if (organ === "Stomach") modelPath = "/models/realistic_human_stomach.glb";
+  else if (organ === "Intestines") modelPath = "/models/small_and_large_intestine.glb";
+  else if (organ === "Skull") modelPath = "/models/human_male_skull.glb";
+  else if (organ === "Skeleton") modelPath = "/models/ecorche_-_anatomy_study.glb";
 
   const { scene } = useGLTF(modelPath);
   const originalMaterials = useRef(new Map());
