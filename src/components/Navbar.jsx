@@ -57,7 +57,7 @@ function Navbar() {
       </div>
 
       {!isDashboard && (
-        <nav className={`nav-menu-container ${menuOpen ? "open" : ""}`}>
+        <nav className={`nav-menu-container ${menuOpen ? "open" : ""}`} style={{ position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
           <ul className="nav-menu-list">
             <li>
               <span

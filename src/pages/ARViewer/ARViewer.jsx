@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import ComparisonViewer from "../Comparison/ComparisonViewer";
 import { FaYoutube } from "react-icons/fa";
+import { FiX } from "react-icons/fi";
 import { generateQuiz } from "../../services/quizApi";
 import { videoData } from "../../data/videoData";
 
@@ -436,6 +437,7 @@ function FocusHandler({ targetPoint, controlsRef }) {
 }
 
 function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHoverRegion, onLoadScene }) {
+  const groupRef = useRef();
   let modelPath = "/models/human_heart.glb"; // Default to Heart
 
   if (organ === "Brain") modelPath = "/models/human_brain_cerebrum__brainstem.glb";
@@ -508,12 +510,40 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
     });
   }, [scene, selectedRegion, hoveredRegion, organ]);
 
+  useEffect(() => {
+    if (!scene || !groupRef.current) return;
+    
+    // Reset group transforms to measure raw scene
+    groupRef.current.scale.set(1, 1, 1);
+    groupRef.current.position.set(0, 0, 0);
+    
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    
+    if (maxDim > 0) {
+      // Auto-scale all models to fit uniformly
+      let targetSize = 4.0;
+      if (organ === "Human Anatomy" || organ === "Skeleton") targetSize = 5.5; 
+      
+      const scale = targetSize / maxDim;
+      groupRef.current.scale.set(scale, scale, scale);
+      
+      // Auto-center exactly in the middle of the screen
+      groupRef.current.position.set(
+        -center.x * scale,
+        -center.y * scale,
+        -center.z * scale
+      );
+    }
+  }, [scene, organ]);
+
   return (
-    <primitive
-      object={scene}
-      scale={organ === "Brain" ? 1.8 : 2.2}
-      position={[0, -0.5, 0]}
-      onClick={(e) => {
+    <group ref={groupRef}>
+      <primitive
+        object={scene}
+        onClick={(e) => {
         e.stopPropagation();
         const meshName = e.object.name || "";
         const regionName = getRegionFromMeshName(meshName, organ);
@@ -536,6 +566,7 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
         onHoverRegion(null);
       }}
     />
+    </group>
   );
 }
 
@@ -547,6 +578,7 @@ function ARViewer() {
   const [activeTab, setActiveTab] = useState("overview"); // "overview" | "anatomy" | "quiz" | "comparison" | "videos"
   const [activePanel, setActivePanel] = useState("overview");
   const [playingVideoId, setPlayingVideoId] = useState(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     setPlayingVideoId(null);
@@ -797,234 +829,71 @@ function ARViewer() {
   return (
     <div
       style={{
-        height: "100vh",
-        background: "linear-gradient(to bottom right, #020617, #0F172A, #111827)",
-        color: "white",
-        fontFamily: "Arial",
-        overflow: "hidden",
         display: "flex",
         flexDirection: "column",
+        position: "fixed",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        overflow: "hidden",
+        color: "white",
+        fontFamily: "'Inter', sans-serif",
       }}
     >
-      <Navbar />
+      {!isFullscreen && <Navbar />}
 
       {/* Viewer Module Tabs */}
-      <div className="viewer-tabs-bar" style={{
-        display: "flex",
-        background: "rgba(15, 23, 42, 0.4)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-        padding: "0 35px",
-        height: "54px",
-        alignItems: "stretch",
-        zIndex: 10,
-        gap: "16px",
-        backdropFilter: "blur(10px)",
-        boxSizing: "border-box",
-        width: "100%"
-      }}>
-        {[
-          { id: "overview", label: "Overview", icon: "📋" },
-          { id: "anatomy", label: "Anatomy", icon: "🧬" },
-          { id: "quiz", label: "Quiz", icon: "📝" },
-          { id: "comparison", label: "Comparison", icon: "🔄" },
-          { id: "videos", label: "Video Guide", icon: "🎥" }
-        ].map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveTab(tab.id);
-                if (tab.id === "comparison") {
-                  setActivePanel(null);
-                } else {
-                  setActivePanel(tab.id);
-                }
-              }}
-              style={{
-                background: "transparent",
-                border: "none",
-                borderBottom: isActive ? "3px solid #06B6D4" : "3px solid transparent",
-                color: isActive ? "#06B6D4" : "#94A3B8",
-                fontSize: "14px",
-                fontWeight: "700",
-                cursor: "pointer",
-                padding: "0 12px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                transition: "all 0.2s ease"
-              }}
-              onMouseEnter={(e) => {
-                if (!isActive) e.currentTarget.style.color = "#E2E8F0";
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive) e.currentTarget.style.color = "#94A3B8";
-              }}
-            >
-              <span>{tab.icon}</span>
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-
       {activeTab === "comparison" ? (
         <div style={{ flex: 1, overflowY: "auto", padding: "24px 35px" }}>
           <ComparisonViewer organName={selectedOrgan} hideHeader={true} />
         </div>
       ) : (
         <>
-          {/* Toolbar / Control Bar */}
-          <div className="ar-toolbar">
-            <div className="ar-toolbar-section">
-              <button
-                onClick={() => navigate("/organ-selection")}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#94A3B8",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                ← Back
-              </button>
-              <div style={{ width: "1px", height: "20px", background: "rgba(255,255,255,0.15)" }}></div>
-              <span style={{ fontSize: "15px", fontWeight: "600", color: "#E2E8F0" }}>
-                3D Canvas Controls
-              </span>
-            </div>
-
-            <div className="ar-toolbar-controls">
-              <button 
-                style={autoRotate ? activeButtonStyle : buttonStyle}
-                onClick={() => setAutoRotate(!autoRotate)}
-              >
-                🔄 Rotate
-              </button>
-
-              <button 
-                style={buttonStyle}
-                onClick={() => alert("Zoom using your mouse scroll wheel or pinch trackpad gestures. Drag to rotate model.")}
-              >
-                🔍 Zoom Info
-              </button>
-
-              <button 
-                style={showLabels ? activeButtonStyle : buttonStyle}
-                onClick={() => setShowLabels(!showLabels)}
-              >
-                🏷️ Labels Mode
-              </button>
-            </div>
-          </div>
-
           {/* Main Content Area */}
-          <div className="ar-main-layout">
-            {/* Left Panel */}
-            <div className="ar-left-panel">
-              <div style={{ display: "flex", alignItems: "center", gap: "15px", marginBottom: "15px" }}>
-                <div style={{ fontSize: "50px" }}>
-                  {selectedOrgan === "Heart" && "🫀"}
-                  {selectedOrgan === "Brain" && "🧠"}
-                  {selectedOrgan === "Human Anatomy" && "🧍"}
-                  {selectedOrgan !== "Heart" && selectedOrgan !== "Brain" && selectedOrgan !== "Human Anatomy" && "🩸"}
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: "14px", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px" }}>Current Model</h3>
-                  <h2 style={{ margin: 0, fontSize: "22px", color: "white", fontWeight: "700" }}>{selectedOrgan}</h2>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", flex: 1, overflowY: "auto", margin: "10px 0" }}>
-                <h3 style={{ color: "#06B6D4", fontSize: "20px", fontWeight: "700", margin: "10px 0 5px 0" }}>
-                  {selectedPart ? selectedPart.label : "Select a Part"}
-                </h3>
-
-                <p style={{ color: "#CBD5E1", lineHeight: "1.6", fontSize: "13px", margin: "5px 0" }}>
-                  {selectedPart ? activeContent.anatomy?.substring(0, 150) + "..." : "Click any anatomical structure directly on the 3D model or choose one from the list below to learn about its function and structure."}
-                </p>
-
-                {selectedPart && (
-                  <button
-                    onClick={() => setSelectedPart(null)}
-                    style={{
-                      marginTop: "10px",
-                      padding: "8px 14px",
-                      borderRadius: "8px",
-                      background: "rgba(255,255,255,0.05)",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      color: "#94A3B8",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      alignSelf: "flex-start",
-                      transition: "0.2s"
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = "white"}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "#94A3B8"}
-                  >
-                    🔄 Reset Model View
-                  </button>
-                )}
-
-                {/* Interactive Regions Sidebar Selector */}
-                <div style={{ marginTop: "25px" }}>
-                  <h4 style={{ color: "#94A3B8", textTransform: "uppercase", fontSize: "11px", letterSpacing: "1px", marginBottom: "12px", fontWeight: "700" }}>
-                    Interactive Regions
-                  </h4>
-                  <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                    maxHeight: "280px",
-                    overflowY: "auto",
-                    paddingRight: "6px"
-                  }} className="interactive-regions-list">
-                    {regionsList.map((region) => {
-                      const isSelected = selectedPart?.label === region;
-                      const isHovered = hoveredRegion === region;
-                      return (
-                        <button
-                          key={region}
-                          onClick={() => handleSelectRegionFromSidebar(region)}
-                          onMouseEnter={() => setHoveredRegion(region)}
-                          onMouseLeave={() => setHoveredRegion(null)}
-                          style={{
-                            textAlign: "left",
-                            padding: "10px 14px",
-                            borderRadius: "8px",
-                            border: isSelected ? "1px solid #06B6D4" : "1px solid rgba(255,255,255,0.05)",
-                            background: isSelected 
-                              ? "rgba(6,182,212,0.18)" 
-                              : isHovered 
-                              ? "rgba(255,255,255,0.06)" 
-                              : "rgba(255,255,255,0.02)",
-                            color: isSelected ? "#22d3ee" : isHovered ? "white" : "#CBD5E1",
-                            fontSize: "13px",
-                            cursor: "pointer",
-                            transition: "all 0.2s ease",
-                            fontWeight: isSelected ? "600" : "400",
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center"
-                          }}
-                        >
-                          <span>{region}</span>
-                          <span style={{ fontSize: "11px", opacity: isSelected || isHovered ? 1 : 0.4 }}>➔</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="ar-main-layout" style={{ flex: 1, minHeight: 0, position: "relative" }}>
 
             {/* Viewer 3D Canvas */}
             <div className="ar-canvas-container">
+              {/* Floating Header Card */}
+              {!isFullscreen && (
+                <div className="floating-header-card">
+                  <button
+                    onClick={() => navigate("/organ-selection")}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#94A3B8",
+                      fontSize: "13px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      padding: 0,
+                      marginBottom: "15px",
+                      width: "fit-content",
+                      fontWeight: "600",
+                      transition: "all 0.2s ease"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = "#F8FAFC"}
+                    onMouseLeave={(e) => e.currentTarget.style.color = "#94A3B8"}
+                  >
+                    ← Back to Selection
+                  </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                    <div style={{ fontSize: "40px" }}>
+                      {selectedOrgan === "Heart" && "🫀"}
+                      {selectedOrgan === "Brain" && "🧠"}
+                      {selectedOrgan === "Human Anatomy" && "🧍‍♂️"}
+                      {selectedOrgan !== "Heart" && selectedOrgan !== "Brain" && selectedOrgan !== "Human Anatomy" && "🧪"}
+                    </div>
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: "12px", color: "#06B6D4", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "800" }}>Current Model</h3>
+                      <h2 style={{ margin: 0, fontSize: "22px", color: "white", fontWeight: "800", letterSpacing: "0.5px" }}>{selectedOrgan}</h2>
+                    </div>
+                  </div>
+                </div>
+              )}
               {/* Background Glow */}
               <div
                 style={{
@@ -1056,110 +925,84 @@ function ARViewer() {
 
                 <OrganModel 
                   organ={selectedOrgan} 
-                  onSelectPart={(part) => setSelectedPart(part)}
-                  selectedRegion={selectedPart?.label}
-                  hoveredRegion={hoveredRegion}
-                  onHoverRegion={setHoveredRegion}
                   onLoadScene={setLoadedScene}
                 />
-
-                {/* Camera transition focus */}
-                <FocusHandler targetPoint={selectedPart?.point} controlsRef={controlsRef} />
-
-                {/* Glowing pinpoint and premium floating text label */}
-                {showLabels && selectedPart && selectedPart.point && (
-                  <mesh position={[selectedPart.point.x, selectedPart.point.y, selectedPart.point.z]}>
-                    <sphereGeometry args={[0.05, 16, 16]} />
-                    <meshBasicMaterial color="#06B6D4" toneMapped={false} />
-                    <Html distanceFactor={6} center>
-                      <div style={{
-                        position: "relative",
-                        transform: "translateY(-45px)",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        pointerEvents: "none",
-                      }}>
-                        <div style={{
-                          background: "rgba(15, 23, 42, 0.95)",
-                          backdropFilter: "blur(10px)",
-                          border: "2px solid #06B6D4",
-                          borderRadius: "8px",
-                          padding: "6px 12px",
-                          color: "white",
-                          fontSize: "12px",
-                          fontWeight: "700",
-                          fontFamily: "sans-serif",
-                          whiteSpace: "nowrap",
-                          boxShadow: "0 0 20px rgba(6,182,212,0.6)",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "6px",
-                        }}>
-                          <span style={{
-                            width: "6px",
-                            height: "6px",
-                            borderRadius: "50%",
-                            background: "#06B6D4",
-                            boxShadow: "0 0 8px #06B6D4",
-                            display: "inline-block"
-                          }}></span>
-                          {selectedPart.label}
-                        </div>
-                        {/* Connecting vertical line */}
-                        <div style={{
-                          width: "2px",
-                          height: "25px",
-                          background: "linear-gradient(to bottom, #06B6D4, rgba(6,182,212,0.1))",
-                          boxShadow: "0 0 4px #06B6D4",
-                        }}></div>
-                      </div>
-                    </Html>
-                  </mesh>
-                )}
 
                 <OrbitControls ref={controlsRef} autoRotate={autoRotate} />
               </Canvas>
             </div>
 
             {/* Side Detail Panel (Inline Sibling) */}
-            {activePanel && (
-              <div className="ar-right-panel">
+            {!isFullscreen && activePanel && (
+              <div className="ar-right-panel" style={{ bottom: "24px", height: "calc(100% - 48px)", borderRadius: "28px", borderBottom: "1px solid rgba(255, 255, 255, 0.15)" }}>
                 <button
                   onClick={() => setActivePanel(null)}
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: "white",
-                    fontSize: "24px",
+                    color: "#64748B",
                     cursor: "pointer",
-                    alignSelf: "flex-end",
-                    marginBottom: "10px",
-                    outline: "none"
+                    position: "absolute",
+                    top: "14px",
+                    right: "14px",
+                    outline: "none",
+                    padding: "8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.2s ease",
+                    borderRadius: "50%",
+                    zIndex: 10
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#F8FAFC";
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
+                    e.currentTarget.style.transform = "scale(1.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#64748B";
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.transform = "scale(1)";
                   }}
                 >
-                  ✕
+                  <FiX size={20} />
                 </button>
 
                 {activePanel === "overview" && (
                   <>
-                    <h2 style={{ color: "#06B6D4", marginBottom: "15px", fontSize: "24px", fontWeight: "700" }}>
-                      📋 Overview: {selectedOrgan}
+                    <h2 style={{ 
+                      background: "linear-gradient(90deg, #22D3EE, #818CF8)", 
+                      WebkitBackgroundClip: "text", 
+                      WebkitTextFillColor: "transparent", 
+                      marginBottom: "16px", 
+                      fontSize: "26px", 
+                      fontWeight: "800", 
+                      letterSpacing: "0.5px",
+                      marginTop: "10px"
+                    }}>
+                      Overview: {selectedOrgan}
                     </h2>
-                    <p style={{ lineHeight: "1.8", color: "#CBD5E1", fontSize: "14px" }}>
+                    <p style={{ lineHeight: "1.8", color: "#94A3B8", fontSize: "14px", margin: "0 0 16px 0" }}>
                       {educationalContent[selectedOrgan]?.general?.anatomy || `Detailed overview and diagnostic models for ${selectedOrgan.toLowerCase()} functions.`}
                     </p>
                     
-                    <div style={{ marginTop: "30px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px" }}>
-                      <h3 style={{ color: "#E2E8F0", fontSize: "18px", marginBottom: "15px" }}>
+                    <div style={{ 
+                      height: "1px",
+                      background: "linear-gradient(90deg, rgba(34,211,238,0.5) 0%, transparent 100%)",
+                      marginBottom: "20px"
+                    }} />
+
+                    <div>
+                      <h3 style={{ color: "#E2E8F0", fontSize: "18px", marginBottom: "16px", fontWeight: "700" }}>
                         {educationalContent[selectedOrgan]?.general?.module?.title || "Educational Guide"}
                       </h3>
                       {educationalContent[selectedOrgan]?.general?.module?.sections?.map((sec, idx) => (
-                        <div key={idx} style={{ marginBottom: "20px" }}>
-                          <h4 style={{ color: "#22d3ee", fontSize: "14px", fontWeight: "600", margin: "0 0 6px 0" }}>
-                            {idx + 1}. {sec.heading}
+                        <div key={idx} style={{ marginBottom: "24px" }}>
+                          <h4 style={{ color: "#22d3ee", fontSize: "15px", fontWeight: "600", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: "10px" }}>
+                            <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "24px", height: "24px", borderRadius: "6px", background: "rgba(34, 211, 238, 0.15)", color: "#22D3EE", fontSize: "12px" }}>{idx + 1}</span>
+                            {sec.heading}
                           </h4>
-                          <p style={{ color: "#CBD5E1", fontSize: "13px", lineHeight: "1.6", margin: 0 }}>
+                          <p style={{ color: "#94A3B8", fontSize: "13.5px", lineHeight: "1.7", margin: 0, paddingLeft: "34px" }}>
                             {sec.text}
                           </p>
                         </div>
@@ -1170,13 +1013,22 @@ function ARViewer() {
 
                 {activePanel === "anatomy" && (
                   <>
-                    <h2 style={{ color: "#06B6D4", marginBottom: "15px", fontSize: "24px", fontWeight: "700" }}>
-                      🧬 Anatomy & Structure
+                    <h2 style={{ 
+                      background: "linear-gradient(90deg, #22D3EE, #818CF8)", 
+                      WebkitBackgroundClip: "text", 
+                      WebkitTextFillColor: "transparent", 
+                      marginBottom: "16px", 
+                      fontSize: "26px", 
+                      fontWeight: "800", 
+                      letterSpacing: "0.5px",
+                      marginTop: "10px"
+                    }}>
+                      Anatomy & Structure
                     </h2>
-                    <h3 style={{ color: "#E2E8F0", fontSize: "18px", marginBottom: "15px" }}>
+                    <h3 style={{ color: "#E2E8F0", fontSize: "18px", marginBottom: "15px", fontWeight: "700" }}>
                       {selectedPart ? selectedPart.label : selectedOrgan}
                     </h3>
-                    <p style={{ lineHeight: "1.8", color: "#CBD5E1", fontSize: "14px" }}>
+                    <p style={{ lineHeight: "1.8", color: "#94A3B8", fontSize: "14px", marginTop: 0 }}>
                       {activeContent.anatomy}
                     </p>
                     
@@ -1191,8 +1043,17 @@ function ARViewer() {
 
                 {activePanel === "quiz" && (
                   <div>
-                    <h2 style={{ color: "#06B6D4", margin: "0 0 10px 0", fontSize: "24px", fontWeight: "700" }}>
-                      📝 Organ Assessment
+                    <h2 style={{ 
+                      background: "linear-gradient(90deg, #22D3EE, #818CF8)", 
+                      WebkitBackgroundClip: "text", 
+                      WebkitTextFillColor: "transparent", 
+                      marginBottom: "16px", 
+                      fontSize: "26px", 
+                      fontWeight: "800", 
+                      letterSpacing: "0.5px",
+                      marginTop: "10px"
+                    }}>
+                      Organ Assessment
                     </h2>
                     
                     {quizLoading ? (
@@ -1479,6 +1340,88 @@ function ARViewer() {
                   </>
                 )}
               </div>
+            )}
+
+            {/* Premium Floating Dock */}
+            {!isFullscreen && (
+              <div className="floating-dock">
+              {[
+                { id: "overview", label: "Overview", icon: "📋" },
+                { id: "anatomy", label: "Anatomy", icon: "🧬" },
+                { id: "quiz", label: "Quiz", icon: "📝" },
+                { id: "comparison", label: "Comparison", icon: "🔄" },
+                { id: "videos", label: "Video Guide", icon: "🎥" }
+              ].map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      if (tab.id === "comparison") {
+                        setActivePanel(null);
+                      } else {
+                        setActivePanel(tab.id);
+                      }
+                    }}
+                    className={`floating-dock-button ${isActive ? "active" : ""}`}
+                  >
+                    <span className="icon">{tab.icon}</span>
+                    <span className="label">{tab.label}</span>
+                  </button>
+                );
+              })}
+                <div style={{ width: "1px", height: "24px", background: "rgba(255, 255, 255, 0.1)", margin: "0 8px" }} />
+                <button
+                  onClick={() => setIsFullscreen(true)}
+                  className="floating-dock-button"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "#22D3EE";
+                    e.currentTarget.style.background = "rgba(15, 23, 42, 0.85)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "#94A3B8";
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <span className="icon">⛶</span>
+                  <span className="label">Focus Mode</span>
+                </button>
+              </div>
+            )}
+
+            {isFullscreen && (
+              <button
+                onClick={() => setIsFullscreen(false)}
+                style={{
+                  position: "absolute",
+                  top: "30px",
+                  right: "40px",
+                  background: "rgba(15, 23, 42, 0.65)",
+                  backdropFilter: "blur(30px)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  borderRadius: "50%",
+                  width: "50px",
+                  height: "50px",
+                  color: "white",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  zIndex: 100,
+                  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                  fontSize: "20px",
+                  transition: "all 0.3s ease"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(239, 68, 68, 0.8)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(15, 23, 42, 0.65)";
+                }}
+              >
+                ✕
+              </button>
             )}
           </div>
         </>

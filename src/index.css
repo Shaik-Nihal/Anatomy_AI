@@ -88,7 +88,7 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 15px 40px;
+  padding: 10px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1387,31 +1387,167 @@ body {
 
 /* Custom Premium Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
+  margin: 4px 0;
 }
 
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
-  border-radius: 99px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.5); /* Accent cyan glow */
-  border: 2px solid transparent;
-  background-clip: padding-box;
+  background: rgba(34, 211, 238, 0.5); /* Accent cyan glow */
 }
 
-/* For Firefox support */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+/* For Firefox support (using @supports to prevent Chrome override) */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
 }
 
-
+/* AR Viewer Vision Pro Layout */
+.ar-main-layout {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, #1E293B 0%, #020617 80%);
+  z-index: 1;
+}
+
+.floating-header-card {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  padding: 16px 24px;
+  z-index: 20;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+}
+
+.ar-right-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.ar-right-panel::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 16px 0;
+}
+.ar-right-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+.ar-right-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.5);
+}
+
+.ar-right-panel {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  bottom: 24px;
+  width: 420px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 28px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 20;
+}
+
+.ar-canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.floating-dock {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 12px;
+  border-radius: 9999px;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+  z-index: 30;
+}
+
+.floating-dock-button {
+  background: transparent;
+  border: none;
+  padding: 12px;
+  border-radius: 9999px;
+  color: #94A3B8;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.floating-dock-button span.icon {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.floating-dock-button span.label {
+  max-width: 0;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-dock-button:hover span.label,
+.floating-dock-button.active span.label {
+  max-width: 120px;
+  opacity: 1;
+  margin-left: 8px;
+}
+
+.floating-dock-button.active {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22D3EE;
+  box-shadow: inset 0 0 0 1px rgba(34, 211, 238, 0.3);
+}
+
+.floating-dock-button:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+}
