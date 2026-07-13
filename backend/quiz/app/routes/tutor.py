@@ -9,5 +9,5 @@ async def ask_tutor(request: TutorRequest):
     if not request.question.strip():
         raise HTTPException(status_code=400, detail='Question cannot be empty.')
 
-    answer = generate_answer(request.question)
+    answer = generate_answer(request.question, conversational_mode=request.conversational_mode)
     return {'answer': answer}

@@ -10,10 +10,13 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
 API_TIMEOUT = 30
 
 SYSTEM_PROMPT = (
-    'You are an educational AI tutor. Answer clearly and simply for a student asking about science and anatomy topics.'
+    'You are an educational AI tutor specializing strictly in human anatomy, biology, and related medical sciences. '
+    'Answer clearly and simply for a student. '
+    'IMPORTANT: If a user asks a question about any other domain (e.g., programming, history, politics, general chit-chat), '
+    'you MUST politely decline to answer and remind them that you are an anatomy tutor.'
 )
 
-def generate_answer(question: str) -> str:
+def generate_answer(question: str, conversational_mode: bool = False) -> str:
     if not GROQ_API_KEY:
         return 'Groq/OpenAI API key is missing. Add GROQ_API_KEY to your backend/quiz/.env.'
 
@@ -30,11 +33,15 @@ def generate_answer(question: str) -> str:
         base_url=base_url
     )
 
+    prompt_to_use = SYSTEM_PROMPT
+    if conversational_mode:
+        prompt_to_use += " IMPORTANT: We are in a voice conversation mode. You must keep your answers EXTREMELY concise, like a human speaking on a phone call. Use 1 or 2 short sentences max. Do NOT use markdown formatting."
+
     try:
         response = client.chat.completions.create(
             model=model_name,
             messages=[
-                {'role': 'system', 'content': SYSTEM_PROMPT},
+                {'role': 'system', 'content': prompt_to_use},
                 {'role': 'user', 'content': question},
             ],
             temperature=0.7,
@@ -55,7 +62,7 @@ def generate_answer(question: str) -> str:
             response = fallback_client.chat.completions.create(
                 model='gpt-3.5-turbo',
                 messages=[
-                    {'role': 'system', 'content': SYSTEM_PROMPT},
+                    {'role': 'system', 'content': prompt_to_use},
                     {'role': 'user', 'content': question},
                 ],
                 temperature=0.7,

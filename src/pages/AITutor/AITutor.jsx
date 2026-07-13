@@ -143,6 +143,12 @@ function AITutor() {
 
   // Speech recognition states & ref
   const [isListening, setIsListening] = useState(false);
+  const isListeningRef = useRef(false);
+
+  const updateIsListening = (val) => {
+    setIsListening(val);
+    isListeningRef.current = val;
+  };
   const recognitionRef = useRef(null);
   
   // MediaRecorder refs for Whisper fallback
@@ -161,6 +167,11 @@ function AITutor() {
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef(null);
+
+  const [isCallActive, setIsCallActive] = useState(false);
+  const isCallActiveRef = useRef(false);
+  const [autoSubmitText, setAutoSubmitText] = useState(null);
+  const isProcessingQueryRef = useRef(false);
 
   // Load chat history from localStorage on mount or when userId changes
   useEffect(() => {
@@ -247,13 +258,36 @@ function AITutor() {
     }
   };
 
+  const toggleCall = () => {
+    if (isCallActive) {
+      setIsCallActive(false);
+      isCallActiveRef.current = false;
+      if (isListeningRef.current) toggleListening();
+      if (audioRef.current) audioRef.current.pause();
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+    } else {
+      setIsCallActive(true);
+      isCallActiveRef.current = true;
+      setVoiceEnabled(true);
+      if (!isListeningRef.current) toggleListening();
+    }
+  };
+
+  useEffect(() => {
+    if (autoSubmitText) {
+      setChatInput(autoSubmitText);
+      submitQuery(autoSubmitText);
+      setAutoSubmitText(null);
+    }
+  }, [autoSubmitText]);
+
   // Whisper MediaRecorder audio recording fallback
   const toggleWhisperRecording = async () => {
-    if (isListening) {
+    if (isListeningRef.current) {
       if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
         mediaRecorderRef.current.stop();
       }
-      setIsListening(false);
+      updateIsListening(false);
     } else {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -278,7 +312,7 @@ function AITutor() {
             formData.append("audio", audioBlob, "recording.webm");
             formData.append("language", "en");
             
-            const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/voice/transcribe`, {
+            const response = await fetch(`${import.meta.env.VITE_QUIZ_API_BASE_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/voice/transcribe`, {
               method: "POST",
               body: formData
             });
@@ -286,7 +320,11 @@ function AITutor() {
             const data = await response.json();
             if (data && data.transcript) {
               const text = data.transcript;
-              setChatInput((prev) => (prev ? prev + " " + text : text));
+              if (isCallActiveRef.current) {
+                setAutoSubmitText(text);
+              } else {
+                setChatInput((prev) => (prev ? prev + " " + text : text));
+              }
             }
           } catch (err) {
             console.error("Transcribe error:", err);
@@ -298,7 +336,7 @@ function AITutor() {
         
         mediaRecorderRef.current = recorder;
         recorder.start();
-        setIsListening(true);
+        updateIsListening(true);
       } catch (err) {
         console.error("Microphone access failed:", err);
         alert("Could not access microphone: " + err.message);
@@ -316,11 +354,11 @@ function AITutor() {
       return;
     }
 
-    if (isListening) {
+    if (isListeningRef.current) {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
-      setIsListening(false);
+      updateIsListening(false);
     } else {
       const rec = new SpeechRecognition();
       rec.continuous = false;
@@ -328,21 +366,35 @@ function AITutor() {
       rec.interimResults = false;
 
       rec.onstart = () => {
-        setIsListening(true);
+        updateIsListening(true);
       };
 
       rec.onerror = (e) => {
         console.error("Speech recognition error:", e.error);
-        setIsListening(false);
+        updateIsListening(false);
+        // If error in continuous mode, we might want to wait and restart, 
+        // but for now, we just turn off the UI indicator.
       };
 
       rec.onend = () => {
-        setIsListening(false);
+        updateIsListening(false);
+        // Automatically restart listening if call is active and we are NOT processing a query/playing audio
+        if (isCallActiveRef.current && !isProcessingQueryRef.current) {
+          setTimeout(() => {
+            if (isCallActiveRef.current && !isListeningRef.current && !isProcessingQueryRef.current) {
+              toggleListening();
+            }
+          }, 500);
+        }
       };
 
       rec.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        setChatInput((prev) => (prev ? prev + " " + transcript : transcript));
+        if (isCallActiveRef.current) {
+          setAutoSubmitText(transcript);
+        } else {
+          setChatInput((prev) => (prev ? prev + " " + transcript : transcript));
+        }
       };
 
       recognitionRef.current = rec;
@@ -401,11 +453,24 @@ function AITutor() {
     return { region: null, organ: null };
   };
 
-  const handleChatSubmit = async (e) => {
+  const handleChatSubmit = (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
+    submitQuery(chatInput.trim());
+  };
 
-    const query = chatInput.trim();
+  const submitQuery = async (query) => {
+    isProcessingQueryRef.current = true;
+    
+    // Explicitly stop the microphone if it's currently on, so it doesn't pick up the AI's voice
+    if (isListeningRef.current) {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+      updateIsListening(false);
+    }
+
     const newUserMsg = { role: "user", text: query };
     setChatInput("");
     setChatLoading(true);
@@ -457,7 +522,7 @@ function AITutor() {
     }
 
     try {
-      const res = await sendTutorQuestion(query);
+      const res = await sendTutorQuestion(query, isCallActiveRef.current);
       const assistantMsg = { role: "assistant", text: res.answer };
       const finalMessages = [...baseMessages, assistantMsg];
 
@@ -488,10 +553,18 @@ function AITutor() {
           audio.onended = () => {
             setAudioPlaying(false);
             setSelectedRegion(null);
+            isProcessingQueryRef.current = false;
+            if (isCallActiveRef.current) {
+              setTimeout(() => {
+                if (isCallActiveRef.current && !isListeningRef.current) toggleListening();
+              }, 500);
+            }
           };
           audio.onerror = () => {
             setAudioPlaying(false);
             setSelectedRegion(null);
+            isProcessingQueryRef.current = false;
+            if (isCallActiveRef.current && !isListeningRef.current) toggleListening();
           };
 
           audio.play();
@@ -503,6 +576,12 @@ function AITutor() {
             () => {
               setAudioPlaying(false);
               setSelectedRegion(null);
+              isProcessingQueryRef.current = false;
+              if (isCallActiveRef.current) {
+                setTimeout(() => {
+                  if (isCallActiveRef.current && !isListeningRef.current) toggleListening();
+                }, 500);
+              }
             }
           );
         }
@@ -514,6 +593,8 @@ function AITutor() {
             setSelectedRegion(null);
           }, 5000);
         }
+        isProcessingQueryRef.current = false;
+        if (isCallActiveRef.current && !isListeningRef.current) toggleListening();
       }
     } catch (err) {
       console.error(err);
@@ -526,6 +607,8 @@ function AITutor() {
         localStorage.setItem(`anatomy_ai_tutor_history_${userId}`, JSON.stringify(next));
         return next;
       });
+      isProcessingQueryRef.current = false;
+      if (isCallActiveRef.current && !isListeningRef.current) toggleListening();
     } finally {
       setChatLoading(false);
     }
@@ -753,6 +836,7 @@ function AITutor() {
               <h2 style={{ fontSize: "24px", color: "#fff", fontWeight: "700", margin: 0 }}>AnatoMind Chat</h2>
               <p style={{ color: "#94A3B8", fontSize: "14px", margin: "4px 0 0 0" }}>Type your academic question and get a simple explanation.</p>
             </div>
+            <div style={{ display: "flex", gap: "10px" }}>
             <button
               type="button"
               onClick={() => {
@@ -785,6 +869,7 @@ function AITutor() {
             >
               {voiceEnabled ? "🔊" : "🔇"}
             </button>
+            </div>
           </div>
 
           {/* Suggestions */}
@@ -868,29 +953,43 @@ function AITutor() {
               disabled={chatLoading}
             />
 
-            {/* Voice Input Mic Button */}
+            {/* Voice Input Mic Button - Toggles Continuous Call Mode */}
             <button
               type="button"
-              onClick={toggleListening}
-              title={isListening ? "Listening... Click to stop" : "Speak your question"}
+              onClick={toggleCall}
+              title={isCallActive ? "End Voice Call" : "Start Voice Call"}
               className={isListening ? "mic-button listening" : "mic-button"}
               style={{
                 padding: "14px",
                 borderRadius: "14px",
-                background: isListening
+                background: isCallActive
                   ? "rgba(239, 68, 68, 0.2)"
                   : "rgba(255, 255, 255, 0.03)",
-                border: isListening
+                border: isCallActive
                   ? "1px solid #EF4444"
                   : "1px solid rgba(255, 255, 255, 0.08)",
-                color: isListening ? "#EF4444" : "#06B6D4",
+                color: isCallActive ? "#EF4444" : "#06B6D4",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 transition: "all 0.3s ease",
+                position: "relative"
               }}
             >
+              {isListening && (
+                <div style={{ 
+                  position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px", 
+                  backgroundColor: "#EF4444", borderRadius: "50%", 
+                  animation: "pulse 1.5s infinite"
+                }} />
+              )}
+              {isCallActive && !isListening && (
+                <div style={{ 
+                  position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px", 
+                  backgroundColor: "#F59E0B", borderRadius: "50%"
+                }} title="Waiting for response..." />
+              )}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2" />

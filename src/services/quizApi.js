@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_BASE =
-  import.meta.env.VITE_QUIZ_API_BASE_URL ?? "http://127.0.0.1:8000";
+  import.meta.env.VITE_QUIZ_API_BASE_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 const QUIZ_API_URL = `${API_BASE}/api`;
 const PROGRESS_API_URL = `${API_BASE}/progress`;
 
@@ -41,8 +41,11 @@ export const getUserProgress = async (userId) => {
   return response.data;
 };
 
-export const sendTutorQuestion = async (question) => {
-  const response = await axios.post(`${QUIZ_API_URL}/tutor`, { question });
+export const sendTutorQuestion = async (question, conversationalMode = false) => {
+  const response = await axios.post(`${QUIZ_API_URL}/tutor`, { 
+    question,
+    conversational_mode: conversationalMode
+  });
   return response.data;
 };
 
@@ -61,7 +64,7 @@ export const getTutorSpeech = async (text, voice = "alloy") => {
   formData.append("text", text);
   formData.append("voice", voice);
   
-  const response = await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/voice/speak`, formData, {
+  const response = await axios.post(`${API_BASE}/voice/speak`, formData, {
     responseType: "blob"
   });
   return response.data;

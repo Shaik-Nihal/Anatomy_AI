@@ -279,3 +279,39 @@ def identify_organ(image_bytes: bytes, mime_type: str):
             raise Exception(f"Vision analysis failed. Gemini: {gemini_error}. OpenAI: {e}")
 
     raise Exception(f"Vision analysis failed. Gemini: {gemini_error}. OpenAI: API Key missing or invalid.")
+
+def label_diagram(image_bytes: bytes, mime_type: str):
+    prompt = """
+    You are an expert anatomy AI. Analyze this image (diagram or physical model).
+    Identify the key anatomical structures present in the image.
+    For each structure, provide a bounding box in the format [ymin, xmin, ymax, xmax], where coordinates are scaled to 1000 (meaning the maximum value for any coordinate is 1000).
+    Return ONLY a valid JSON array of objects. Do not include markdown formatting or extra text.
+    Format:
+    [
+        {
+            "label": "Heart",
+            "box": [ymin, xmin, ymax, xmax]
+        },
+        ...
+    ]
+    """
+    
+    # Use Gemini directly since it natively supports bounding box prompting well
+    if gemini_client is not None:
+        try:
+            response = gemini_client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=[
+                    types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                    prompt
+                ]
+            )
+            text = response.text.strip()
+            if text.startswith("```json"):
+                text = text.replace("```json", "").replace("```", "").strip()
+            return json.loads(text)
+        except Exception as e:
+            print(f"Gemini Diagram Labeling failed: {e}")
+            raise Exception(f"Diagram Labeling failed: {e}")
+    else:
+        raise Exception("Gemini client not initialized for diagram labeling.")
