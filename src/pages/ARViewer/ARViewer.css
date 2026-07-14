@@ -1,0 +1,39 @@
+@reference "tailwindcss";
+
+.ar-container {
+  @apply min-h-screen flex flex-col text-white overflow-hidden relative;
+  background: linear-gradient(to bottom right, #020617, #0F172A, #111827);
+}
+
+.ar-toolbar {
+  @apply h-auto md:h-[60px] flex flex-col md:flex-row justify-between items-stretch md:items-center px-4 md:px-10 py-3 md:py-0 border-b z-10 gap-3 md:gap-0;
+  background: rgba(15, 23, 42, 0.45);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.ar-toolbar-section {
+  @apply flex items-center justify-between md:justify-start gap-4;
+}
+
+.ar-toolbar-controls {
+  @apply flex items-center justify-start gap-3 flex-wrap;
+}
+
+.ar-main-layout {
+  @apply flex flex-col md:flex-row flex-1 relative overflow-y-auto md:overflow-hidden w-full h-[calc(100vh-60px)];
+}
+
+.ar-left-panel {
+  @apply w-full md:w-[350px] border-b md:border-b-0 md:border-r border-slate-700/50 p-6 flex flex-col z-10 order-2 md:order-1 h-auto md:h-full shrink-0;
+  background: rgba(30, 41, 59, 0.45);
+  backdrop-filter: blur(20px);
+}
+
+.ar-canvas-container {
+  @apply flex-1 relative h-[45vh] md:h-full min-h-[300px] order-1 md:order-2 w-full;
+}
+
+.ar-detail-overlay {
+  @apply fixed top-0 right-0 w-full md:w-[420px] h-screen bg-slate-900 border-l border-white/10 p-6 z-[9999] overflow-y-auto font-sans shadow-2xl;
+}
+

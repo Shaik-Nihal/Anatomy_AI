@@ -1,0 +1,137 @@
+@reference "tailwindcss";
+
+.viewer-header {
+  @apply flex justify-between items-center mb-6 px-4 md:px-0;
+}
+
+.viewer-title-center {
+  @apply flex items-center gap-4;
+}
+
+.viewer-organ-icon {
+  @apply w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center text-2xl border border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.3)];
+}
+
+.viewer-title {
+  @apply text-xl md:text-3xl font-bold m-0 text-white;
+}
+
+.viewer-subtitle {
+  @apply text-xs md:text-sm text-cyan-400 font-semibold;
+}
+
+.tab-selector {
+  @apply flex flex-wrap justify-center gap-2 md:gap-4 mb-8 px-4;
+}
+
+.tab-btn {
+  @apply bg-slate-800 border border-slate-600 text-slate-300 px-4 md:px-6 py-2.5 rounded-full font-semibold cursor-pointer transition-all duration-300 hover:bg-slate-700;
+}
+
+.tab-btn.active-gender { @apply bg-blue-500/20 border-blue-500 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.3)]; }
+.tab-btn.active-condition { @apply bg-red-500/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]; }
+.tab-btn.active-age { @apply bg-green-500/20 border-green-500 text-green-400 shadow-[0_0_15px_rgba(34,197,94,0.3)]; }
+
+.canvas-grid {
+  @apply grid gap-6 mb-8 px-4 md:px-0;
+}
+
+@media (max-width: 768px) {
+  .canvas-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.viewport-card {
+  @apply bg-slate-800/80 rounded-[24px] border border-white/10 overflow-hidden flex flex-col h-[400px] md:h-[500px];
+}
+
+.viewport-toolbar {
+  @apply flex justify-between items-center p-4 border-b border-white/10 bg-slate-900/50 flex-wrap gap-2;
+}
+
+.viewport-badge {
+  @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+}
+.badge-male { @apply bg-blue-500/20 text-blue-400 border border-blue-500/50; }
+.badge-female { @apply bg-pink-500/20 text-pink-400 border border-pink-500/50; }
+.badge-healthy { @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/50; }
+.badge-diseased { @apply bg-red-500/20 text-red-400 border border-red-500/50; }
+.badge-adult { @apply bg-purple-500/20 text-purple-400 border border-purple-500/50; }
+.badge-child { @apply bg-amber-500/20 text-amber-400 border border-amber-500/50; }
+
+.toolbar-controls {
+  @apply flex gap-2;
+}
+
+.toolbar-btn {
+  @apply bg-slate-800 border border-slate-600 text-slate-300 px-2 py-1 md:px-3 md:py-1.5 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-700 hover:text-white transition-colors;
+}
+
+.canvas-container {
+  @apply flex-1 relative bg-[radial-gradient(circle_at_center,rgba(30,41,59,0.8)_0%,rgba(15,23,42,1)_100%)];
+}
+
+.stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 px-4 md:px-0;
+}
+
+.stats-card {
+  @apply bg-slate-800/60 rounded-2xl p-5 border border-white/5;
+}
+
+.stats-card-title {
+  @apply text-lg font-bold mb-4 pb-2 border-b border-white/10;
+}
+
+.stats-title-left-gender { @apply text-blue-400 border-b-blue-500/30; }
+.stats-title-right-gender { @apply text-pink-400 border-b-pink-500/30; }
+.stats-title-left-condition { @apply text-emerald-400 border-b-emerald-500/30; }
+.stats-title-right-condition { @apply text-red-400 border-b-red-500/30; }
+.stats-title-left-age { @apply text-purple-400 border-b-purple-500/30; }
+.stats-title-right-age { @apply text-amber-400 border-b-amber-500/30; }
+
+.stats-table {
+  @apply w-full text-sm mb-4 border-collapse;
+}
+
+.stats-table tr {
+  @apply border-b border-white/5;
+}
+
+.stats-table td {
+  @apply py-2;
+}
+
+.stats-label {
+  @apply text-slate-400 capitalize;
+}
+
+.stats-value {
+  @apply text-right font-semibold text-white;
+}
+
+.stats-notes {
+  @apply text-sm text-slate-400 italic bg-slate-900/50 p-3 rounded-lg border-l-2 border-cyan-500 m-0;
+}
+
+.summary-panel {
+  @apply bg-slate-800/80 rounded-2xl p-6 border border-white/10 mx-4 md:mx-0;
+}
+
+.summary-title {
+  @apply text-xl font-bold mb-4 text-white;
+}
+
+.summary-list {
+  @apply list-none m-0 p-0;
+}
+
+.summary-list li {
+  @apply relative pl-6 py-2 text-slate-300 border-b border-white/5 last:border-b-0;
+}
+
+.summary-list li::before {
+  content: '→';
+  @apply absolute left-0 text-cyan-500 font-bold;
+}

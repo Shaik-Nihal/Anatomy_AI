@@ -6,6 +6,7 @@ import { useGamification } from "../../contexts/GamificationContext";
 import { getUserProgress } from "../../services/quizApi";
 import { FiHeart, FiActivity, FiTrendingUp, FiCpu, FiCamera, FiRepeat } from "react-icons/fi";
 import { comparisonData } from "../../data/comparisonData";
+import "./Dashboard.css";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -153,19 +154,7 @@ function Dashboard() {
 
       <div className="dashboard-content">
         {/* Glow */}
-        <div
-          style={{
-            position: "absolute",
-            width: "600px",
-            height: "600px",
-            background: "rgba(6, 182, 212, 0.08)",
-            borderRadius: "50%",
-            filter: "blur(150px)",
-            top: "-100px",
-            right: "-100px",
-            pointerEvents: "none",
-          }}
-        />
+        <div className="dashboard-glow" />
 
         {/* 2-Column Responsive Dashboard Layout */}
         <div className="dashboard-layout-new">
@@ -174,42 +163,27 @@ function Dashboard() {
           <div className="dashboard-left-section">
             
             {/* Welcome Banner Card */}
-            <div className="glass-card-new welcome-banner" style={{ background: "linear-gradient(135deg, rgba(15, 23, 42, 0.45) 0%, rgba(30, 41, 59, 0.4) 100%)", minHeight: "140px", display: "flex", alignItems: "center" }}>
-              <div style={{ zIndex: 5, width: "100%" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "10px", flexWrap: "wrap" }}>
-                  <div style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "14px",
-                    background: "rgba(6, 182, 212, 0.12)",
-                    border: "1px solid rgba(6, 182, 212, 0.25)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "22px",
-                    boxShadow: "0 0 15px rgba(6, 182, 212, 0.2)"
-                  }}>
+            <div className="glass-card-new welcome-banner">
+              <div className="relative z-10 w-full">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(6,182,212,0.2)]">
                     👋
                   </div>
-                  <h2 style={{ fontSize: "30px", fontWeight: "800", margin: 0, color: "white", letterSpacing: "-0.5px" }}>
-                    Welcome Back, <span style={{
-                      background: "linear-gradient(90deg, #00f2fe 0%, #4facfe 100%)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent"
-                    }}>{displayName}</span>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold m-0 text-white tracking-tight">
+                    Welcome Back, <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{displayName}</span>
                   </h2>
                 </div>
-                <p style={{ color: "#94A3B8", fontSize: "15px", margin: 0, fontWeight: "500" }}>
+                <p className="text-slate-400 text-sm sm:text-base m-0 font-medium">
                   Intelligent Medical Visualization & Anatomy Learning Center
                 </p>
               </div>
 
               {/* Decorative Floating Medical Icons */}
-              <div style={{ position: "absolute", right: "20px", top: "0", bottom: "0", width: "180px", overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
-                <span className="floating-med-icon" style={{ fontSize: "24px", top: "20px", right: "20px", animationDelay: "0s" }}>🧬</span>
-                <span className="floating-med-icon" style={{ fontSize: "22px", top: "65px", right: "100px", animationDelay: "1.5s" }}>🧠</span>
-                <span className="floating-med-icon" style={{ fontSize: "20px", bottom: "25px", right: "60px", animationDelay: "3s" }}>🫁</span>
-                <span className="floating-med-icon" style={{ fontSize: "22px", top: "95px", right: "30px", animationDelay: "4.5s" }}>🫀</span>
+              <div className="absolute right-0 top-0 bottom-0 w-48 overflow-hidden pointer-events-none z-0 hidden sm:block">
+                <span className="floating-med-icon text-2xl top-5 right-5" style={{ animationDelay: "0s" }}>🧬</span>
+                <span className="floating-med-icon text-2xl top-16 right-24" style={{ animationDelay: "1.5s" }}>🧠</span>
+                <span className="floating-med-icon text-xl bottom-6 right-16" style={{ animationDelay: "3s" }}>🫁</span>
+                <span className="floating-med-icon text-2xl top-24 right-8" style={{ animationDelay: "4.5s" }}>🫀</span>
               </div>
             </div>
 
@@ -221,13 +195,13 @@ function Dashboard() {
                 className="glass-card-new clickable active-cyan"
                 onClick={() => navigate("/body-selection")}
               >
-                <div className="icon-box-new">
-                  <FiHeart style={{ color: "#06B6D4", fontSize: "18px" }} />
+                <div className="icon-box-new text-cyan-500 text-lg">
+                  <FiHeart />
                 </div>
-                <h3 style={{ color: "#06B6D4", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                <h3 className="text-cyan-500 mt-4 text-xl font-bold mb-2">
                   Learn Anatomy
                 </h3>
-                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p className="text-slate-300 text-sm leading-relaxed m-0">
                   Explore detailed male and female organ structures in realistic 3D and AR.
                 </p>
               </div>
@@ -237,13 +211,13 @@ function Dashboard() {
                 className="glass-card-new clickable active-purple"
                 onClick={() => navigate("/quiz")}
               >
-                <div className="icon-box-new">
-                  <FiCpu style={{ color: "#A78BFA", fontSize: "18px" }} />
+                <div className="icon-box-new text-purple-400 text-lg">
+                  <FiCpu />
                 </div>
-                <h3 style={{ color: "#A78BFA", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                <h3 className="text-purple-400 mt-4 text-xl font-bold mb-2">
                   Interactive Quiz
                 </h3>
-                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p className="text-slate-300 text-sm leading-relaxed m-0">
                   Test your medical knowledge through AI-powered quiz assessments.
                 </p>
               </div>
@@ -253,13 +227,13 @@ function Dashboard() {
                 className="glass-card-new clickable active-pink"
                 onClick={() => navigate("/learning-progress")}
               >
-                <div className="icon-box-new">
-                  <FiTrendingUp style={{ color: "#F472B6", fontSize: "18px" }} />
+                <div className="icon-box-new text-pink-400 text-lg">
+                  <FiTrendingUp />
                 </div>
-                <h3 style={{ color: "#F472B6", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                <h3 className="text-pink-400 mt-4 text-xl font-bold mb-2">
                   Progress Tracking
                 </h3>
-                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p className="text-slate-300 text-sm leading-relaxed m-0">
                   Track learning milestones, time spent, and review charts.
                 </p>
               </div>
@@ -269,13 +243,13 @@ function Dashboard() {
                 className="glass-card-new clickable active-indigo"
                 onClick={() => navigate("/ai-tutor")}
               >
-                <div className="icon-box-new">
-                  <FiCpu style={{ color: "#6366F1", fontSize: "18px" }} />
+                <div className="icon-box-new text-indigo-400 text-lg">
+                  <FiCpu />
                 </div>
-                <h3 style={{ color: "#6366F1", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                <h3 className="text-indigo-400 mt-4 text-xl font-bold mb-2">
                   AI Tutor
                 </h3>
-                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p className="text-slate-300 text-sm leading-relaxed m-0">
                   Personalized AI-powered explanations and terminology queries.
                 </p>
               </div>
@@ -285,13 +259,13 @@ function Dashboard() {
                 className="glass-card-new clickable active-cyan"
                 onClick={() => navigate("/organ-recognition")}
               >
-                <div className="icon-box-new">
-                  <FiCamera style={{ color: "#06B6D4", fontSize: "18px" }} />
+                <div className="icon-box-new text-cyan-500 text-lg">
+                  <FiCamera />
                 </div>
-                <h3 style={{ color: "#06B6D4", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                <h3 className="text-cyan-500 mt-4 text-xl font-bold mb-2">
                   Organ Recognition
                 </h3>
-                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p className="text-slate-300 text-sm leading-relaxed m-0">
                   Identify organs from real physical models using AI cameras.
                 </p>
               </div>
@@ -301,13 +275,13 @@ function Dashboard() {
                 className="glass-card-new clickable active-purple"
                 onClick={() => navigate("/comparison")}
               >
-                <div className="icon-box-new">
-                  <FiRepeat style={{ color: "#A78BFA", fontSize: "18px" }} />
+                <div className="icon-box-new text-purple-400 text-lg">
+                  <FiRepeat />
                 </div>
-                <h3 style={{ color: "#A78BFA", marginTop: "18px", fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                <h3 className="text-purple-400 mt-4 text-xl font-bold mb-2">
                   Comparison
                 </h3>
-                <p style={{ color: "#CBD5E1", fontSize: "14px", lineHeight: "1.5", margin: 0 }}>
+                <p className="text-slate-300 text-sm leading-relaxed m-0">
                   Compare anatomical structures across different body conditions and genders.
                 </p>
               </div>
@@ -320,71 +294,46 @@ function Dashboard() {
           <div className="dashboard-right-section">
             
             {/* Gamification Profile Card */}
-            <div className="glass-card-new right-card-progress" style={{ marginBottom: "20px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "12px",
-                    background: "linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "20px",
-                    fontWeight: "800",
-                    color: "white",
-                    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.3)"
-                  }}>
+            <div className="glass-card-new right-card-progress mb-5">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-xl font-extrabold text-white shadow-[0_4px_15px_rgba(6,182,212,0.3)]">
                     {level}
                   </div>
                   <div>
-                    <h3 style={{ fontSize: "16px", fontWeight: "700", margin: 0, color: "white" }}>Level {level}</h3>
-                    <div style={{ fontSize: "12px", color: "#94A3B8" }}>{xp} Total XP</div>
+                    <h3 className="text-base font-bold m-0 text-white">Level {level}</h3>
+                    <div className="text-xs text-slate-400">{xp} Total XP</div>
                   </div>
                 </div>
                 
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "rgba(245, 158, 11, 0.1)", padding: "6px 12px", borderRadius: "20px", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
-                  <span style={{ fontSize: "16px" }}>{streak >= 3 ? "🔥" : "⚡"}</span>
-                  <span style={{ fontSize: "14px", fontWeight: "800", color: "#F59E0B" }}>{streak} Day Streak</span>
+                <div className="flex items-center gap-1.5 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20">
+                  <span className="text-base">{streak >= 3 ? "🔥" : "⚡"}</span>
+                  <span className="text-sm font-extrabold text-amber-500">{streak} Day Streak</span>
                 </div>
               </div>
 
               {/* XP Progress Bar */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <span style={{ fontSize: "12px", fontWeight: "600", color: "#94A3B8" }}>XP to Level {level + 1}</span>
-                <span style={{ fontSize: "12px", fontWeight: "700", color: "#06B6D4" }}>{currentLevelXp} / 100</span>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs font-semibold text-slate-400">XP to Level {level + 1}</span>
+                <span className="text-xs font-bold text-cyan-500">{currentLevelXp} / 100</span>
               </div>
-              <div style={{ width: "100%", height: "8px", background: "rgba(255, 255, 255, 0.05)", borderRadius: "4px", overflow: "hidden" }}>
-                <div style={{ width: `${(currentLevelXp / 100) * 100}%`, height: "100%", background: "linear-gradient(90deg, #06B6D4 0%, #3B82F6 100%)", borderRadius: "4px", transition: "width 1s ease-in-out" }} />
+              <div className="w-full h-2 bg-white/5 rounded-md overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-md transition-all duration-1000 ease-in-out" style={{ width: `${(currentLevelXp / 100) * 100}%` }} />
               </div>
 
               {/* Badges Display */}
-              <div style={{ marginTop: "20px" }}>
-                <div style={{ fontSize: "12px", fontWeight: "700", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px", marginBottom: "12px" }}>
+              <div className="mt-5">
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
                   Achievements
                 </div>
-                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <div className="flex gap-2.5 flex-wrap">
                   {availableBadges.map((badge) => {
                     const isUnlocked = badges.includes(badge.id);
                     return (
                       <div 
                         key={badge.id}
                         title={badge.description}
-                        style={{
-                          width: "45px",
-                          height: "45px",
-                          borderRadius: "12px",
-                          background: isUnlocked ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.02)",
-                          border: isUnlocked ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid rgba(255, 255, 255, 0.05)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "22px",
-                          filter: isUnlocked ? "none" : "grayscale(100%) opacity(0.3)",
-                          cursor: "help",
-                          transition: "all 0.3s ease"
-                        }}
+                        className={`w-11 h-11 rounded-xl border flex items-center justify-center text-2xl cursor-help transition-all duration-300 ${isUnlocked ? 'bg-white/5 border-white/20' : 'bg-white/5 border-white/5 grayscale opacity-30'}`}
                       >
                         {badge.icon}
                       </div>
@@ -396,9 +345,9 @@ function Dashboard() {
 
             {/* Recent Activity Card */}
             <div className="glass-card-new right-card-activity">
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-                <span style={{ fontSize: "18px", color: "#F59E0B" }}>⚡</span>
-                <h3 style={{ fontSize: "18px", fontWeight: "700", margin: 0, color: "white" }}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg text-amber-500">⚡</span>
+                <h3 className="text-lg font-bold m-0 text-white">
                   Recent Activity
                 </h3>
               </div>
@@ -406,44 +355,29 @@ function Dashboard() {
               <div className="timeline-new">
                 {activities.map((activity) => (
                   <div key={activity.id} className="timeline-item-new">
-                    <div style={{
-                      position: "absolute",
-                      left: "-20px",
-                      top: "20px",
-                      width: "12px",
-                      height: "12px",
-                      borderRadius: "50%",
-                      border: "2px solid #080c14",
-                      boxShadow: `0 0 8px ${activity.color}`,
-                      backgroundColor: activity.color,
-                      zIndex: 2
-                    }} />
+                    <div 
+                      className="absolute left-[-26px] sm:left-[-36px] top-5 w-3 h-3 rounded-full border-2 border-slate-900 z-10"
+                      style={{ 
+                        boxShadow: `0 0 8px ${activity.color}`,
+                        backgroundColor: activity.color
+                      }} 
+                    />
                     
                     <div className="timeline-card-new">
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <div style={{
-                          width: "36px",
-                          height: "36px",
-                          borderRadius: "10px",
-                          background: "rgba(255, 255, 255, 0.02)",
-                          border: "1px solid rgba(255, 255, 255, 0.05)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "16px"
-                        }}>
-                          {activity.icon?.includes(".png") ? <img src={activity.icon} alt="icon" style={{ width: "24px", height: "24px", objectFit: "contain" }} /> : activity.icon}
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-base shrink-0">
+                          {activity.icon?.includes(".png") ? <img src={activity.icon} alt="icon" className="w-6 h-6 object-contain" /> : activity.icon}
                         </div>
                         <div>
-                          <div style={{ fontSize: "13px", fontWeight: "600", color: "white" }}>
+                          <div className="text-sm font-semibold text-white">
                             {activity.title}
                           </div>
-                          <div style={{ fontSize: "11px", color: "#94A3B8", marginTop: "2px" }}>
+                          <div className="text-xs text-slate-400 mt-0.5">
                             {activity.desc}
                           </div>
                         </div>
                       </div>
-                      <div>
+                      <div className="mt-2 md:mt-0 flex shrink-0">
                         <span className={`status-pill ${activity.type}`}>{activity.tag}</span>
                       </div>
                     </div>
@@ -453,18 +387,18 @@ function Dashboard() {
             </div>
 
             {/* Learning Progress Card */}
-            <div className="glass-card-new right-card-progress">
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
-                <span style={{ fontSize: "18px", color: "#FBBF24" }}>🏆</span>
-                <h3 style={{ fontSize: "18px", fontWeight: "700", margin: 0, color: "white" }}>
+            <div className="glass-card-new right-card-progress mt-6 lg:mt-0">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="text-lg text-amber-400">🏆</span>
+                <h3 className="text-lg font-bold m-0 text-white">
                   Learning Progress
                 </h3>
               </div>
 
               {/* Anatomy Mastery Slider */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: "13px", fontWeight: "600", color: "#94A3B8" }}>Anatomy Mastery</span>
-                <span style={{ fontSize: "18px", fontWeight: "800", color: "#EC4899" }}>{overallMastery}%</span>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold text-slate-400">Anatomy Mastery</span>
+                <span className="text-lg font-extrabold text-pink-500">{overallMastery}%</span>
               </div>
               <div className="mastery-progress-bg">
                 <div className="mastery-progress-fill" style={{ width: `${overallMastery}%` }} />
@@ -473,18 +407,18 @@ function Dashboard() {
               {/* Stats Grid */}
               <div className="stat-boxes-container">
                 <div className="stat-box-item">
-                  <span style={{ fontSize: "20px" }}>⏱️</span>
+                  <span className="text-xl">⏱️</span>
                   <div>
-                    <div style={{ fontSize: "10px", fontWeight: "700", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.5px" }}>Study Time</div>
-                    <div style={{ fontSize: "14px", fontWeight: "700", color: "white", marginTop: "2px" }}>{studyHours} hrs</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Study Time</div>
+                    <div className="text-sm font-bold text-white mt-0.5">{studyHours} hrs</div>
                   </div>
                 </div>
 
                 <div className="stat-box-item">
-                  <span style={{ fontSize: "20px" }}>🏆</span>
+                  <span className="text-xl">🏆</span>
                   <div>
-                    <div style={{ fontSize: "10px", fontWeight: "700", color: "#64748B", textTransform: "uppercase", letterSpacing: "0.5px" }}>Quizzes Passed</div>
-                    <div style={{ fontSize: "14px", fontWeight: "700", color: "white", marginTop: "2px" }}>{quizzesPassed}/{quizzesTotal}</div>
+                    <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Quizzes Passed</div>
+                    <div className="text-sm font-bold text-white mt-0.5">{quizzesPassed}/{quizzesTotal}</div>
                   </div>
                 </div>
               </div>

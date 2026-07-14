@@ -1,264 +1,471 @@
 <div align="center">
-  <img src="src/assets/logo.png" alt="AR AnatomyAI Logo" width="300" />
+  <img src="src/assets/logo.png" alt="AR AnatomyAI Logo" width="280" />
   <h1>AR AnatomyAI 🧬</h1>
-  <p><strong>A Next-Generation Interactive 3D Anatomy Learning Platform</strong></p>
-  <p>
-    <em>Powered by Artificial Intelligence, Computer Vision, and Augmented Reality mechanics.</em>
-  </p>
+  <p><strong>An Interactive 3D Anatomy Learning Platform Powered by Artificial Intelligence</strong></p>
+  <p><em>Explore • Compare • Quiz • Learn — All in Your Browser</em></p>
+
+  <br />
+
+  ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+  ![Three.js](https://img.shields.io/badge/Three.js-0.184-black?logo=threedotjs)
+  ![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688?logo=fastapi)
+  ![Gemini](https://img.shields.io/badge/Gemini_AI-Google-4285F4?logo=google)
+  ![Supabase](https://img.shields.io/badge/Supabase-Auth-3FCF8E?logo=supabase)
+  ![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)
 </div>
 
 <br />
 
+---
+
 ## 📖 Overview
 
-**AR AnatomyAI** is a state-of-the-art educational application designed specifically for medical students, healthcare professionals, biology educators, and anatomy enthusiasts. By bridging the gap between flat textbook diagrams and real-world clinical applications, it transforms the learning experience into an immersive, interactive, and personalized journey.
+**AR AnatomyAI** is a full-stack, AI-powered educational platform that transforms how students study human anatomy. Instead of flat textbook diagrams, students interact with **11 photorealistic 3D organ models** directly in their browser. Instead of static question banks, an **AI quiz engine** generates unique questions every session. Instead of memorizing terminology alone, students **converse with an AI anatomy tutor** that adapts to their organ of study and answers in real-time.
 
-The platform fuses **high-fidelity 3D organ visualizations** with **generative AI tutors**, creating a dynamic environment where users can dissect, compare, and quiz themselves on human anatomy in real-time.
+The platform integrates **four distinct AI systems** into one cohesive experience:
 
----
+| AI System | Provider | What It Does |
+|---|---|---|
+| **Text Generation** | Google Gemini Pro | Dynamic quiz generation, anatomy tutoring |
+| **Vision Analysis** | Google Gemini Vision | Medical image recognition (X-rays, MRIs, diagrams) |
+| **Fast Inference** | Groq (LLaMA 3 70B) | Sub-2-second tutor chat responses |
+| **Speech Recognition** | OpenAI Whisper | Hands-free voice queries to the AI tutor |
 
-## 🚀 Core Features & Modules
-
-### 1. 🫀 Interactive 3D & AR Organ Viewer
-The core of the application is a high-performance 3D visualization engine.
-- **11 Comprehensive Anatomical Systems**: Explore meticulously detailed models of the Heart, Brain, Lungs, Liver, Kidney, Stomach, Intestines, Skeleton, Skull, Eye, and the Full Human Anatomy.
-- **Dynamic 3D Rendering Engine**: Built on `Three.js` and `@react-three/fiber`, featuring advanced lighting, anti-aliasing, and smooth 360-degree orbital controls.
-- **Auto-Scaling & Centering Architecture**: An intelligent algorithmic bounding-box system automatically calculates the geometry of any 3D model. It seamlessly centers and scales models of vastly different sizes (e.g., an eyeball vs. a full human skeleton) for a unified, glitch-free viewing experience without manual coordinate adjustments.
-- **Multimedia Integration**: Each organ features detailed clinical breakdowns, physiological explanations, and seamlessly integrated YouTube video guides for comprehensive learning.
-
-### 2. 🔬 Side-by-Side Pathology Comparison
-Move beyond healthy models by studying real-world medical conditions.
-- **Multi-Dimensional Analysis**: Compare Male vs. Female, Healthy vs. Diseased, and Adult vs. Child anatomical models side-by-side in real-time.
-- **Spatial Disease Markers (Highlights)**: The 3D engine allows users to identify specific diseased regions (e.g., cirrhosis nodes in the liver, tumors, or arterial blockages) via interactive 3D spatial highlight spheres.
-- **Clinical Data Overlays**: View comparative statistics such as organ weight, volume, and metabolic clearance rates synchronized directly with the 3D viewport.
-
-### 3. 📸 AI-Powered Organ Recognition (Vision AI)
-Leverage the power of computer vision to identify unknown medical images.
-- **Image Upload & Capture Pipeline**: Upload or snap photos of medical diagrams, MRI scans, X-rays, or anatomy charts.
-- **Instant AI Analysis**: Powered by Google's Gemini Vision AI, the platform instantly identifies the organ, breaks down its physiological structures, and flags potential visual anomalies or pathological markers.
-- **Markdown-Rendered Reports**: Results are formatted in clean, readable Markdown and integrated directly into the dashboard for easy study note creation.
-
-### 4. 🤖 Intelligent Conversational Anatomy Tutor
-Don't just look at models—talk to them.
-- **Conversational LLM Integration**: Engage with a virtual tutor powered by Gemini and Groq LLMs for ultra-fast, accurate, and conversational medical explanations.
-- **Context-Aware Assistance**: The tutor understands which organ you are currently studying and tailors its hints, definitions, and anatomical analogies accordingly.
-- **Speech-to-Text Integration**: Hands-free studying enabled by OpenAI's whisper APIs, allowing users to ask complex physiological questions verbally while manipulating the 3D models.
-
-### 5. 🎯 Adaptive Gamified Quiz System
-Test your knowledge with an AI that adapts to your learning curve.
-- **Dynamic Quiz Generation**: Quizzes are never hardcoded. The AI dynamically generates unique multiple-choice questions based on your chosen organ and difficulty level (Easy, Medium, Hard, Expert).
-- **Gamification Mechanics**: Earn XP (Experience Points), track daily study streaks, unlock milestones, and collect mastery badges to stay motivated.
-- **Real-time Evaluative Feedback**: Detailed, AI-generated explanations are provided for every incorrect answer, ensuring continuous learning and concept correction.
-
-### 6. 📈 Learning Analytics Dashboard
-A central hub for tracking your educational journey.
-- **Visual Progress Tracking**: Beautiful, interactive charts built with `Recharts` display mastery over time, daily study streaks, and historical quiz accuracy.
-- **Strengths & Weaknesses Profiler**: The system aggregates your quiz data across all 11 anatomical systems to identify areas needing improvement and recommends targeted study sessions (e.g., "Review Renal Functions").
-- **Premium Glassmorphism UI**: A visually stunning, modern interface featuring frosted glass effects, animated gradients, and custom 3D PNG icons that mimic Windows 11 Fluent Design.
-
-### 7. 🔐 Secure Authentication & Session Management
-- **Supabase BaaS Integration**: Rock-solid backend authentication supporting Email/Password and Google OAuth sign-ins.
-- **Strict Route Guarding**: React Router DOM protection ensures sensitive learning data and premium AI features are kept strictly private.
-- **Persistent Sessions**: "Remember Me" functionality securely syncs your session state, instantly redirecting returning users past the login screens for frictionless access.
+Authentication is handled securely via **Supabase** (Email/Password + Google OAuth), and all quiz progress is persisted in a **SQLite** database managed by **SQLAlchemy ORM**.
 
 ---
 
-## 🏗️ Technical Architecture & Stack
+## 🚀 Features
 
-AR AnatomyAI utilizes a decoupled architecture, separating a blazing-fast React frontend from a robust Python FastAPI backend dedicated to heavy AI/LLM processing and state management.
+### 🫀 1. Interactive 3D Organ Viewer
+- **11 Anatomical Models**: Heart, Brain, Lungs, Liver, Kidney, Stomach, Intestines, Skeleton, Skull, Eye, Full Human Anatomy
+- **Real-Time WebGL Rendering**: Powered by `Three.js` + `@react-three/fiber` + `@react-three/drei`
+- **Auto-Scaling Algorithm**: Custom bounding box normalization (`THREE.Box3`) automatically centers and scales every model — from a tiny eyeball to a full skeleton — to fit perfectly in the viewport without manual adjustments
+- **Three-Point Lighting**: Ambient + Directional + Point lighting rig simulates clinical overhead illumination for realistic tissue shading
+- **OrbitControls**: 360° rotation, zoom, pan with smooth damped momentum
+- **Educational Panels**: Each organ displays clinical notes, anatomical landmarks, physiological functions, and curated YouTube video guides
 
-### Frontend (Client-Side)
-- **Framework**: React 18 + Vite (Lightning-fast HMR)
-- **3D Engine**: Three.js, `@react-three/fiber`, `@react-three/drei`
-- **Routing**: React Router DOM (v6)
-- **Styling**: TailwindCSS, Vanilla CSS (Custom Glassmorphism design system)
-- **Data Visualization**: Recharts (for analytics dashboard)
-- **Icons**: React-Icons, Custom 3D Fluent PNGs
+### 🔬 2. Side-by-Side Pathology Comparison
+- **Three Comparison Modes**: Male vs. Female, Healthy vs. Diseased, Adult vs. Child
+- **Dual 3D Canvases**: Two independent React Three Fiber viewports render simultaneously
+- **3D Disease Markers**: Translucent sphere meshes highlight pathological regions (cirrhosis, tumors) at calculated bounding box offset positions
+- **Clinical Statistics Overlay**: Quantitative data panels showing weight, volume, metabolic rates beneath each viewport
 
-### Backend (Server-Side)
-- **Framework**: Python FastAPI
-- **Database**: SQLite (managed via SQLAlchemy ORM for relational integrity)
-- **AI Integrations**: 
-  - `google-generativeai` (Gemini Pro & Gemini Vision Pro)
-  - `groq` (High-speed LPU inference for instant chat responses)
-  - `openai` (Whisper Speech-to-Text)
-- **Server**: Uvicorn (ASGI web server)
+### 📸 3. AI Organ Recognition (Vision AI)
+- **Image Upload**: Drag-and-drop or click-to-browse — supports X-rays, CT scans, MRIs, textbook diagrams
+- **Gemini Vision Pro Analysis**: Image is base64-encoded and submitted to Gemini Vision with a structured medical prompt
+- **Structured Reports**: AI returns organ identification, visible structures, pathological indicators, and clinical context as formatted Markdown
 
-### Backend-as-a-Service (BaaS)
-- **Authentication**: Supabase Auth
+### 🤖 4. AI Anatomy Tutor
+- **Multi-Turn Conversations**: Full chat history is maintained and sent with each request for contextual continuity
+- **Dual-Provider Routing**: Routes to Groq first (ultra-fast LPU inference, ~1.3s response) with Gemini Pro as fallback
+- **Context-Aware**: Automatically receives the currently selected organ as conversation context
+- **Voice Input**: Microphone audio → Web Speech API → OpenAI Whisper transcription → auto-fills chat input
+
+### 🎯 5. Dynamic Gamified Quiz System
+- **AI-Generated Questions**: Every quiz is unique — Gemini/Groq generates 5 MCQs in strict JSON schema per session
+- **Four Difficulty Levels**: Easy, Medium, Hard, Expert — each testing progressively deeper clinical knowledge
+- **Gamification Engine**: XP points, daily study streaks, mastery badges (e.g., "Heart Expert" at 90%+ cardiac quiz score)
+- **Detailed Explanations**: AI-written rationale for each correct answer, enabling learning from mistakes
+
+### 📈 6. Learning Analytics Dashboard
+- **Per-Organ Mastery**: Tracks latest quiz scores across all 11 anatomical systems
+- **Recharts Visualizations**: LineChart (accuracy over time), PieChart (strengths vs. weaknesses), progress bars
+- **Study Streak Counter**: Consecutive calendar days with at least one quiz attempt
+- **Recent Activity Feed**: Timeline of quiz attempts with scores and timestamps
+- **Glassmorphism UI**: Premium frosted-glass card design with animated gradient accents
+
+### 🔐 7. Secure Authentication
+- **Supabase Auth**: Email/Password registration + Google OAuth 2.0 sign-in
+- **Route Protection**: `ProtectedRoute.jsx` redirects unauthenticated users; `PublicRoute.jsx` redirects authenticated users away from login
+- **Persistent Sessions**: Supabase `onAuthStateChange` hook maintains reactive session state — no localStorage polling
+
+### 🎨 8. Splash Screen & Premium UI
+- **Animated Splash**: Branded loading screen with logo animation on initial app load
+- **Custom 3D Icons**: Hand-crafted Fluent-style 3D PNG icons for Liver, Kidney, Stomach, Intestines, and Human Anatomy
+- **Dark Glassmorphism Theme**: `backdrop-filter: blur()` frosted glass effects, subtle gradients, micro-animations throughout
+- **Responsive Design**: Adapts to different viewport sizes
 
 ---
 
-## 🔄 Data Flow Diagram
+## 🏗️ Architecture
 
-```mermaid
-graph TD
-    subgraph Client [React Frontend Browser]
-        UI[User Interface / Pages]
-        AC[Auth Context]
-        GC[Gamification Context]
-        QA[API Clients Axios]
-        R3F[React Three Fiber Canvas]
-    end
+### System Architecture Diagram
 
-    subgraph BaaS [Supabase]
-        SAuth[Authentication & OAuth]
-    end
+```
+┌──────────────────────────────────────────────────────────────┐
+│                  FRONTEND  (React 19 + Vite 8)               │
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌──────────────────────┐ │
+│  │ AuthContext  │  │ Gamification│  │ API Clients (Axios)  │ │
+│  │ (Supabase)  │  │ Context     │  │                      │ │
+│  └─────────────┘  └─────────────┘  └──────────────────────┘ │
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌──────────────────────┐ │
+│  │ 3D Viewer   │  │ Comparison  │  │ Quiz + Dashboard +   │ │
+│  │ (R3F Canvas)│  │ (2× Canvas) │  │ Tutor + Vision       │ │
+│  └─────────────┘  └─────────────┘  └──────────────────────┘ │
+└───────────────────────────┬──────────────────────────────────┘
+                            │ REST API (HTTP/JSON + multipart)
+┌───────────────────────────▼──────────────────────────────────┐
+│                  BACKEND  (Python FastAPI)                    │
+│                                                              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────────┐ │
+│  │ /quiz/*  │  │ /tutor/* │  │ /vision/*│  │ /voice/*    │ │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └──────┬──────┘ │
+│       │              │             │               │         │
+│  ┌────▼──────────────▼─────────────▼───────────────▼──────┐ │
+│  │              AI Services Layer                         │ │
+│  │  gemini_service │ openai_service │ voice_service       │ │
+│  │  (Gemini Pro)   │ (Groq+Whisper) │ (Whisper STT)      │ │
+│  └────────────────────────────────────────────────────────┘ │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │              SQLite Database (SQLAlchemy)              │ │
+│  └────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+```
 
-    subgraph Service [FastAPI Backend]
-        FMain[FastAPI Server]
-        RQuiz[Quiz Route]
-        RTutor[Tutor Route]
-        RVision[Vision Route]
-        LLM[Gemini / Groq / OpenAI LLMs]
-        DB[(SQLite DB)]
-    end
+### Data Flow
 
-    UI -->|Check Session| AC
-    UI -->|Track XP/Level| GC
-    AC -->|Login/Register| SAuth
-    UI -->|Load GLTF Models| R3F
-    UI -->|Generate Quiz / Chat / Vision| QA
-    QA -->|REST API Request| FMain
-    FMain -->|Generate content / Analyze Image| LLM
-    FMain -->|Save attempt / Fetch history| DB
+```
+User Interaction
+    │
+    ├── [Auth Required?] → ProtectedRoute → Supabase session check
+    │
+    ├── [Explore 3D] → useGLTF loader → Box3 auto-scale → OrbitControls → WebGL
+    │
+    ├── [Start Quiz] → POST /quiz/generate → Gemini/Groq → JSON MCQs
+    │                  → POST /progress/attempt → SQLite save
+    │
+    ├── [Ask Tutor] → POST /tutor/chat → Groq (fast) | Gemini (fallback)
+    │
+    ├── [Voice Query] → MediaRecorder → POST /voice/transcribe → Whisper → text
+    │
+    └── [Upload Image] → POST /vision/analyze → Base64 → Gemini Vision → Markdown
 ```
 
 ---
 
-## 🛠️ Detailed Setup & Installation Guide
+## 📂 Project Structure
 
-### Prerequisite: Supabase Setup
-1. Log in to [Supabase](https://supabase.com) and create a new project.
-2. Go to **Project Settings -> API** and copy your `Project URL` and `anon public` key.
-3. Open `backend/.env` (create it if it doesn't exist) and add:
-   ```env
-   VITE_SUPABASE_URL=your_project_url
-   VITE_SUPABASE_ANON_KEY=your_anon_key
-   ```
-4. Navigate to **Authentication -> Providers** in Supabase:
-   - Enable **Email** provider (disable "Confirm email" for local dev).
-   - Enable **Google** provider with OAuth credentials from Google Cloud Console.
-
-### Part 1: Python FastAPI Backend
-1. Navigate to the backend directory:
-   ```bash
-   cd backend/quiz
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   # Windows
-   python -m venv .venv
-   .venv\Scripts\activate
-
-   # Linux/macOS
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Configure Backend Environment Variables in `backend/quiz/.env`:
-   ```env
-   GEMINI_API_KEY=your_gemini_key
-   GROQ_API_KEY=your_groq_key
-   OPENAI_API_KEY=your_openai_key
-   ```
-5. Initialize the database schema:
-   ```bash
-   python -m app.init_db
-   ```
-6. Start the server:
-   ```bash
-   uvicorn app.main:app --reload
-   # The backend API will start on http://127.0.0.1:8000
-   ```
-
-### Part 2: React Frontend
-1. Open a new terminal in the project root (`ARAnatomyAI/`).
-2. Install Node dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   # The React application will start on http://localhost:5173
-   ```
-
----
-
-## 📂 Comprehensive Directory Structure
-
-```text
-ARAnatomyAI/
-├── backend/                  
-│   ├── quiz/                 # Python FastAPI Microservice
-│   │   ├── app/
-│   │   │   ├── routes/       # Endpoint controllers (quiz.py, progress.py, tutor.py, vision.py)
-│   │   │   ├── services/     # AI Provider integrations (Gemini, Groq, OpenAI APIs)
-│   │   │   ├── database.py   # SQLAlchemy configuration and SQLite connections
-│   │   │   ├── init_db.py    # DB migration and initialization script
-│   │   │   ├── models.py     # SQLAlchemy Schema definitions (User attempts, Scores)
-│   │   │   └── main.py       # FastAPI application factory and CORS setup
-│   │   ├── .env              # Backend secrets (DO NOT COMMIT)
-│   │   └── requirements.txt  # Python package list
-│   ├── .env                  # Frontend Vite environment variables (Supabase)
-│   └── .env.example          # Template for required .env variables
-├── public/                   
-│   ├── icons/                # Custom 3D PNG Icons (Liver, Heart, Brain, etc.)
-│   └── models/               # High-fidelity GLTF/GLB 3D Anatomical Models
-├── src/                      
-│   ├── assets/               # CSS, Logos, and static images
-│   ├── components/           # Reusable UI (Navbar, Route Guards, Buttons, Modals)
-│   ├── contexts/             # Global React State (AuthContext, GamificationContext)
-│   ├── data/                 # Static configs (comparisonData.js, videoData.js)
-│   ├── models/               # R3F Canvas components and Model Loaders (GLTFLoader logic)
-│   ├── pages/                
-│   │   ├── ARViewer/         # 3D exploration and video integration page
-│   │   ├── Comparison/       # Side-by-side pathology viewing logic
-│   │   ├── Dashboard/        # Analytics, Timeline, and Gamification stats
-│   │   ├── Quiz/             # AI Quiz Generator, Evaluation, and Results Modals
-│   │   └── OrganSelection/   # Main entry hub for selecting anatomical systems
-│   ├── services/             # Axios API clients and Supabase auth wrappers
-│   ├── App.jsx               # React Router configuration
-│   └── index.css             # Base CSS, Glassmorphism, and Tailwind utility classes
-├── eslint.config.js          # ESLint rules
-├── vite.config.js            # Vite configuration and server proxy mapping
-└── package.json              # Node dependencies & NPM scripts
+```
+AR_AnatomyAI/
+│
+├── backend/
+│   ├── .env                              # Frontend env vars (Supabase keys)
+│   ├── .env.example                      # Template
+│   └── quiz/                             # Python FastAPI microservice
+│       ├── app/
+│       │   ├── main.py                   # FastAPI app factory + CORS
+│       │   ├── database.py               # SQLAlchemy engine + session
+│       │   ├── init_db.py                # DB table initialization
+│       │   ├── routes/
+│       │   │   ├── quiz.py               # /quiz/generate endpoint
+│       │   │   ├── progress.py           # /progress/attempt + /progress/history
+│       │   │   ├── tutor.py              # /tutor/chat endpoint
+│       │   │   ├── vision.py             # /vision/analyze (image upload)
+│       │   │   └── voice.py              # /voice/transcribe (audio upload)
+│       │   └── services/
+│       │       ├── gemini_service.py      # Gemini Pro + Vision + Quiz generation
+│       │       ├── openai_service.py      # Groq chat + OpenAI Whisper
+│       │       ├── voice_service.py       # Audio transcription wrapper
+│       │       └── knowledge_service.py   # Knowledge base utilities
+│       ├── .env                          # Backend secrets (API keys)
+│       └── requirements.txt
+│
+├── public/
+│   ├── icons/                            # Custom 3D PNG organ icons
+│   │   ├── liver.png, kidney.png, stomach.png, intestines.png, human.png
+│   └── models/                           # GLTF/GLB 3D anatomical models
+│       ├── human_heart.glb               # 74.8 MB — High-detail heart
+│       ├── human_brain_cerebrum__brainstem.glb
+│       ├── respiratory_system.glb        # Lungs
+│       ├── kidney.glb                    # 53.3 MB — Detailed kidney
+│       ├── realistic_human_stomach.glb
+│       ├── small_and_large_intestine.glb
+│       ├── human_male_skull.glb
+│       ├── Brain.glb
+│       ├── male_full_body_ecorche.glb    # Full human anatomy
+│       └── ecorche_-_anatomy_study.glb   # Skeleton/muscle study
+│
+├── src/
+│   ├── assets/
+│   │   ├── logo.png                      # Application logo
+│   │   └── hero.png                      # Hero section image
+│   ├── components/
+│   │   ├── Navbar.jsx                    # Navigation with auth state
+│   │   ├── ProtectedRoute.jsx            # Auth guard — redirects to /login
+│   │   └── PublicRoute.jsx               # Prevents re-auth — redirects to /dashboard
+│   ├── contexts/
+│   │   ├── AuthContext.jsx               # Supabase session provider
+│   │   └── GamificationContext.jsx       # XP, streaks, badges provider
+│   ├── data/
+│   │   ├── comparisonData.js             # Organ comparison configs (models, stats, icons)
+│   │   └── videoData.js                  # Curated YouTube video IDs per organ
+│   ├── pages/
+│   │   ├── Splash/                       # Animated splash loading screen
+│   │   ├── Login/                        # Email + Google OAuth login
+│   │   ├── Register/                     # Account registration
+│   │   ├── Dashboard/                    # Analytics hub + activity timeline
+│   │   ├── OrganSelection/              # 11-organ selection grid
+│   │   ├── ARViewer/                     # 3D organ exploration + educational content
+│   │   ├── Comparison/                   # Side-by-side pathology viewer
+│   │   ├── Quiz/                         # AI quiz generator + evaluation
+│   │   │   ├── QuizHome.jsx             # Organ + difficulty selector
+│   │   │   └── components/DifficultyModal.jsx
+│   │   ├── LearningProgress/            # Full analytics dashboard (Recharts)
+│   │   ├── AITutor/                      # Conversational AI + voice input
+│   │   ├── OrganRecognition/            # Vision AI image upload + analysis
+│   │   ├── BodySelection/               # Body region selector
+│   │   └── Settings/                     # User preferences
+│   ├── services/
+│   │   ├── supabase.js                   # Supabase client singleton
+│   │   └── quizApi.js                    # Axios wrappers for all backend APIs
+│   ├── App.jsx                           # React Router configuration
+│   ├── main.jsx                          # React DOM mount point
+│   └── index.css                         # Global CSS + glassmorphism design system
+│
+├── .env                                  # Root environment config
+├── .gitignore
+├── eslint.config.js
+├── vite.config.js                        # Vite config (envDir: './backend')
+├── package.json
+└── README.md
 ```
 
 ---
 
-## 🌐 API Documentation Overview
+## 🛠️ Tech Stack
 
-The FastAPI backend exposes several RESTful endpoints to power the frontend:
+### Frontend
 
-- `POST /api/quiz/generate`: Generates a dynamic 5-question quiz based on `organ_name` and `difficulty`.
-- `POST /api/progress/attempt`: Saves a completed quiz score to the SQLite database.
-- `GET /api/progress/history`: Retrieves the user's historical quiz data for the Dashboard charts.
-- `POST /api/tutor/chat`: Sends a conversational query to the Groq/Gemini LLM for anatomy tutoring.
-- `POST /api/vision/analyze`: Accepts a multipart form image upload (X-ray/diagram) and returns a Gemini Vision AI analysis.
+| Package | Version | Purpose |
+|---|---|---|
+| `react` | 19.2.6 | Core UI framework |
+| `react-dom` | 19.2.6 | DOM rendering |
+| `react-router-dom` | 7.15.1 | Client-side routing + route guards |
+| `three` | 0.184.0 | WebGL 3D rendering engine |
+| `@react-three/fiber` | 9.6.1 | React renderer for Three.js |
+| `@react-three/drei` | 10.7.7 | OrbitControls, useGLTF, helpers |
+| `@supabase/supabase-js` | 2.107.0 | Supabase Auth client |
+| `axios` | 1.16.1 | HTTP client for backend API calls |
+| `recharts` | 3.8.1 | Data visualization (Line, Pie, Bar charts) |
+| `framer-motion` | 12.40.0 | Animations and transitions |
+| `react-icons` | 5.6.0 | SVG icon library (Feather, Font Awesome) |
+| `jspdf` + `jspdf-autotable` | 4.2.1 | PDF report generation |
+| `tailwindcss` | 4.3.0 | Utility-first CSS framework |
+| `vite` | 8.0.12 | Build tool + dev server with HMR |
+
+### Backend
+
+| Package | Purpose |
+|---|---|
+| `fastapi` | Async Python web framework |
+| `uvicorn` | ASGI server for FastAPI |
+| `google-genai` | Gemini Pro + Vision API access |
+| `openai` | Whisper speech-to-text + Groq integration |
+| `python-multipart` | Multipart form data (image/audio uploads) |
+| `python-dotenv` | Environment variable management |
+| `psycopg2-binary` | PostgreSQL adapter (production-ready) |
+| `requests` | HTTP utilities |
+| `cryptography` | Security utilities |
+
+### External Services
+
+| Service | Provider | Role |
+|---|---|---|
+| Gemini Pro | Google AI | Quiz generation, anatomy tutoring |
+| Gemini Vision Pro | Google AI | Medical image organ recognition |
+| Groq (LLaMA 3 70B) | Groq Cloud | Ultra-fast tutor chat (~1.3s latency) |
+| OpenAI Whisper | OpenAI | Speech-to-text transcription |
+| Supabase Auth | Supabase | Email/Password + Google OAuth |
+| YouTube Embed | Google | Educational anatomy video guides |
 
 ---
 
-## 🛡️ Security & Environment Best Practices
-- **Never commit `.env` files**: All sensitive API keys (Gemini, Supabase, OpenAI, Groq) must remain strictly local. Ensure `.env` is in your `.gitignore`.
-- **Route Protection**: The React application enforces strict route guarding via `ProtectedRoute.jsx`. 
-- **Database Safety**: API calls mapping to user progress require valid user IDs authenticated via Supabase to prevent data cross-contamination.
+## ⚙️ Installation & Setup
+
+### Prerequisites
+- **Node.js** 18+ and **npm**
+- **Python** 3.10+
+- A **Supabase** project (free tier works)
+- API keys for **Google Gemini**, **Groq**, and **OpenAI**
+
+### Step 1: Clone the Repository
+```bash
+git clone https://github.com/Shaik-Nihal/Anatomy_AI.git
+cd Anatomy_AI
+```
+
+### Step 2: Supabase Setup
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to **Settings → API** — copy your Project URL and anon key
+3. Go to **Authentication → Providers** — enable Email and Google OAuth
+4. Create `backend/.env`:
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOi...
+VITE_QUIZ_API_BASE_URL=http://127.0.0.1:8000
+```
+
+### Step 3: Backend Setup
+```bash
+cd backend/quiz
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS/Linux
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+Create `backend/quiz/.env`:
+```env
+GEMINI_API_KEY=your_gemini_key
+GROQ_API_KEY=your_groq_key
+OPENAI_API_KEY=your_openai_key
+```
+
+Initialize database and start the server:
+```bash
+python -m app.init_db
+uvicorn app.main:app --reload
+# Backend running at http://127.0.0.1:8000
+# Swagger docs at http://127.0.0.1:8000/docs
+```
+
+### Step 4: Frontend Setup
+```bash
+# From project root
+npm install
+npm run dev
+# Frontend running at http://localhost:5173
+```
 
 ---
 
-## 🤝 Contributing Guidelines
-Contributions to AR AnatomyAI are highly encouraged! To contribute:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request with a detailed summary of your architectural changes.
+## 🔌 API Endpoints
 
-**Quality Checks**: Ensure you run `npm run lint` for frontend changes and verify the Python backend endpoints using Swagger UI (`http://127.0.0.1:8000/docs`) before submitting a PR.
+| Endpoint | Method | Request | Response | Description |
+|---|---|---|---|---|
+| `/quiz/generate` | POST | `{ organ, difficulty }` | `{ questions: [...] }` | AI generates 5 unique MCQs |
+| `/progress/attempt` | POST | `{ user_id, organ, score, total, percentage }` | `{ success: true }` | Save quiz result |
+| `/progress/history` | GET | `?user_id=<uuid>` | `[{ organ, score, ... }]` | Fetch all past attempts |
+| `/tutor/chat` | POST | `{ message, organ }` | `{ response: "..." }` | AI tutor conversation |
+| `/voice/transcribe` | POST | `multipart: audio` | `{ text: "..." }` | Whisper speech-to-text |
+| `/vision/analyze` | POST | `multipart: image` | `{ analysis: "..." }` | Gemini Vision image analysis |
 
 ---
-*Built with ❤️ for the future of medical education.*
+
+## 🧠 Technical Highlights
+
+### Auto-Scaling 3D Models
+Every organ model comes from a different source with different scales. Our bounding box algorithm solves this:
+
+```javascript
+const box = new THREE.Box3().setFromObject(scene);
+const center = box.getCenter(new THREE.Vector3());
+const size = box.getSize(new THREE.Vector3());
+const maxDim = Math.max(size.x, size.y, size.z);
+const scale = TARGET_SIZE / maxDim;
+scene.scale.setScalar(scale);
+scene.position.sub(center.multiplyScalar(scale));
+```
+
+This means a 0.02-unit eyeball and a 2.5-unit skeleton both render perfectly in the same viewport.
+
+### Multi-Provider AI Routing
+```
+User Query
+    │
+    ├── [Chat/Tutor] → Try Groq first (1.3s avg) → Gemini fallback
+    ├── [Quiz Gen]   → Gemini Pro (strong multi-step reasoning)
+    ├── [Vision]     → Gemini Vision Pro (image understanding)
+    └── [Voice]      → OpenAI Whisper (speech-to-text)
+```
+
+### Robust JSON Quiz Extraction
+LLMs sometimes wrap JSON in markdown fences or add explanatory text. Our extraction pipeline handles all cases:
+1. Direct `JSON.parse()` attempt
+2. Regex extraction from ` ```json ... ``` ` fences
+3. Raw `[...]` array extraction
+4. Graceful error with user-facing message
+
+### Responsive Design & Tailwind CSS Migration
+The entire platform features a **mobile-first responsive design** powered by **Tailwind CSS**. 
+- **Adaptive Layouts**: Complex 3D viewports and comparative charts automatically collapse from side-by-side grids on desktops to stacked layouts on mobile devices.
+- **Glassmorphism UI**: High-performance backdrop blurs and semi-transparent layers scale seamlessly across all screen sizes.
+- **Unified Styling**: CSS modules combined with `@apply` Tailwind directives ensure consistent design tokens (spacing, typography, colors) and fluid animations.
+
+---
+
+## 📊 3D Model Library
+
+| Organ | File | Size | Source Format |
+|---|---|---|---|
+| Heart | `human_heart.glb` | 74.8 MB | GLB (binary GLTF) |
+| Brain | `human_brain_cerebrum__brainstem.glb` | 12.2 MB | GLB |
+| Lungs | `respiratory_system.glb` | 17.4 MB | GLB |
+| Kidney | `kidney.glb` | 53.3 MB | GLB |
+| Stomach | `realistic_human_stomach.glb` | 22.7 MB | GLB |
+| Intestines | `small_and_large_intestine.glb` | 15.6 MB | GLB |
+| Skull | `human_male_skull.glb` | 3.6 MB | GLB |
+| Skeleton | `ecorche_-_anatomy_study.glb` | 16.3 MB | GLB |
+| Full Body | `male_full_body_ecorche.glb` | 30.0 MB | GLB |
+| Brain (alt) | `Brain.glb` | 3.8 MB | GLB |
+| Heart (alt) | `Heart1.glb` | 74.8 MB | GLB |
+
+---
+
+## 🔒 Environment Variables Reference
+
+### Frontend (`backend/.env`)
+```env
+VITE_SUPABASE_URL=         # Supabase project URL
+VITE_SUPABASE_ANON_KEY=    # Supabase anon public key
+VITE_QUIZ_API_BASE_URL=    # Backend URL (default: http://127.0.0.1:8000)
+```
+
+### Backend (`backend/quiz/.env`)
+```env
+GEMINI_API_KEY=            # Google AI Studio key (Gemini Pro + Vision)
+GROQ_API_KEY=              # Groq Cloud key (LLaMA 3 / Mixtral)
+OPENAI_API_KEY=            # OpenAI key (Whisper speech-to-text)
+```
+
+> ⚠️ **Never commit `.env` files.** All are listed in `.gitignore`.
+
+---
+
+## 🛡️ Security
+- **Route Guards**: `ProtectedRoute.jsx` wraps all authenticated pages — unauthenticated access is impossible
+- **Session Sync**: Supabase's `onAuthStateChange` maintains reactive session state
+- **API Isolation**: All AI API keys live exclusively on the backend — never exposed to the browser
+- **CORS Configuration**: FastAPI CORS middleware restricts origins in production
+
+---
+
+## 👥 Team
+
+| Name | Role |
+|---|---|
+| **Shaik Nihal** | Developer |
+| **P Jaajitha Reddy** | Developer |
+| **S Durga Sri** | Developer |
+| **I Kiran Kumar** | Developer |
+| **L Monika** | Developer |
+
+---
+
+## 📄 License
+
+This project was developed during an internship at **Career Direction**.
+
+---
+
+<div align="center">
+  <p><em>Built with ❤️ for the future of medical education</em></p>
+</div>

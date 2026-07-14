@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Global Base Styles */
 body {
   margin: 0;
@@ -466,8 +468,14 @@ body {
 /* Mobile Screens */
 @media (max-width: 768px) {
   .nav-header {
-    flex-wrap: wrap;
-    position: relative;
+    flex-wrap: nowrap;
+    position: sticky;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  
+  .nav-level-badge, .nav-settings-btn {
+    display: none !important;
   }
 
   .nav-hamburger {
@@ -549,15 +557,23 @@ body {
   }
 
   .tutor-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     height: auto;
     overflow-y: auto;
-    padding: 15px;
+    padding: 12px;
+    gap: 15px;
   }
 
   .tutor-sidebar {
+    order: 2;
     height: auto;
     margin-bottom: 20px;
+  }
+
+  .tutor-chat-box {
+    order: 1;
+    min-height: 65vh;
   }
 
   .progress-container-grid {
@@ -1550,4 +1566,66 @@ body {
 .floating-dock-button:hover:not(.active) {
   background: rgba(255, 255, 255, 0.08);
   color: #F8FAFC;
-}
+}
+
+@media (max-width: 768px) {
+  .floating-header-card {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    padding: 10px 14px;
+    border-radius: 12px;
+  }
+  
+  .ar-right-panel {
+    top: 90px !important;
+    left: 12px;
+    right: 12px;
+    bottom: 130px !important;
+    width: auto;
+    height: auto !important;
+    max-height: calc(100% - 220px) !important;
+    padding: 16px;
+    border-radius: 16px;
+    z-index: 25;
+    background: rgba(15, 23, 42, 0.85) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+  }
+  
+  .floating-dock {
+    display: flex;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 92%;
+    justify-content: flex-start;
+    padding: 8px 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border-radius: 9999px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  }
+  
+  .floating-dock::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .floating-dock-button {
+    padding: 8px 12px;
+    flex-shrink: 0;
+  }
+  
+  /* Make the separator line not shrink */
+  .floating-dock > div[style*="width: 1px"] {
+    flex-shrink: 0;
+  }
+}
+

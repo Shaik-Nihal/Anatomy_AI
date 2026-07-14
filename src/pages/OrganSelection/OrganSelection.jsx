@@ -1,6 +1,6 @@
-
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import "./OrganSelection.css";
 
 function OrganSelection() {
   const navigate = useNavigate();
@@ -63,84 +63,31 @@ function OrganSelection() {
     },
   ];
 
-  const organStyle = {
-    background: "rgba(30,41,59,0.45)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    backdropFilter: "blur(20px)",
-    borderRadius: "25px",
-    padding: "30px",
-    color: "white",
-    textAlign: "center",
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-    boxShadow: "0 0 20px rgba(6,182,212,0.15)",
-  };
-
   return (
-    <div className="body-select-container">
+    <div className="organ-select-container">
       <Navbar />
 
-      <div className="dashboard-content">
+      <div className="organ-select-content">
         {/* Background Glow */}
-        <div
-          style={{
-            position: "absolute",
-            width: "600px",
-            height: "600px",
-            background: "rgba(6,182,212,0.12)",
-            borderRadius: "50%",
-            filter: "blur(150px)",
-            top: "-100px",
-            right: "-100px",
-            pointerEvents: "none",
-          }}
-        />
+        <div className="organ-select-glow" />
 
         {/* Header */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "35px",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          <h1 className="body-select-title">
+        <div className="organ-select-header">
+          <h1 className="organ-select-title">
             Select Organ
           </h1>
 
-          <p
-            style={{
-              color: "#94A3B8",
-              fontSize: "18px",
-            }}
-          >
+          <p className="organ-select-subtitle">
             Choose an organ to explore in immersive 3D & AR
           </p>
         </div>
 
         {/* Organ Cards */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "25px",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
+        <div className="organ-select-grid">
           {organs.map((organ) => (
             <div
               key={organ.name}
-              style={organStyle}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-8px) scale(1.02)";
-                e.currentTarget.style.boxShadow = "0 0 35px rgba(6,182,212,0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0px) scale(1)";
-                e.currentTarget.style.boxShadow = "0 0 20px rgba(6,182,212,0.15)";
-              }}
+              className="organ-card group"
               onClick={() =>
                 navigate("/ar-viewer", {
                   state: {
@@ -149,29 +96,19 @@ function OrganSelection() {
                 })
               }
             >
-              <div style={{ fontSize: "80px", display: "flex", justifyContent: "center", alignItems: "center", height: "96px" }}>
+              <div className="organ-card-icon-container">
                 {organ.icon.includes(".png") ? (
-                  <img src={organ.icon} alt={organ.name} style={{ width: "90px", height: "90px", objectFit: "contain", filter: "drop-shadow(0px 8px 16px rgba(0,0,0,0.4))" }} />
+                  <img src={organ.icon} alt={organ.name} className="organ-card-icon group-hover:scale-110 transition-transform duration-300" />
                 ) : (
-                  organ.icon
+                  <span className="group-hover:scale-110 transition-transform duration-300 block">{organ.icon}</span>
                 )}
               </div>
 
-              <h2
-                style={{
-                  color: "#06B6D4",
-                  marginTop: "15px",
-                }}
-              >
+              <h2 className="organ-card-title">
                 {organ.name}
               </h2>
 
-              <p
-                style={{
-                  color: "#CBD5E1",
-                  marginTop: "10px",
-                }}
-              >
+              <p className="organ-card-desc">
                 {organ.description}
               </p>
             </div>

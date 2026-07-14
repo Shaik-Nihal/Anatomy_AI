@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { comparisonData } from "../../data/comparisonData";
+import "./ComparisonViewer.css";
 
 // 3D Model Component supporting scaling, beating animations, and pathological tints
 function ComparativeModel({ 

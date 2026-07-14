@@ -9,6 +9,7 @@ import { FaYoutube } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import { generateQuiz } from "../../services/quizApi";
 import { videoData } from "../../data/videoData";
+import "./ARViewer.css";
 
 // Comprehensive Educational Dataset for Organs and their Parts
 const educationalContent = {

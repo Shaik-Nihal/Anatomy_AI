@@ -150,26 +150,26 @@ if (question.type === "fill_blank_option") {
 
 
   return (
-    <div className={`quiz-screen ${organ?.toLowerCase()}`}>
-      <div className="quiz-topbar">
-        <h2>{organ} Quiz</h2>
+    <div className={`min-h-screen p-4 md:p-10 ${organ?.toLowerCase()}`}>
+      <div className="flex justify-between items-center max-w-[1100px] mx-auto">
+        <h2 className="text-2xl font-bold">{organ} Quiz</h2>
 
-        <div className="timer">
+        <div className="bg-slate-800 px-5 py-2.5 rounded-xl font-bold">
           ⏱ {timeLeft}s
         </div>
       </div>
 
-      <div className="progress-container">
+      <div className="max-w-[1100px] mx-auto mt-5 h-2.5 bg-slate-800 rounded-full overflow-hidden">
         <div
-          className="progress-bar"
+          className="h-full bg-cyan-500 transition-all duration-300"
           style={{
             width: `${((currentQuestion + 1) / questions.length) * 100}%`,
           }}
         ></div>
       </div>
 
-      <div className="question-card">
-        <div className="question-count">
+      <div className="max-w-[1100px] mx-auto mt-10 bg-slate-800 p-6 md:p-9 rounded-3xl border border-cyan-500/15 shadow-[0_0_25px_rgba(6,182,212,0.08)]">
+        <div className="text-slate-300 mb-5 flex flex-col md:flex-row justify-between">
           <div
             style={{
               color: "#06B6D4",
@@ -183,26 +183,20 @@ if (question.type === "fill_blank_option") {
           </div>
         </div>
 
-        <h3
-  style={{
-    maxWidth: "900px",
-    lineHeight: "1.8",
-    marginBottom: "25px"
-  }}
->
-  {question.question}
-</h3>
+        <h3 className="max-w-[900px] leading-relaxed mb-6 text-xl md:text-2xl">
+          {question.question}
+        </h3>
         {question.type === "fill_blank" && (
-  <div style={{ marginTop: "20px" }}>
-    <input
-      type="text"
-      value={fillAnswer}
-      onChange={(e) =>
-        setFillAnswer(e.target.value)
-      }
-      className="fill-blank-input"
-      placeholder="Type your answer..."
-    />
+          <div className="mt-5">
+            <input
+              type="text"
+              value={fillAnswer}
+              onChange={(e) =>
+                setFillAnswer(e.target.value)
+              }
+              className="w-full p-3.5 rounded-xl border-2 border-cyan-500 bg-slate-800 text-white text-base outline-none"
+              placeholder="Type your answer..."
+            />
 
     <button
       className="next-btn"
@@ -214,16 +208,16 @@ if (question.type === "fill_blank_option") {
   </div>
 )}
 {question.type === "fill_blank_option" && (
-  <div className="options">
+  <div className="flex flex-col gap-4 mt-5">
     {question.options?.map((option) => (
       <button
         key={option}
-        className={`option-btn ${
+        className={`w-full md:w-[90%] mx-auto bg-slate-900 text-white border border-white/10 p-4 rounded-2xl cursor-pointer transition-all duration-300 hover:border-cyan-500 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] ${
           showExplanation
             ? option === question.answer
-              ? "correct"
+              ? "border-2 border-green-500 bg-green-500/15 text-green-500 hover:border-green-500 hover:shadow-none"
               : selectedAnswer === option
-              ? "wrong"
+              ? "border-2 border-red-500 bg-red-500/15 text-red-500 hover:border-red-500 hover:shadow-none"
               : ""
             : ""
         }`}
@@ -240,39 +234,39 @@ if (question.type === "fill_blank_option") {
  question.type !== "fill_blank_option" &&
  question.type !== "match" && (
 
-        <div className="options">
+        <div className="flex flex-col gap-4 mt-5">
           {question.options?.map((option) => {
-  let correctOption;
+            let correctOption;
 
-if (question.type === "mcq") {
-  correctOption =
-    question.options[
-      question.answer.charCodeAt(0) - 65
-    ];
-}
+            if (question.type === "mcq") {
+              correctOption =
+                question.options[
+                  question.answer.charCodeAt(0) - 65
+                ];
+            }
 
-if (question.type === "true_false") {
-  correctOption = question.answer;
-}
-  return (
-    <button
-      key={option}
-      className={`option-btn ${
-        showExplanation
-          ? option === correctOption
-            ? "correct"
-            : selectedAnswer === option
-            ? "wrong"
-            : ""
-          : ""
-      }`}
-      onClick={() => handleAnswer(option)}
-      disabled={showExplanation}
-    >
-      {option}
-    </button>
-  );
-})}
+            if (question.type === "true_false") {
+              correctOption = question.answer;
+            }
+            return (
+              <button
+                key={option}
+                className={`w-full md:w-[90%] mx-auto bg-slate-900 text-white border border-white/10 p-4 rounded-2xl cursor-pointer transition-all duration-300 hover:border-cyan-500 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] ${
+                  showExplanation
+                    ? option === correctOption
+                      ? "border-2 border-green-500 bg-green-500/15 text-green-500 hover:border-green-500 hover:shadow-none"
+                      : selectedAnswer === option
+                      ? "border-2 border-red-500 bg-red-500/15 text-red-500 hover:border-red-500 hover:shadow-none"
+                      : ""
+                    : ""
+                }`}
+                onClick={() => handleAnswer(option)}
+                disabled={showExplanation}
+              >
+                {option}
+              </button>
+            );
+          })}
         </div>
         )}
         {question?.type === "match" &&

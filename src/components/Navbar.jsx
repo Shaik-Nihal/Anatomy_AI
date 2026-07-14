@@ -121,7 +121,7 @@ function Navbar() {
 
       <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
         {user && (
-          <div style={{
+          <div className="nav-level-badge" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '12px',

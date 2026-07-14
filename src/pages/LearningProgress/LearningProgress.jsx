@@ -14,6 +14,7 @@ import {
 import Navbar from "../../components/Navbar";
 import { getUserProgress } from "../../services/quizApi";
 import { useAuth } from "../../contexts/AuthContext";
+import "./LearningProgress.css";
 
 // ─── Small reusable components ───────────────────────────────────────────────
 

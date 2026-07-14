@@ -1,0 +1,178 @@
+@reference "tailwindcss";
+
+.dashboard-container {
+  @apply min-h-screen relative text-white;
+  background: linear-gradient(to bottom right, #020617, #0F172A, #111827);
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-content {
+  @apply relative z-10 px-4 py-8 md:px-10 md:py-8;
+}
+
+.dashboard-glow {
+  @apply absolute rounded-full pointer-events-none;
+  width: 600px;
+  height: 600px;
+  background: rgba(6, 182, 212, 0.08);
+  filter: blur(150px);
+  top: -100px;
+  right: -100px;
+}
+
+.dashboard-layout-new {
+  @apply flex flex-col lg:grid lg:grid-cols-[2.2fr_1fr] gap-6 lg:gap-8 w-full relative;
+}
+
+.dashboard-left-section {
+  @apply flex flex-col gap-6 lg:gap-8;
+}
+
+.dashboard-right-section {
+  @apply flex flex-col gap-6 lg:gap-8;
+}
+
+/* Floating animation for banner graphics */
+@keyframes floating {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(3deg); filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.35)); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.floating-med-icon {
+  @apply absolute opacity-25 transition-all duration-400 pointer-events-none;
+  animation: floating 6s ease-in-out infinite;
+}
+
+.floating-med-icon:hover {
+  @apply opacity-50 scale-110;
+}
+
+/* Glassmorphism Cards */
+.glass-card-new {
+  @apply rounded-3xl p-6 md:p-8 text-white relative overflow-hidden transition-all duration-300;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.5) 0%, rgba(30, 41, 59, 0.3) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.welcome-banner {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.45) 0%, rgba(30, 41, 59, 0.4) 100%);
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+}
+
+.features-grid-new {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.glass-card-new.clickable {
+  @apply cursor-pointer;
+}
+
+.glass-card-new.active-cyan:hover {
+  transform: translateY(-5px);
+  border-color: rgba(6, 182, 212, 0.4);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(6, 182, 212, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-card-new.active-purple:hover {
+  transform: translateY(-5px);
+  border-color: rgba(167, 139, 250, 0.4);
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(167, 139, 250, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-card-new.active-pink:hover {
+  transform: translateY(-5px);
+  border-color: rgba(244, 114, 182, 0.4);
+  background: linear-gradient(135deg, rgba(244, 114, 182, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(244, 114, 182, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-card-new.active-indigo:hover {
+  transform: translateY(-5px);
+  border-color: rgba(99, 102, 241, 0.4);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(15, 23, 42, 0.65) 100%);
+  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Icon Box inside feature cards */
+.icon-box-new {
+  @apply flex items-center justify-center w-12 h-12 rounded-xl transition-all duration-300;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.glass-card-new.active-cyan:hover .icon-box-new {
+  border-color: rgba(6, 182, 212, 0.35);
+  background: rgba(6, 182, 212, 0.12);
+}
+
+.glass-card-new.active-purple:hover .icon-box-new {
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(167, 139, 250, 0.12);
+}
+
+.glass-card-new.active-pink:hover .icon-box-new {
+  border-color: rgba(244, 114, 182, 0.35);
+  background: rgba(244, 114, 182, 0.12);
+}
+
+.glass-card-new.active-indigo:hover .icon-box-new {
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.timeline-new {
+  @apply relative pl-8 mt-4 flex flex-col gap-4;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timeline-item-new {
+  @apply relative;
+}
+
+.timeline-card-new {
+  @apply rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.status-pill {
+  @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+}
+
+.status-pill.score {
+  @apply bg-purple-500/10 text-purple-400 border border-purple-500/20;
+}
+.status-pill.completed {
+  @apply bg-blue-500/10 text-blue-400 border border-blue-500/20;
+}
+.status-pill.explored {
+  @apply bg-cyan-500/10 text-cyan-400 border border-cyan-500/20;
+}
+
+.mastery-progress-bg {
+  @apply w-full h-3 rounded-full mt-2 mb-6 overflow-hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mastery-progress-fill {
+  @apply h-full rounded-full transition-all duration-1000;
+  background: linear-gradient(90deg, #EC4899 0%, #8B5CF6 100%);
+}
+
+.stat-boxes-container {
+  @apply grid grid-cols-2 gap-4;
+}
+
+.stat-box-item {
+  @apply flex items-center gap-4 p-4 rounded-xl;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
