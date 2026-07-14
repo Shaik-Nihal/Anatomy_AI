@@ -1047,11 +1047,19 @@ function ARViewer() {
                     ← Back to Selection
                   </button>
                   <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                    <div style={{ fontSize: "40px" }}>
+                    <div style={{ fontSize: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       {selectedOrgan === "Heart" && "🫀"}
                       {selectedOrgan === "Brain" && "🧠"}
-                      {selectedOrgan === "Human Anatomy" && "🧍‍♂️"}
-                      {selectedOrgan !== "Heart" && selectedOrgan !== "Brain" && selectedOrgan !== "Human Anatomy" && "🧪"}
+                      {selectedOrgan === "Lungs" && "🫁"}
+                      {selectedOrgan === "Skeleton" && "🦴"}
+                      {selectedOrgan === "Skull" && "💀"}
+                      {selectedOrgan === "Eye" && "👁️"}
+                      {selectedOrgan === "Human Anatomy" && <img src="/icons/human.png" alt="Human" style={{ width: 44, height: 44, objectFit: "contain" }} />}
+                      {selectedOrgan === "Liver" && <img src="/icons/liver.png" alt="Liver" style={{ width: 44, height: 44, objectFit: "contain" }} />}
+                      {selectedOrgan === "Kidney" && <img src="/icons/kidney.png" alt="Kidney" style={{ width: 44, height: 44, objectFit: "contain" }} />}
+                      {selectedOrgan === "Stomach" && <img src="/icons/stomach.png" alt="Stomach" style={{ width: 44, height: 44, objectFit: "contain" }} />}
+                      {selectedOrgan === "Intestines" && <img src="/icons/intestines.png" alt="Intestines" style={{ width: 44, height: 44, objectFit: "contain" }} />}
+                      {!["Heart", "Brain", "Lungs", "Skeleton", "Skull", "Eye", "Human Anatomy", "Liver", "Kidney", "Stomach", "Intestines"].includes(selectedOrgan) && "🧪"}
                     </div>
                     <div>
                       <h3 style={{ margin: 0, fontSize: "12px", color: "#06B6D4", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "800" }}>Current Model</h3>
