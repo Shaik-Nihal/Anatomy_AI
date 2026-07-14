@@ -26,7 +26,7 @@ function CircularProgress({ value }) {
     <svg width="110" height="110" viewBox="0 0 110 110">
       <defs>
         <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%"   stopColor="#06b6d4" />
+          <stop offset="0%" stopColor="#06b6d4" />
           <stop offset="100%" stopColor="#7c3aed" />
         </linearGradient>
       </defs>
@@ -132,7 +132,7 @@ function LearningProgress() {
 
   // ─── CALCULATE DYNAMIC METRICS ───────────────────────────────────────────────
   const quizzesCompleted = progressData.length;
-  const averageAccuracy = quizzesCompleted > 0 
+  const averageAccuracy = quizzesCompleted > 0
     ? Math.round(progressData.reduce((acc, q) => acc + q.percentage, 0) / quizzesCompleted)
     : 0;
 
@@ -143,7 +143,7 @@ function LearningProgress() {
       if (!q.attempted_at) return "";
       return q.attempted_at.split(' ')[0] || q.attempted_at.split('T')[0];
     }).filter(d => d);
-    
+
     const uniqueDates = [...new Set(dates)].sort((a, b) => new Date(b) - new Date(a));
     if (uniqueDates.length > 0) {
       const todayStr = new Date().toISOString().split('T')[0];
@@ -155,7 +155,7 @@ function LearningProgress() {
         studyStreak = 1;
         for (let i = 0; i < uniqueDates.length - 1; i++) {
           const current = new Date(uniqueDates[i]);
-          const next = new Date(uniqueDates[i+1]);
+          const next = new Date(uniqueDates[i + 1]);
           const diffDays = Math.ceil(Math.abs(current - next) / (1000 * 60 * 60 * 24));
           if (diffDays === 1) {
             studyStreak++;
@@ -201,13 +201,13 @@ function LearningProgress() {
 
   // Topics list
   const topicData = [
-    { name: "Heart",  icon: "🫀",  pct: latestByOrgan["Heart"] ? Math.round(latestByOrgan["Heart"].percentage) : 0, color: "#ef4444" },
-    { name: "Brain",  icon: "🧠",  pct: latestByOrgan["Brain"] ? Math.round(latestByOrgan["Brain"].percentage) : 0, color: "#a78bfa" },
-    { name: "Lungs",  icon: "🫁",  pct: latestByOrgan["Lungs"] ? Math.round(latestByOrgan["Lungs"].percentage) : 0, color: "#06b6d4" },
-    { name: "Liver",  icon: "/icons/liver.png",  pct: latestByOrgan["Liver"] ? Math.round(latestByOrgan["Liver"].percentage) : 0, color: "#f97316" },
+    { name: "Heart", icon: "🫀", pct: latestByOrgan["Heart"] ? Math.round(latestByOrgan["Heart"].percentage) : 0, color: "#ef4444" },
+    { name: "Brain", icon: "🧠", pct: latestByOrgan["Brain"] ? Math.round(latestByOrgan["Brain"].percentage) : 0, color: "#a78bfa" },
+    { name: "Lungs", icon: "🫁", pct: latestByOrgan["Lungs"] ? Math.round(latestByOrgan["Lungs"].percentage) : 0, color: "#06b6d4" },
+    { name: "Liver", icon: "/icons/liver.png", pct: latestByOrgan["Liver"] ? Math.round(latestByOrgan["Liver"].percentage) : 0, color: "#f97316" },
     { name: "Kidney", icon: "/icons/kidney.png", pct: latestByOrgan["Kidney"] ? Math.round(latestByOrgan["Kidney"].percentage) : 0, color: "#ef4444" },
-    { name: "Stomach",icon: "/icons/stomach.png",pct: latestByOrgan["Stomach"] ? Math.round(latestByOrgan["Stomach"].percentage) : 0, color: "#10b981" },
-    { name: "Intestines",icon:"/icons/intestines.png",pct: latestByOrgan["Intestines"] ? Math.round(latestByOrgan["Intestines"].percentage) : 0, color: "#a78bfa" },
+    { name: "Stomach", icon: "/icons/stomach.png", pct: latestByOrgan["Stomach"] ? Math.round(latestByOrgan["Stomach"].percentage) : 0, color: "#10b981" },
+    { name: "Intestines", icon: "/icons/intestines.png", pct: latestByOrgan["Intestines"] ? Math.round(latestByOrgan["Intestines"].percentage) : 0, color: "#a78bfa" },
     { name: "Human Anatomy", icon: "/icons/human.png", pct: latestByOrgan["Human Anatomy"] ? Math.round(latestByOrgan["Human Anatomy"].percentage) : 0, color: "#3b82f6" },
     { name: "Skeleton", icon: "🦴", pct: latestByOrgan["Skeleton"] ? Math.round(latestByOrgan["Skeleton"].percentage) : 0, color: "#f1f5f9" },
     { name: "Skull", icon: "💀", pct: latestByOrgan["Skull"] ? Math.round(latestByOrgan["Skull"].percentage) : 0, color: "#cbd5e1" },
@@ -232,7 +232,7 @@ function LearningProgress() {
   // Strengths & Weaknesses Pie Calculation
   const strengthsList = [];
   const weaknessesList = [];
-  
+
   organList.forEach(orgName => {
     const latest = latestByOrgan[orgName];
     if (latest) {
@@ -243,15 +243,15 @@ function LearningProgress() {
       }
     }
   });
-  
+
   const strengthsCount = strengthsList.length;
   const weaknessesCount = weaknessesList.length;
   const remainingCount = organList.length - (strengthsCount + weaknessesCount);
 
   const donutData = [
-    { name: "Strengths",  value: strengthsCount, color: "#06b6d4" },
+    { name: "Strengths", value: strengthsCount, color: "#06b6d4" },
     { name: "Weaknesses", value: weaknessesCount, color: "#7c3aed" },
-    { name: "Remaining",  value: remainingCount, color: "#1e293b" },
+    { name: "Remaining", value: remainingCount, color: "#1e293b" },
   ];
 
   // Insights Calculations
@@ -341,10 +341,10 @@ function LearningProgress() {
   ];
 
   const insights = [
-    { icon: "🕐", iconColor: "#f59e0b", label: "Best Time to Study",       value: bestTime },
-    { icon: "📅", iconColor: "#06b6d4", label: "Most Active Day",           value: mostActiveDay },
-    { icon: "📈", iconColor: "#22c55e", label: "Quiz Performance Trend",    value: performanceTrend },
-    { icon: "❤️", iconColor: "#ef4444", label: "Preferred Topic",           value: preferredTopic },
+    { icon: "🕐", iconColor: "#f59e0b", label: "Best Time to Study", value: bestTime },
+    { icon: "📅", iconColor: "#06b6d4", label: "Most Active Day", value: mostActiveDay },
+    { icon: "📈", iconColor: "#22c55e", label: "Quiz Performance Trend", value: performanceTrend },
+    { icon: "❤️", iconColor: "#ef4444", label: "Preferred Topic", value: preferredTopic },
   ];
 
   return (
@@ -358,7 +358,7 @@ function LearningProgress() {
       <Navbar />
 
       <main className="dashboard-content" style={{ flex: 1, padding: "32px 40px" }}>
-        
+
         {/* ── EMPTY STATE IF NO QUIZZES YET ── */}
         {quizzesCompleted === 0 ? (
           <div className="glass-card-new" style={{
@@ -441,70 +441,74 @@ function LearningProgress() {
             <div className="progress-charts-grid">
 
               {/* Mastery Over Time */}
-              <div className="glass-card-new active-cyan" style={{ display: "flex", flexDirection: "column" }}>
+              <div className="glass-card-new active-cyan">
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Mastery Over Time</span>
                   <span style={{ color: "#64748b", fontSize: 12 }}>Performance Score</span>
                 </div>
-                <div style={{ flex: 1, minHeight: 280 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={masteryData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <XAxis
-                        dataKey="date"
-                        tick={{ fill: "#475569", fontSize: 11 }}
-                        axisLine={false} tickLine={false}
-                      />
-                      <YAxis
-                        domain={[0, 100]}
-                        ticks={[0, 25, 50, 75, 100]}
-                        tickFormatter={(v) => `${v}%`}
-                        tick={{ fill: "#475569", fontSize: 11 }}
-                        axisLine={false} tickLine={false}
-                        width={40}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          background: "#1e293b", border: "1px solid #334155",
-                          borderRadius: 8, color: "#e2e8f0", fontSize: 12,
-                        }}
-                        formatter={(v) => [`${v}%`, "Mastery"]}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#06b6d4"
-                        strokeWidth={3}
-                        dot={{ r: 4, fill: "#06b6d4", stroke: "#0b0f1a", strokeWidth: 2 }}
-                        activeDot={{ r: 6, fill: "#7c3aed", stroke: "#fff", strokeWidth: 2 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+                <ResponsiveContainer width="100%" height={160}>
+                  <LineChart data={masteryData}>
+                    <defs>
+                      <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#06b6d4" />
+                        <stop offset="100%" stopColor="#7c3aed" />
+                      </linearGradient>
+                    </defs>
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: "#475569", fontSize: 11 }}
+                      axisLine={false} tickLine={false}
+                    />
+                    <YAxis
+                      domain={[0, 100]}
+                      ticks={[0, 25, 50, 75, 100]}
+                      tickFormatter={(v) => `${v}%`}
+                      tick={{ fill: "#475569", fontSize: 11 }}
+                      axisLine={false} tickLine={false}
+                      width={36}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "#1e293b", border: "1px solid #334155",
+                        borderRadius: 8, color: "#e2e8f0", fontSize: 12,
+                      }}
+                      formatter={(v) => [`${v}%`, "Mastery"]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="url(#lineGrad)"
+                      strokeWidth={2.5}
+                      dot={{ r: 4, fill: "#06b6d4", stroke: "#0b0f1a", strokeWidth: 2 }}
+                      activeDot={{ r: 6, fill: "#7c3aed" }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
 
               {/* Topic Mastery */}
               <div className="glass-card-new active-purple">
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Topic Mastery</span>
-                  <span style={{ color: "#06b6d4", fontSize: 12, fontWeight: 700 }}>Top 5 Organs</span>
+                  <span style={{ color: "#06b6d4", fontSize: 12 }}>4 Main Organs</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                  {[...topicData].sort((a, b) => b.pct - a.pct).slice(0, 5).map((t) => (
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                  {topicData.map((t) => (
                     <div key={t.name}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 28, height: 28, borderRadius: 6, background: t.color + "15", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>
-                            {t.icon.includes(".png") ? <img src={t.icon} alt={t.name} style={{ width: "16px", height: "16px", objectFit: "contain" }} /> : t.icon}
-                          </div>
-                          <span style={{ color: "#cbd5e1", fontSize: 14, fontWeight: 500 }}>{t.name}</span>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontSize: 16 }}>
+                            {t.icon.includes(".png") ? <img src={t.icon} alt={t.name} style={{ width: "20px", height: "20px", objectFit: "contain" }} /> : t.icon}
+                          </span>
+                          <span style={{ color: "#cbd5e1", fontSize: 13 }}>{t.name}</span>
                         </div>
-                        <span style={{ color: t.color, fontSize: 13, fontWeight: 700 }}>{t.pct}%</span>
+                        <span style={{ color: "#94a3b8", fontSize: 12 }}>{t.pct}%</span>
                       </div>
-                      <div style={{ height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ height: 6, background: "#1e293b", borderRadius: 4, overflow: "hidden" }}>
                         <div style={{
                           width: `${t.pct}%`, height: "100%",
                           background: t.color, borderRadius: 4,
-                          transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
+                          transition: "width 0.5s ease",
                         }} />
                       </div>
                     </div>
@@ -569,7 +573,7 @@ function LearningProgress() {
                 </PieChart>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%", marginTop: 8 }}>
                   {[
-                    { color: "#06b6d4", label: `Strengths (${strengthsCount})`,  sub: strengthsList.length > 0 ? strengthsList.join(", ") : "None yet (>=75%)" },
+                    { color: "#06b6d4", label: `Strengths (${strengthsCount})`, sub: strengthsList.length > 0 ? strengthsList.join(", ") : "None yet (>=75%)" },
                     { color: "#7c3aed", label: `Weaknesses (${weaknessesCount})`, sub: weaknessesList.length > 0 ? weaknessesList.join(", ") : "None yet (<75%)" },
                   ].map((item) => (
                     <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>

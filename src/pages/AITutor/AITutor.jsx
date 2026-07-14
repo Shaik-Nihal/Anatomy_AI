@@ -14,24 +14,24 @@ const speakWithBrowserTTS = (text, onStart, onEnd) => {
     onEnd();
     return;
   }
-  
+
   try {
     window.speechSynthesis.cancel();
-    
+
     // Remove markdown asterisks
     const cleanText = text.replace(/\*\*/g, "");
-    
+
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.onstart = onStart;
     utterance.onend = onEnd;
     utterance.onerror = onEnd;
-    
+
     const voices = window.speechSynthesis.getVoices();
     const naturalVoice = voices.find(v => v.lang.startsWith("en") && v.name.includes("Google")) || voices.find(v => v.lang.startsWith("en"));
     if (naturalVoice) {
       utterance.voice = naturalVoice;
     }
-    
+
     window.speechSynthesis.speak(utterance);
   } catch (err) {
     console.error("Browser speech synthesis error:", err);
@@ -43,7 +43,7 @@ const speakWithBrowserTTS = (text, onStart, onEnd) => {
 function getRegionFromMeshName(meshName, organ) {
   if (!meshName) return null;
   const nameLower = meshName.toLowerCase();
-  
+
   if (organ === "Heart") {
     if (nameLower.includes("aorta")) return "Aorta";
     if (nameLower.includes("left_ventricle") || nameLower.includes("lv") || (nameLower.includes("ventricle") && nameLower.includes("left"))) return "Left Ventricle";
@@ -66,19 +66,19 @@ function getRegionFromMeshName(meshName, organ) {
 }
 
 function OrganModel({ organ, selectedRegion }) {
-  // If the selected organ is not Brain or Heart, default it to Heart (Heart1.glb)
-  let actualOrgan = organ;
-  if (organ !== "Brain" && organ !== "Heart") {
-    actualOrgan = "Heart";
-  }
-
-  let modelPath = "/models/human_heart.glb";
-  if (actualOrgan === "Brain") {
-    modelPath = "/models/human_brain_cerebrum__brainstem.glb";
-  }
+  let modelPath = "/models/human_heart.glb"; // Default
+  if (organ === "Brain") modelPath = "/models/human_brain_cerebrum__brainstem.glb";
+  else if (organ === "Human Anatomy") modelPath = "/models/male_full_body_ecorche.glb";
+  else if (organ === "Lungs") modelPath = "/models/respiratory_system.glb";
+  else if (organ === "Kidney") modelPath = "/models/kidney.glb";
+  else if (organ === "Stomach") modelPath = "/models/realistic_human_stomach.glb";
+  else if (organ === "Intestines") modelPath = "/models/small_and_large_intestine.glb";
+  else if (organ === "Skull") modelPath = "/models/human_male_skull.glb";
+  else if (organ === "Skeleton") modelPath = "/models/ecorche_-_anatomy_study.glb";
 
   const { scene } = useGLTF(modelPath);
   const originalMaterials = useRef(new Map());
+  const groupRef = useRef();
 
   // Back up original material settings to allow non-destructive glow tinting
   useEffect(() => {
@@ -103,8 +103,8 @@ function OrganModel({ organ, selectedRegion }) {
         const orig = originalMaterials.current.get(node.uuid);
         if (!orig) return;
 
-        const nodeRegion = getRegionFromMeshName(node.name, actualOrgan);
-        const isSelected = selectedRegion && nodeRegion.toLowerCase() === selectedRegion.toLowerCase();
+        const nodeRegion = getRegionFromMeshName(node.name, organ);
+        const isSelected = selectedRegion && nodeRegion && nodeRegion.toLowerCase() === selectedRegion.toLowerCase();
 
         if (isSelected) {
           if (node.material.color) node.material.color.setHex(0xa78bfa); // Glowing Purple
@@ -122,14 +122,68 @@ function OrganModel({ organ, selectedRegion }) {
         }
       }
     });
-  }, [scene, selectedRegion, actualOrgan]);
+  }, [scene, selectedRegion, organ]);
+
+  // Auto-scale and center the model uniformly using precise Mesh bounds
+  useEffect(() => {
+    if (!scene || !groupRef.current) return;
+
+    // Reset group transforms to measure raw scene
+    groupRef.current.scale.set(1, 1, 1);
+    groupRef.current.position.set(0, 0, 0);
+
+    // Compute bounding box strictly for visible meshes to ignore invisible lights/armatures
+    const box = new THREE.Box3();
+    box.makeEmpty();
+    scene.traverse((node) => {
+      if (node.isMesh && node.visible && !node.name.toLowerCase().includes('light') && !node.name.toLowerCase().includes('camera')) {
+        node.geometry.computeBoundingBox();
+        const meshBox = node.geometry.boundingBox.clone();
+        meshBox.applyMatrix4(node.matrixWorld);
+        box.union(meshBox);
+      }
+    });
+
+    if (box.isEmpty()) {
+      box.setFromObject(scene); // fallback if no meshes found
+    }
+
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    // Anatomical models often have long protruding vessels (ureters, veins) 
+    // that heavily skew the geometric center away from the visual center of mass.
+    const organConfig = {
+      Kidney: { scaleMultiplier: 2.8, xOffset: -1.0, yOffset: 1.0, zOffset: 0 },
+      Lungs: { scaleMultiplier: 1.5, xOffset: 0, yOffset: 0.2, zOffset: 0 },
+      Stomach: { scaleMultiplier: 1.6, xOffset: 0, yOffset: 0.2, zOffset: 0 },
+      Intestines: { scaleMultiplier: 1.3, xOffset: 0, yOffset: 0, zOffset: 0 },
+      Skeleton: { scaleMultiplier: 1.0, xOffset: 0, yOffset: -0.4, zOffset: 0 },
+      "Human Anatomy": { scaleMultiplier: 1.0, xOffset: 0, yOffset: -0.4, zOffset: 0 },
+    };
+
+    if (maxDim > 0) {
+      let targetSize = 3.5;
+      if (organ === "Human Anatomy" || organ === "Skeleton") targetSize = 4.8;
+
+      const conf = organConfig[organ] || { scaleMultiplier: 1.0, xOffset: 0, yOffset: 0, zOffset: 0 };
+      const scale = (targetSize / maxDim) * conf.scaleMultiplier;
+      groupRef.current.scale.set(scale, scale, scale);
+
+      // Auto-center based on bounds, then apply manual corrections for visual center of mass
+      groupRef.current.position.set(
+        (-center.x * scale) + conf.xOffset,
+        (-center.y * scale) + conf.yOffset,
+        (-center.z * scale) + conf.zOffset
+      );
+    }
+  }, [scene, organ]);
 
   return (
-    <primitive
-      object={scene}
-      scale={actualOrgan === "Brain" ? 1.0 : 1.25}
-      position={actualOrgan === "Brain" ? [0, -0.1, 0] : [0, -0.3, 0]}
-    />
+    <group ref={groupRef}>
+      <primitive object={scene} />
+    </group>
   );
 }
 
@@ -153,7 +207,7 @@ function AITutor() {
     isListeningRef.current = val;
   };
   const recognitionRef = useRef(null);
-  
+
   // MediaRecorder refs for Whisper fallback
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -295,31 +349,31 @@ function AITutor() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioChunksRef.current = [];
-        
+
         const recorder = new MediaRecorder(stream);
         recorder.ondataavailable = (e) => {
           if (e.data && e.data.size > 0) {
             audioChunksRef.current.push(e.data);
           }
         };
-        
+
         recorder.onstop = async () => {
           const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-          
+
           // Stop stream tracks to release microphone icon
           stream.getTracks().forEach(track => track.stop());
-          
+
           setChatLoading(true);
           try {
             const formData = new FormData();
             formData.append("audio", audioBlob, "recording.webm");
             formData.append("language", "en");
-            
+
             const response = await fetch(`${import.meta.env.VITE_QUIZ_API_BASE_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000"}/voice/transcribe`, {
               method: "POST",
               body: formData
             });
-            
+
             const data = await response.json();
             if (data && data.transcript) {
               const text = data.transcript;
@@ -336,7 +390,7 @@ function AITutor() {
             setChatLoading(false);
           }
         };
-        
+
         mediaRecorderRef.current = recorder;
         recorder.start();
         updateIsListening(true);
@@ -349,7 +403,7 @@ function AITutor() {
 
   const toggleListening = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+
     // If the browser doesn't support Web Speech API natively (e.g. Brave blocks it),
     // we use our MediaRecorder + Whisper server fallback!
     if (!SpeechRecognition) {
@@ -410,50 +464,46 @@ function AITutor() {
     if (!text) return { region: null, organ: null };
     const textLower = text.toLowerCase();
 
-    // Check Brain keywords specifically (avoiding general words like "lobe" on its own)
-    if (
-      textLower.includes("brain") ||
-      textLower.includes("cerebellum") ||
-      textLower.includes("cerebrum") ||
-      textLower.includes("cortex") ||
-      textLower.includes("hemisphere") ||
-      textLower.includes("brainstem") ||
-      textLower.includes("frontal lobe") ||
-      textLower.includes("parietal lobe") ||
-      textLower.includes("occipital lobe") ||
-      textLower.includes("temporal lobe")
-    ) {
-      let region = null;
-      if (textLower.includes("cerebellum")) region = "Cerebellum";
-      else if (textLower.includes("brainstem") || textLower.includes("stem")) region = "Brainstem";
-      else if (textLower.includes("frontal")) region = "Frontal Lobe";
-      else if (textLower.includes("parietal")) region = "Parietal Lobe";
-      else if (textLower.includes("occipital")) region = "Occipital Lobe";
-      else if (textLower.includes("temporal")) region = "Temporal Lobe";
-      else if (textLower.includes("cortex") || textLower.includes("cerebrum")) region = "Cerebral Cortex";
-      return { region, organ: "Brain" };
+    let detectedOrgan = null;
+
+    // 1. Detect primary organ first (avoids overlap like "cortex" in kidney vs brain)
+    if (textLower.includes("kidney") || textLower.includes("renal")) detectedOrgan = "Kidney";
+    else if (textLower.includes("lung") || textLower.includes("respiratory") || textLower.includes("alveoli")) detectedOrgan = "Lungs";
+    else if (textLower.includes("liver") || textLower.includes("hepatic")) detectedOrgan = "Liver";
+    else if (textLower.includes("stomach") || textLower.includes("gastric")) detectedOrgan = "Stomach";
+    else if (textLower.includes("intestine") || textLower.includes("bowel") || textLower.includes("colon")) detectedOrgan = "Intestines";
+    else if (textLower.includes("skull") || textLower.includes("cranium")) detectedOrgan = "Skull";
+    else if (textLower.includes("skeleton") || textLower.includes("bone")) detectedOrgan = "Skeleton";
+    else if (textLower.includes("heart") || textLower.includes("aorta") || textLower.includes("ventricle") || textLower.includes("atrium") || textLower.includes("myocardium") || textLower.includes("pulmonary")) detectedOrgan = "Heart";
+    else if (textLower.includes("brain") || textLower.includes("cerebellum") || textLower.includes("cerebrum") || textLower.includes("hemisphere") || textLower.includes("brainstem") || textLower.includes("lobe") || textLower.includes("cortex")) detectedOrgan = "Brain";
+    else if (textLower.includes("anatomy") || textLower.includes("body")) detectedOrgan = "Human Anatomy";
+
+    let detectedRegion = null;
+
+    // 2. Region detection restricted to the identified organ
+    if (detectedOrgan === "Brain") {
+      if (textLower.includes("cerebellum")) detectedRegion = "Cerebellum";
+      else if (textLower.includes("brainstem") || textLower.includes("stem")) detectedRegion = "Brainstem";
+      else if (textLower.includes("frontal")) detectedRegion = "Frontal Lobe";
+      else if (textLower.includes("parietal")) detectedRegion = "Parietal Lobe";
+      else if (textLower.includes("occipital")) detectedRegion = "Occipital Lobe";
+      else if (textLower.includes("temporal")) detectedRegion = "Temporal Lobe";
+      else if (textLower.includes("cortex") || textLower.includes("cerebrum")) detectedRegion = "Cerebral Cortex";
+    } else if (detectedOrgan === "Heart") {
+      if (textLower.includes("aorta")) detectedRegion = "Aorta";
+      else if (textLower.includes("left ventricle") || (textLower.includes("ventricle") && textLower.includes("left"))) detectedRegion = "Left Ventricle";
+      else if (textLower.includes("right ventricle") || (textLower.includes("ventricle") && textLower.includes("right"))) detectedRegion = "Right Ventricle";
+      else if (textLower.includes("left atrium") || (textLower.includes("atrium") && textLower.includes("left"))) detectedRegion = "Left Atrium";
+      else if (textLower.includes("right atrium") || (textLower.includes("atrium") && textLower.includes("right"))) detectedRegion = "Right Atrium";
+      else if (textLower.includes("pulmonary") || textLower.includes("artery")) detectedRegion = "Pulmonary Artery";
+    } else if (detectedOrgan === "Kidney") {
+       if (textLower.includes("cortex")) detectedRegion = "Cortex";
+       else if (textLower.includes("medulla") || textLower.includes("pyramid")) detectedRegion = "Medulla pyramid";
+       else if (textLower.includes("ureter")) detectedRegion = "Ureter";
+       else if (textLower.includes("capsule")) detectedRegion = "Capsule";
     }
 
-    // Check Heart keywords
-    if (
-      textLower.includes("heart") ||
-      textLower.includes("aorta") ||
-      textLower.includes("ventricle") ||
-      textLower.includes("atrium") ||
-      textLower.includes("myocardium") ||
-      textLower.includes("pulmonary")
-    ) {
-      let region = null;
-      if (textLower.includes("aorta")) region = "Aorta";
-      else if (textLower.includes("left ventricle") || (textLower.includes("ventricle") && textLower.includes("left"))) region = "Left Ventricle";
-      else if (textLower.includes("right ventricle") || (textLower.includes("ventricle") && textLower.includes("right"))) region = "Right Ventricle";
-      else if (textLower.includes("left atrium") || (textLower.includes("atrium") && textLower.includes("left"))) region = "Left Atrium";
-      else if (textLower.includes("right atrium") || (textLower.includes("atrium") && textLower.includes("right"))) region = "Right Atrium";
-      else if (textLower.includes("pulmonary") || textLower.includes("artery")) region = "Pulmonary Artery";
-      return { region, organ: "Heart" };
-    }
-
-    return { region: null, organ: null };
+    return { region: detectedRegion, organ: detectedOrgan };
   };
 
   const handleChatSubmit = (e) => {
@@ -464,7 +514,7 @@ function AITutor() {
 
   const submitQuery = async (query) => {
     isProcessingQueryRef.current = true;
-    
+
     // Explicitly stop the microphone if it's currently on, so it doesn't pick up the AI's voice
     if (isListeningRef.current) {
       if (recognitionRef.current) recognitionRef.current.stop();
@@ -753,31 +803,31 @@ function AITutor() {
               ) : (
                 conversations.map((chat) => (
                   <div
-                     key={chat.id}
-                     style={{
-                       display: "flex",
-                       alignItems: "center",
-                       justifyContent: "space-between",
-                       padding: "8px 12px",
-                       borderRadius: "10px",
-                       background: currentChatId === chat.id ? "rgba(6, 182, 212, 0.1)" : "transparent",
-                       border: "1px solid " + (currentChatId === chat.id ? "rgba(6, 182, 212, 0.25)" : "transparent"),
-                       cursor: "pointer",
-                       transition: "all 0.2s ease",
-                     }}
-                     onClick={() => handleSelectConversation(chat.id)}
-                     onMouseEnter={(e) => {
-                       if (currentChatId !== chat.id) {
-                         e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                         e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
-                       }
-                     }}
-                     onMouseLeave={(e) => {
-                       if (currentChatId !== chat.id) {
-                         e.currentTarget.style.background = "transparent";
-                         e.currentTarget.style.borderColor = "transparent";
-                       }
-                     }}
+                    key={chat.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "8px 12px",
+                      borderRadius: "10px",
+                      background: currentChatId === chat.id ? "rgba(6, 182, 212, 0.1)" : "transparent",
+                      border: "1px solid " + (currentChatId === chat.id ? "rgba(6, 182, 212, 0.25)" : "transparent"),
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                    onClick={() => handleSelectConversation(chat.id)}
+                    onMouseEnter={(e) => {
+                      if (currentChatId !== chat.id) {
+                        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (currentChatId !== chat.id) {
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.borderColor = "transparent";
+                      }
+                    }}
                   >
                     <span
                       style={{
@@ -844,38 +894,38 @@ function AITutor() {
               <p style={{ color: "#94A3B8", fontSize: "14px", margin: "4px 0 0 0" }}>Type your academic question and get a simple explanation.</p>
             </div>
             <div style={{ display: "flex", gap: "10px" }}>
-            <button
-              type="button"
-              onClick={() => {
-                const nextVal = !voiceEnabled;
-                setVoiceEnabled(nextVal);
-                if (!nextVal && audioRef.current) {
-                  audioRef.current.pause();
-                  audioRef.current = null;
-                  setAudioPlaying(false);
-                  setSelectedRegion(null);
-                }
-                if (!nextVal && window.speechSynthesis) {
-                  window.speechSynthesis.cancel();
-                }
-              }}
-              title={voiceEnabled ? "Mute Voice Speech" : "Speak Voice Speech"}
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                border: "1px solid " + (voiceEnabled ? "#06B6D4" : "rgba(255,255,255,0.08)"),
-                color: voiceEnabled ? "#06B6D4" : "#64748B",
-                padding: "10px 14px",
-                borderRadius: "12px",
-                fontSize: "16px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.3s ease"
-              }}
-            >
-              {voiceEnabled ? "🔊" : "🔇"}
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const nextVal = !voiceEnabled;
+                  setVoiceEnabled(nextVal);
+                  if (!nextVal && audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current = null;
+                    setAudioPlaying(false);
+                    setSelectedRegion(null);
+                  }
+                  if (!nextVal && window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                  }
+                }}
+                title={voiceEnabled ? "Mute Voice Speech" : "Speak Voice Speech"}
+                style={{
+                  background: "rgba(255, 255, 255, 0.03)",
+                  border: "1px solid " + (voiceEnabled ? "#06B6D4" : "rgba(255,255,255,0.08)"),
+                  color: voiceEnabled ? "#06B6D4" : "#64748B",
+                  padding: "10px 14px",
+                  borderRadius: "12px",
+                  fontSize: "16px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.3s ease"
+                }}
+              >
+                {voiceEnabled ? "🔊" : "🔇"}
+              </button>
             </div>
           </div>
 
@@ -985,15 +1035,15 @@ function AITutor() {
               }}
             >
               {isListening && (
-                <div style={{ 
-                  position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px", 
-                  backgroundColor: "#EF4444", borderRadius: "50%", 
+                <div style={{
+                  position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px",
+                  backgroundColor: "#EF4444", borderRadius: "50%",
                   animation: "pulse 1.5s infinite"
                 }} />
               )}
               {isCallActive && !isListening && (
-                <div style={{ 
-                  position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px", 
+                <div style={{
+                  position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px",
                   backgroundColor: "#F59E0B", borderRadius: "50%"
                 }} title="Waiting for response..." />
               )}
@@ -1031,18 +1081,18 @@ function AITutor() {
             <h3 style={{ fontSize: "18px", color: "#fff", fontWeight: "700", margin: 0 }}>Interactive 3D Visualizer</h3>
             <p style={{ color: "#94A3B8", fontSize: "12px", margin: "4px 0 0 0" }}>Active Model: <strong style={{ color: "#06B6D4" }}>{selectedOrgan}</strong></p>
           </div>
-          
+
           <div className="tutor-canvas-container">
             <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
               <ambientLight intensity={1.5} />
               <directionalLight position={[2, 2, 2]} intensity={2.0} />
               <pointLight position={[-2, -2, -2]} intensity={1.0} />
-              
-              <OrganModel 
-                organ={selectedOrgan} 
-                selectedRegion={selectedRegion} 
+
+              <OrganModel
+                organ={selectedOrgan}
+                selectedRegion={selectedRegion}
               />
-              
+
               <OrbitControls enableZoom={true} />
             </Canvas>
 

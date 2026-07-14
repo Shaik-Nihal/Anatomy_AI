@@ -682,24 +682,51 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
     groupRef.current.scale.set(1, 1, 1);
     groupRef.current.position.set(0, 0, 0);
 
-    const box = new THREE.Box3().setFromObject(scene);
+    // Compute bounding box strictly for visible meshes to ignore invisible lights/armatures
+    const box = new THREE.Box3();
+    box.makeEmpty();
+    scene.traverse((node) => {
+      if (node.isMesh && node.visible && !node.name.toLowerCase().includes('light') && !node.name.toLowerCase().includes('camera')) {
+        node.geometry.computeBoundingBox();
+        const meshBox = node.geometry.boundingBox.clone();
+        meshBox.applyMatrix4(node.matrixWorld);
+        box.union(meshBox);
+      }
+    });
+
+    if (box.isEmpty()) {
+      box.setFromObject(scene); // fallback if no meshes found
+    }
+
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
+
+    // Anatomical models often have long protruding vessels (ureters, veins) 
+    // that heavily skew the geometric center away from the visual center of mass.
+    const organConfig = {
+      Kidney: { scaleMultiplier: 2.8, xOffset: -1.0, yOffset: 1.0, zOffset: 0 },
+      Lungs: { scaleMultiplier: 1.5, xOffset: 0, yOffset: 0.2, zOffset: 0 },
+      Stomach: { scaleMultiplier: 1.6, xOffset: 0, yOffset: 0.2, zOffset: 0 },
+      Intestines: { scaleMultiplier: 1.3, xOffset: 0, yOffset: 0, zOffset: 0 },
+      Skeleton: { scaleMultiplier: 1.0, xOffset: 0, yOffset: -0.4, zOffset: 0 },
+      "Human Anatomy": { scaleMultiplier: 1.0, xOffset: 0, yOffset: -0.4, zOffset: 0 },
+    };
 
     if (maxDim > 0) {
       // Auto-scale all models to fit uniformly
       let targetSize = 4.0;
       if (organ === "Human Anatomy" || organ === "Skeleton") targetSize = 5.5;
 
-      const scale = targetSize / maxDim;
+      const conf = organConfig[organ] || { scaleMultiplier: 1.0, xOffset: 0, yOffset: 0, zOffset: 0 };
+      const scale = (targetSize / maxDim) * conf.scaleMultiplier;
       groupRef.current.scale.set(scale, scale, scale);
 
-      // Auto-center exactly in the middle of the screen
+      // Auto-center based on bounds, then apply manual corrections for visual center of mass
       groupRef.current.position.set(
-        -center.x * scale,
-        -center.y * scale,
-        -center.z * scale
+        (-center.x * scale) + conf.xOffset,
+        (-center.y * scale) + conf.yOffset,
+        (-center.z * scale) + conf.zOffset
       );
     }
   }, [scene, organ]);
@@ -1047,19 +1074,11 @@ function ARViewer() {
                     ← Back to Selection
                   </button>
                   <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                    <div style={{ fontSize: "40px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ fontSize: "40px" }}>
                       {selectedOrgan === "Heart" && "🫀"}
                       {selectedOrgan === "Brain" && "🧠"}
-                      {selectedOrgan === "Lungs" && "🫁"}
-                      {selectedOrgan === "Skeleton" && "🦴"}
-                      {selectedOrgan === "Skull" && "💀"}
-                      {selectedOrgan === "Eye" && "👁️"}
-                      {selectedOrgan === "Human Anatomy" && <img src="/icons/human.png" alt="Human" style={{ width: 44, height: 44, objectFit: "contain" }} />}
-                      {selectedOrgan === "Liver" && <img src="/icons/liver.png" alt="Liver" style={{ width: 44, height: 44, objectFit: "contain" }} />}
-                      {selectedOrgan === "Kidney" && <img src="/icons/kidney.png" alt="Kidney" style={{ width: 44, height: 44, objectFit: "contain" }} />}
-                      {selectedOrgan === "Stomach" && <img src="/icons/stomach.png" alt="Stomach" style={{ width: 44, height: 44, objectFit: "contain" }} />}
-                      {selectedOrgan === "Intestines" && <img src="/icons/intestines.png" alt="Intestines" style={{ width: 44, height: 44, objectFit: "contain" }} />}
-                      {!["Heart", "Brain", "Lungs", "Skeleton", "Skull", "Eye", "Human Anatomy", "Liver", "Kidney", "Stomach", "Intestines"].includes(selectedOrgan) && "🧪"}
+                      {selectedOrgan === "Human Anatomy" && "🧍‍♂️"}
+                      {selectedOrgan !== "Heart" && selectedOrgan !== "Brain" && selectedOrgan !== "Human Anatomy" && "🧪"}
                     </div>
                     <div>
                       <h3 style={{ margin: 0, fontSize: "12px", color: "#06B6D4", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "800" }}>Current Model</h3>
