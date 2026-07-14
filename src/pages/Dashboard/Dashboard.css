@@ -128,34 +128,6 @@
   background: rgba(99, 102, 241, 0.12);
 }
 
-.timeline-new {
-  @apply relative pl-8 mt-4 flex flex-col gap-4;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.timeline-item-new {
-  @apply relative;
-}
-
-.timeline-card-new {
-  @apply rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.status-pill {
-  @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
-}
-
-.status-pill.score {
-  @apply bg-purple-500/10 text-purple-400 border border-purple-500/20;
-}
-.status-pill.completed {
-  @apply bg-blue-500/10 text-blue-400 border border-blue-500/20;
-}
-.status-pill.explored {
-  @apply bg-cyan-500/10 text-cyan-400 border border-cyan-500/20;
-}
 
 .mastery-progress-bg {
   @apply w-full h-3 rounded-full mt-2 mb-6 overflow-hidden;
