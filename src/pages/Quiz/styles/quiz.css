@@ -94,7 +94,7 @@
 
 /* ORGAN CARD */
 
-.organ-card{
+.quiz-organ-card{
   background:#1E293B;
   border:1px solid rgba(255,255,255,0.08);
 
@@ -111,7 +111,7 @@
   transition:0.3s ease;
 }
 
-.organ-card:hover{
+.quiz-organ-card:hover{
   transform:translateY(-3px);
   border-color:#06B6D4;
   box-shadow:0 0 25px rgba(6,182,212,0.4);
