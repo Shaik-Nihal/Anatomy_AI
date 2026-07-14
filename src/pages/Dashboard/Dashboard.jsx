@@ -294,8 +294,8 @@ function Dashboard() {
           <div className="dashboard-right-section">
             
             {/* Gamification Profile Card */}
-            <div className="glass-card-new right-card-progress mb-5">
-              <div className="flex justify-between items-center mb-4">
+            <div className="glass-card-new mb-5">
+              <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-xl font-extrabold text-white shadow-[0_4px_15px_rgba(6,182,212,0.3)]">
                     {level}
@@ -312,13 +312,15 @@ function Dashboard() {
                 </div>
               </div>
 
-              {/* XP Progress Bar */}
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-semibold text-slate-400">XP to Level {level + 1}</span>
-                <span className="text-xs font-bold text-cyan-500">{currentLevelXp} / 100</span>
-              </div>
-              <div className="w-full h-2 bg-white/5 rounded-md overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-md transition-all duration-1000 ease-in-out" style={{ width: `${(currentLevelXp / 100) * 100}%` }} />
+              {/* XP Progress Group */}
+              <div className="mb-2">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-semibold text-slate-400">XP to Level {level + 1}</span>
+                  <span className="text-xs font-bold text-cyan-500">{currentLevelXp} / 100</span>
+                </div>
+                <div className="w-full h-2 min-h-[8px] flex-shrink-0 bg-white/10 rounded-md overflow-hidden shadow-inner">
+                  <div className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-md transition-all duration-1000 ease-in-out shadow-[0_0_10px_rgba(6,182,212,0.5)]" style={{ width: `${(currentLevelXp / 100) * 100}%` }} />
+                </div>
               </div>
 
               {/* Badges Display */}
@@ -388,20 +390,22 @@ function Dashboard() {
 
             {/* Learning Progress Card */}
             <div className="glass-card-new right-card-progress mt-6 lg:mt-0">
-              <div className="flex items-center gap-2 mb-5">
+              <div className="flex items-center gap-2">
                 <span className="text-lg text-amber-400">🏆</span>
                 <h3 className="text-lg font-bold m-0 text-white">
                   Learning Progress
                 </h3>
               </div>
 
-              {/* Anatomy Mastery Slider */}
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-semibold text-slate-400">Anatomy Mastery</span>
-                <span className="text-lg font-extrabold text-pink-500">{overallMastery}%</span>
-              </div>
-              <div className="mastery-progress-bg">
-                <div className="mastery-progress-fill" style={{ width: `${overallMastery}%` }} />
+              {/* Anatomy Mastery Group */}
+              <div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-semibold text-slate-400">Anatomy Mastery</span>
+                  <span className="text-lg font-extrabold text-pink-500">{overallMastery}%</span>
+                </div>
+                <div className="mastery-progress-bg">
+                  <div className="mastery-progress-fill" style={{ width: `${overallMastery}%` }} />
+                </div>
               </div>
 
               {/* Stats Grid */}

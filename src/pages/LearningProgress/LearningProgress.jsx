@@ -441,74 +441,70 @@ function LearningProgress() {
             <div className="progress-charts-grid">
 
               {/* Mastery Over Time */}
-              <div className="glass-card-new active-cyan">
+              <div className="glass-card-new active-cyan" style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Mastery Over Time</span>
                   <span style={{ color: "#64748b", fontSize: 12 }}>Performance Score</span>
                 </div>
-                <ResponsiveContainer width="100%" height={160}>
-                  <LineChart data={masteryData}>
-                    <defs>
-                      <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%"   stopColor="#06b6d4" />
-                        <stop offset="100%" stopColor="#7c3aed" />
-                      </linearGradient>
-                    </defs>
-                    <XAxis
-                      dataKey="date"
-                      tick={{ fill: "#475569", fontSize: 11 }}
-                      axisLine={false} tickLine={false}
-                    />
-                    <YAxis
-                      domain={[0, 100]}
-                      ticks={[0, 25, 50, 75, 100]}
-                      tickFormatter={(v) => `${v}%`}
-                      tick={{ fill: "#475569", fontSize: 11 }}
-                      axisLine={false} tickLine={false}
-                      width={36}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        background: "#1e293b", border: "1px solid #334155",
-                        borderRadius: 8, color: "#e2e8f0", fontSize: 12,
-                      }}
-                      formatter={(v) => [`${v}%`, "Mastery"]}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="value"
-                      stroke="url(#lineGrad)"
-                      strokeWidth={2.5}
-                      dot={{ r: 4, fill: "#06b6d4", stroke: "#0b0f1a", strokeWidth: 2 }}
-                      activeDot={{ r: 6, fill: "#7c3aed" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+                <div style={{ flex: 1, minHeight: 280 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={masteryData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: "#475569", fontSize: 11 }}
+                        axisLine={false} tickLine={false}
+                      />
+                      <YAxis
+                        domain={[0, 100]}
+                        ticks={[0, 25, 50, 75, 100]}
+                        tickFormatter={(v) => `${v}%`}
+                        tick={{ fill: "#475569", fontSize: 11 }}
+                        axisLine={false} tickLine={false}
+                        width={40}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#1e293b", border: "1px solid #334155",
+                          borderRadius: 8, color: "#e2e8f0", fontSize: 12,
+                        }}
+                        formatter={(v) => [`${v}%`, "Mastery"]}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#06b6d4"
+                        strokeWidth={3}
+                        dot={{ r: 4, fill: "#06b6d4", stroke: "#0b0f1a", strokeWidth: 2 }}
+                        activeDot={{ r: 6, fill: "#7c3aed", stroke: "#fff", strokeWidth: 2 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
 
               {/* Topic Mastery */}
               <div className="glass-card-new active-purple">
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
                   <span style={{ fontWeight: 600, color: "#e2e8f0" }}>Topic Mastery</span>
-                  <span style={{ color: "#06b6d4", fontSize: 12 }}>4 Main Organs</span>
+                  <span style={{ color: "#06b6d4", fontSize: 12, fontWeight: 700 }}>Top 5 Organs</span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                  {topicData.map((t) => (
+                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                  {[...topicData].sort((a, b) => b.pct - a.pct).slice(0, 5).map((t) => (
                     <div key={t.name}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontSize: 16 }}>
-                            {t.icon.includes(".png") ? <img src={t.icon} alt={t.name} style={{ width: "20px", height: "20px", objectFit: "contain" }} /> : t.icon}
-                          </span>
-                          <span style={{ color: "#cbd5e1", fontSize: 13 }}>{t.name}</span>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ width: 28, height: 28, borderRadius: 6, background: t.color + "15", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>
+                            {t.icon.includes(".png") ? <img src={t.icon} alt={t.name} style={{ width: "16px", height: "16px", objectFit: "contain" }} /> : t.icon}
+                          </div>
+                          <span style={{ color: "#cbd5e1", fontSize: 14, fontWeight: 500 }}>{t.name}</span>
                         </div>
-                        <span style={{ color: "#94a3b8", fontSize: 12 }}>{t.pct}%</span>
+                        <span style={{ color: t.color, fontSize: 13, fontWeight: 700 }}>{t.pct}%</span>
                       </div>
-                      <div style={{ height: 6, background: "#1e293b", borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ height: 6, background: "rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
                         <div style={{
                           width: `${t.pct}%`, height: "100%",
                           background: t.color, borderRadius: 4,
-                          transition: "width 0.5s ease",
+                          transition: "width 1s cubic-bezier(0.4, 0, 0.2, 1)",
                         }} />
                       </div>
                     </div>

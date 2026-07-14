@@ -65,7 +65,7 @@
 }
 
 .features-grid-new {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6;
 }
 
 .glass-card-new.clickable {
@@ -129,22 +129,3 @@
 }
 
 
-.mastery-progress-bg {
-  @apply w-full h-3 rounded-full mt-2 mb-6 overflow-hidden;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.mastery-progress-fill {
-  @apply h-full rounded-full transition-all duration-1000;
-  background: linear-gradient(90deg, #EC4899 0%, #8B5CF6 100%);
-}
-
-.stat-boxes-container {
-  @apply grid grid-cols-2 gap-4;
-}
-
-.stat-box-item {
-  @apply flex items-center gap-4 p-4 rounded-xl;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
