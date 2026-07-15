@@ -309,7 +309,8 @@ function Settings() {
         showToast("No progress records found to export.", "error");
         return;
       }
-      const headers = ["Attempt ID", "Organ", "Difficulty", "Score", "Total Questions", "Percentage", "Weak Areas", "Attempted At"];
+      const escapeCSV = (val) => `"${String(val).replace(/"/g, '""')}"`;
+      const headers = ["Attempt ID", "Organ", "Difficulty", "Score", "Total Questions", "Percentage", "Weak Areas", "Attempted At"].map(escapeCSV);
       const rows = progress.map(item => [
         item.id,
         item.organ,
@@ -319,12 +320,13 @@ function Settings() {
         `${Math.round(item.percentage)}%`,
         (item.weak_areas || "").replace(/,/g, ";"),
         item.attempted_at
-      ]);
+      ].map(escapeCSV));
+      
       const csvContent = [
-        "AnatomyAI Quiz Progress Report",
-        `User Name: ${fullName || "Unknown User"}`,
-        `Generated for: ${email}`,
-        `Date: ${new Date().toLocaleDateString()}`,
+        escapeCSV("AnatomyAI Quiz Progress Report"),
+        escapeCSV(`User Name: ${fullName || "Unknown User"}`),
+        escapeCSV(`Generated for: ${email}`),
+        escapeCSV(`Date: ${new Date().toLocaleDateString()}`),
         "",
         headers.join(","), 
         ...rows.map(e => e.join(","))
