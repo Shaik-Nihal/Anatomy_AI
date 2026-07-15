@@ -7,16 +7,6 @@
   min-height: 100vh;
 }
 
-.quiz-root,
-.quiz-root * {
-  box-sizing: border-box;
-}
-
-.quiz-root * {
-  margin: 0;
-  padding: 0;
-}
-
 /* PAGE */
 
 .quiz-home{
