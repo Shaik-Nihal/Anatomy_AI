@@ -495,19 +495,28 @@ function AITutor() {
     if (!text) return { region: null, organ: null };
     const textLower = text.toLowerCase();
 
-    let detectedOrgan = null;
+    const organScores = {
+      Kidney: (textLower.match(/\b(kidney|kidneys|renal)\b/g) || []).length,
+      Lungs: (textLower.match(/\b(lung|lungs|respiratory|alveoli)\b/g) || []).length,
+      Liver: (textLower.match(/\b(liver|hepatic)\b/g) || []).length,
+      Stomach: (textLower.match(/\b(stomach|gastric)\b/g) || []).length,
+      Intestines: (textLower.match(/\b(intestine|intestines|bowel|colon)\b/g) || []).length,
+      Skull: (textLower.match(/\b(skull|cranium)\b/g) || []).length,
+      Skeleton: (textLower.match(/\b(skeleton|bone|bones)\b/g) || []).length,
+      Heart: (textLower.match(/\b(heart|aorta|ventricle|atrium|myocardium|pulmonary)\b/g) || []).length,
+      Brain: (textLower.match(/\b(brain|cerebellum|cerebrum|hemisphere|brainstem|lobe|cortex)\b/g) || []).length,
+      "Human Anatomy": (textLower.match(/\b(anatomy|body)\b/g) || []).length,
+    };
 
-    // 1. Detect primary organ first (avoids overlap like "cortex" in kidney vs brain)
-    if (textLower.includes("kidney") || textLower.includes("renal")) detectedOrgan = "Kidney";
-    else if (textLower.includes("lung") || textLower.includes("respiratory") || textLower.includes("alveoli")) detectedOrgan = "Lungs";
-    else if (textLower.includes("liver") || textLower.includes("hepatic")) detectedOrgan = "Liver";
-    else if (textLower.includes("stomach") || textLower.includes("gastric")) detectedOrgan = "Stomach";
-    else if (textLower.includes("intestine") || textLower.includes("bowel") || textLower.includes("colon")) detectedOrgan = "Intestines";
-    else if (textLower.includes("skull") || textLower.includes("cranium")) detectedOrgan = "Skull";
-    else if (textLower.includes("skeleton") || textLower.includes("bone")) detectedOrgan = "Skeleton";
-    else if (textLower.includes("heart") || textLower.includes("aorta") || textLower.includes("ventricle") || textLower.includes("atrium") || textLower.includes("myocardium") || textLower.includes("pulmonary")) detectedOrgan = "Heart";
-    else if (textLower.includes("brain") || textLower.includes("cerebellum") || textLower.includes("cerebrum") || textLower.includes("hemisphere") || textLower.includes("brainstem") || textLower.includes("lobe") || textLower.includes("cortex")) detectedOrgan = "Brain";
-    else if (textLower.includes("anatomy") || textLower.includes("body")) detectedOrgan = "Human Anatomy";
+    let detectedOrgan = null;
+    let maxScore = 0;
+
+    for (const [organ, score] of Object.entries(organScores)) {
+      if (score > maxScore) {
+        maxScore = score;
+        detectedOrgan = organ;
+      }
+    }
 
     let detectedRegion = null;
 
@@ -568,6 +577,12 @@ function AITutor() {
     }
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
+    }
+
+    // Instantly switch organ based on user's query
+    const { organ: queryOrgan } = scanTextForAnatomicalRegions(query);
+    if (queryOrgan) {
+      setSelectedOrgan(queryOrgan);
     }
 
     let activeId = currentChatId;

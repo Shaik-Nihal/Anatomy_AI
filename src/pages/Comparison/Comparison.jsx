@@ -66,7 +66,15 @@ function Comparison() {
                 >
                   <div className="organ-card-header">
                     <div className="organ-icon-container">
-                      <span className="organ-icon">{organ.icon}</span>
+                      {organ.icon.endsWith(".png") ? (
+                        <img 
+                          src={organ.icon} 
+                          alt={organ.organName} 
+                          style={{ width: "40px", height: "40px", objectFit: "contain" }} 
+                        />
+                      ) : (
+                        <span className="organ-icon">{organ.icon}</span>
+                      )}
                     </div>
                     <h2 className="organ-name">{organ.organName}</h2>
                   </div>
