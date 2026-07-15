@@ -79,6 +79,8 @@ function OrganModel({ organ, selectedRegion, isBeating }) {
   else if (organ === "Intestines") modelPath = "/models/small_and_large_intestine.glb";
   else if (organ === "Skull") modelPath = "/models/human_male_skull.glb";
   else if (organ === "Skeleton") modelPath = "/models/ecorche_-_anatomy_study.glb";
+  else if (organ === "Liver") modelPath = "/models/liver.glb";
+  else if (organ === "Eye") modelPath = "/models/human_eye.glb";
 
   const { scene } = useGLTF(modelPath);
 
@@ -504,6 +506,7 @@ function AITutor() {
     const textLower = text.toLowerCase();
 
     const organScores = {
+      Eye: (textLower.match(/\b(eye|eyes|ocular|optic)\b/g) || []).length,
       Kidney: (textLower.match(/\b(kidney|kidneys|renal)\b/g) || []).length,
       Lungs: (textLower.match(/\b(lung|lungs|respiratory|alveoli)\b/g) || []).length,
       Liver: (textLower.match(/\b(liver|hepatic)\b/g) || []).length,

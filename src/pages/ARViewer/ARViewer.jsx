@@ -614,6 +614,8 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
   else if (organ === "Intestines") modelPath = "/models/small_and_large_intestine.glb";
   else if (organ === "Skull") modelPath = "/models/human_male_skull.glb";
   else if (organ === "Skeleton") modelPath = "/models/ecorche_-_anatomy_study.glb";
+  else if (organ === "Liver") modelPath = "/models/liver.glb";
+  else if (organ === "Eye") modelPath = "/models/human_eye.glb";
 
   const { scene } = useGLTF(modelPath);
   const originalMaterials = useRef(new Map());
