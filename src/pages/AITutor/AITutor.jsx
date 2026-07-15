@@ -225,6 +225,14 @@ function AITutor() {
   ]);
   const [chatLoading, setChatLoading] = useState(false);
   const [isBeating, setIsBeating] = useState(true);
+  const chatEndRef = useRef(null);
+
+  // Auto-scroll to bottom whenever chatMessages changes
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, chatLoading]);
 
   const { user } = useAuth();
   const { addXP, awardBadge } = useGamification();
@@ -1034,6 +1042,7 @@ function AITutor() {
                 <span style={{ color: "#06B6D4", fontSize: "13px", fontWeight: "600" }}>Tutor is thinking...</span>
               </div>
             )}
+            <div ref={chatEndRef} />
           </div>
 
           {/* Form Input */}
