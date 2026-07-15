@@ -25,7 +25,7 @@ function QuizHome({ onStartQuiz }) {
     },
   ];
   const filteredOrgans = organs.filter((organ) =>
-    organ.name.toLowerCase().includes(searchTerm.toLowerCase())
+    organ.name.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
 
   const visibleOrgans = searchTerm
@@ -74,7 +74,7 @@ function QuizHome({ onStartQuiz }) {
                 className={`quiz-organ-card
                   ${
                     searchTerm &&
-                    organ.name.toLowerCase().includes(searchTerm.toLowerCase())
+                    organ.name.toLowerCase().startsWith(searchTerm.toLowerCase())
                       ? "highlight-organ"
                       : ""
                   }
@@ -94,7 +94,7 @@ function QuizHome({ onStartQuiz }) {
                 <span>{organ.name}</span>
               </div>
             ))}
-            {!showAll && (
+            {!showAll && !searchTerm && (
               <button className="more-btn" onClick={() => setShowAll(true)}>
                 + More Organs
               </button>
