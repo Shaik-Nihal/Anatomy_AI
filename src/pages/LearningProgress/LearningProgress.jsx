@@ -188,16 +188,26 @@ function LearningProgress() {
   const overallMastery = latestAttempts.length > 0 ? Math.round(masterySum / organList.length) : 0;
 
   // Chart data
-  const masteryData = [...progressData]
+  const dateMap = {};
+  [...progressData]
     .sort((a, b) => new Date(a.attempted_at) - new Date(b.attempted_at))
-    .map((attempt) => {
+    .forEach((attempt) => {
       const dateObj = new Date(attempt.attempted_at);
       const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      return {
-        date: dateStr,
-        value: Math.round(attempt.percentage),
-      };
+      if (!dateMap[dateStr]) dateMap[dateStr] = { sum: 0, count: 0 };
+      dateMap[dateStr].sum += attempt.percentage;
+      dateMap[dateStr].count += 1;
     });
+
+  const masteryData = Object.keys(dateMap).map((date) => ({
+    date,
+    value: Math.round(dateMap[date].sum / dateMap[date].count)
+  }));
+
+  if (masteryData.length === 1) {
+    masteryData.unshift({ date: "Start", value: 0 });
+  }
+
 
   // Topics list
   const topicData = [
@@ -478,7 +488,7 @@ function LearningProgress() {
                       <Line
                         type="monotone"
                         dataKey="value"
-                        stroke="url(#lineGrad)"
+                        stroke="#06b6d4"
                         strokeWidth={3}
                         dot={{ r: 5, fill: "#06b6d4", stroke: "#0b0f1a", strokeWidth: 2 }}
                         activeDot={{ r: 7, fill: "#7c3aed", stroke: "#0b0f1a", strokeWidth: 2 }}
