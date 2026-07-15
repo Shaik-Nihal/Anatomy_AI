@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "./Settings.css";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
+import logo from "../../assets/logo.png";
 import { supabase } from "../../services/supabase";
 import { getUserProgress, resetUserProgress } from "../../services/quizApi";
 import { jsPDF } from "jspdf";
@@ -117,6 +119,8 @@ function Settings() {
   const [toastMessage, setToastMessage] = useState(null);
   const [toastType, setToastType] = useState("success"); // success | error | info
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sessionInfo, setSessionInfo] = useState({ os: "Unknown OS", browser: "Unknown Browser" });
   const [othersRevoked, setOthersRevoked] = useState(false);
@@ -924,176 +928,240 @@ function Settings() {
 
             {/* ABOUT TAB */}
             {activeTab === "about" && (
-              <div className="settings-form-panel" style={{ textAlign: "center", padding: "40px 20px" }}>
-                <div style={{
-                  width: "80px",
-                  height: "80px",
-                  background: "linear-gradient(135deg, #06B6D4, #3B82F6)",
-                  borderRadius: "24px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 20px",
-                  boxShadow: "0 10px 25px rgba(6, 182, 212, 0.4)",
-                  transform: "rotate(-5deg)"
-                }}>
-                  <FiInfo style={{ fontSize: "40px", color: "white", transform: "rotate(5deg)" }} />
-                </div>
-                
-                <h2 style={{ fontSize: "28px", fontWeight: 800, color: "white", margin: "0 0 8px 0", letterSpacing: "-0.5px" }}>AR AnatomyAI</h2>
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
-                  <div style={{ 
-                    background: "rgba(6, 182, 212, 0.15)", 
-                    border: "1px solid rgba(6, 182, 212, 0.3)", 
-                    color: "#06B6D4", 
-                    padding: "4px 12px", 
-                    borderRadius: "20px", 
-                    fontSize: "12px", 
-                    fontWeight: 700
-                  }}>
-                    v1.2.4 (Stable Build)
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="settings-form-panel" 
+                style={{ textAlign: "center", padding: "50px 20px", position: "relative", overflow: "hidden" }}
+              >
+                {/* Background glow for the panel */}
+                <motion.div 
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                  transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+                  style={{
+                    position: "absolute",
+                    top: "-50px",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "300px",
+                    height: "300px",
+                    background: "radial-gradient(circle, rgba(6, 182, 212, 0.2) 0%, rgba(0,0,0,0) 70%)",
+                    filter: "blur(50px)",
+                    zIndex: 0
+                  }} 
+                />
+
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <motion.div 
+                    animate={{ y: [0, -12, 0] }}
+                    transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      background: "rgba(255, 255, 255, 0.03)",
+                      borderRadius: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 28px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      boxShadow: "0 15px 35px rgba(0,0,0,0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)",
+                      backdropFilter: "blur(15px)",
+                      padding: "16px"
+                    }}
+                  >
+                    <img src={logo} alt="AR AnatomyAI Logo" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "drop-shadow(0 0 10px rgba(6, 182, 212, 0.4))" }} />
+                  </motion.div>
+                  
+                  <motion.h2 
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                    style={{ fontSize: "36px", fontWeight: 800, color: "white", margin: "0 0 16px 0", letterSpacing: "-0.5px" }}
+                  >
+                    AR Anatomy<span style={{ color: "#06B6D4" }}>AI</span>
+                  </motion.h2>
+                  
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}
+                    style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}
+                  >
+                    <motion.div 
+                      whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(6, 182, 212, 0.3)" }}
+                      style={{ 
+                        background: "linear-gradient(90deg, rgba(6, 182, 212, 0.15), rgba(59, 130, 246, 0.15))", 
+                        border: "1px solid rgba(6, 182, 212, 0.4)", 
+                        color: "#38bdf8", 
+                        padding: "6px 20px", 
+                        borderRadius: "20px", 
+                        fontSize: "13px", 
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px"
+                      }}
+                    >
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#38bdf8", boxShadow: "0 0 10px #38bdf8" }} />
+                      v1.2.4 (Stable Build)
+                    </motion.div>
+                  </motion.div>
+
+                  <motion.p 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                    style={{ color: "#94A3B8", fontSize: "16px", lineHeight: "1.7", maxWidth: "480px", margin: "0 auto 48px" }}
+                  >
+                    A next-generation interactive learning platform utilizing advanced AI and augmented reality to master human anatomy.
+                  </motion.p>
+
+                  {/* Core Specs */}
+                  <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "56px", flexWrap: "wrap" }}>
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}
+                      whileHover={{ scale: 1.05, y: -5, borderColor: "rgba(6, 182, 212, 0.4)", boxShadow: "0 10px 30px rgba(6, 182, 212, 0.15)" }}
+                      style={{ 
+                        background: "rgba(255,255,255,0.02)", 
+                        border: "1px solid rgba(255,255,255,0.08)", 
+                        borderRadius: "24px", 
+                        padding: "20px 24px",
+                        width: "100%",
+                        maxWidth: "260px",
+                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        backdropFilter: "blur(12px)",
+                        cursor: "pointer",
+                        transition: "border-color 0.3s ease, box-shadow 0.3s ease"
+                      }}
+                    >
+                      <div style={{ background: "linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.05))", padding: "14px", borderRadius: "16px", color: "#06B6D4", border: "1px solid rgba(6, 182, 212, 0.2)" }}>
+                        <FiMonitor size={26} />
+                      </div>
+                      <div>
+                        <div style={{ color: "#64748B", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>Engine Core</div>
+                        <div style={{ color: "white", fontSize: "15px", fontWeight: 700, marginTop: "4px" }}>React 19 + ThreeJS</div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div 
+                      initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
+                      whileHover={{ scale: 1.05, y: -5, borderColor: "rgba(167, 139, 250, 0.4)", boxShadow: "0 10px 30px rgba(167, 139, 250, 0.15)" }}
+                      style={{ 
+                        background: "rgba(255,255,255,0.02)", 
+                        border: "1px solid rgba(255,255,255,0.08)", 
+                        borderRadius: "24px", 
+                        padding: "20px 24px",
+                        width: "100%",
+                        maxWidth: "260px",
+                        textAlign: "left",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "16px",
+                        backdropFilter: "blur(12px)",
+                        cursor: "pointer",
+                        transition: "border-color 0.3s ease, box-shadow 0.3s ease"
+                      }}
+                    >
+                      <div style={{ background: "linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(167, 139, 250, 0.05))", padding: "14px", borderRadius: "16px", color: "#A78BFA", border: "1px solid rgba(167, 139, 250, 0.2)" }}>
+                        <FiDatabase size={26} />
+                      </div>
+                      <div>
+                        <div style={{ color: "#64748B", fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>AI Models</div>
+                        <div style={{ color: "white", fontSize: "15px", fontWeight: 700, marginTop: "4px" }}>Google Gemini Pro</div>
+                      </div>
+                    </motion.div>
                   </div>
-                </div>
 
-                <p style={{ color: "#94A3B8", fontSize: "14px", lineHeight: "1.6", maxWidth: "400px", margin: "0 auto 32px" }}>
-                  A next-generation interactive learning platform utilizing advanced AI and augmented reality to master human anatomy.
-                </p>
-
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
-                  <div style={{ 
-                    background: "rgba(255,255,255,0.02)", 
-                    border: "1px solid rgba(255,255,255,0.05)", 
-                    borderRadius: "16px", 
-                    padding: "20px",
-                    width: "100%",
-                    maxWidth: "400px",
-                    textAlign: "left"
-                  }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
-                      <span style={{ color: "#64748B", fontSize: "13px", fontWeight: 600 }}>Engine Core</span>
-                      <span style={{ color: "white", fontSize: "13px", fontWeight: 500 }}>React 19 + ThreeJS</span>
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} style={{ textAlign: "center", marginBottom: "48px" }}>
+                    <div style={{ display: "inline-block", position: "relative" }}>
+                      <h3 style={{ color: "white", fontSize: "22px", fontWeight: 800, marginBottom: "32px", letterSpacing: "-0.5px" }}>Meet the Team</h3>
+                      <div style={{ position: "absolute", bottom: "16px", left: "20%", width: "60%", height: "4px", background: "linear-gradient(90deg, transparent, #06B6D4, transparent)", borderRadius: "2px" }} />
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "#64748B", fontSize: "13px", fontWeight: 600 }}>AI Models</span>
-                      <span style={{ color: "white", fontSize: "13px", fontWeight: 500 }}>Google Gemini Pro</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ textAlign: "center", marginBottom: "32px" }}>
-                  <h3 style={{ color: "white", fontSize: "18px", fontWeight: 700, marginBottom: "20px" }}>Meet the Developers</h3>
-                  <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap", maxWidth: "900px", margin: "0 auto" }}>
                     
-                    {/* Developer 1 */}
-                    <div style={{ 
-                      background: "rgba(255,255,255,0.02)", 
-                      border: "1px solid rgba(255,255,255,0.05)", 
-                      borderRadius: "16px", 
-                      padding: "20px 16px",
-                      width: "180px",
-                      textAlign: "center",
-                      transition: "transform 0.3s ease, border-color 0.3s ease",
-                      cursor: "default"
-                    }} className="developer-card">
-                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #06B6D4, #3B82F6)", padding: "2px" }}>
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nihal&backgroundColor=b6e3f4" alt="Shaik Nihal" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
-                      </div>
-                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>Shaik Nihal</div>
-                      <div style={{ color: "#06B6D4", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Lead AI & Full-Stack</div>
-                    </div>
+                    <div style={{ display: "flex", gap: "24px", justifyContent: "center", flexWrap: "wrap", maxWidth: "900px", margin: "0 auto" }}>
+                      
+                      {[
+                        { name: "Shaik Nihal", role: "Developer", color: "#06B6D4", seed: "Nihal", bg: "b6e3f4" },
+                        { name: "P Jaajitha Reddy", role: "Developer", color: "#10B981", seed: "Jaajitha", bg: "c0aede" },
+                        { name: "S Durga Sri", role: "Developer", color: "#F59E0B", seed: "Durga", bg: "fcd34d" },
+                        { name: "I Kiran Kumar", role: "Developer", color: "#8B5CF6", seed: "Kiran", bg: "ddd6fe" },
+                        { name: "L Monika", role: "Developer", color: "#F43F5E", seed: "Monika", bg: "fecdd3" }
+                      ].map((dev, i) => (
+                        <motion.div 
+                          key={dev.name}
+                          initial={{ opacity: 0, y: 40, rotateX: -15, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+                          transition={{ delay: 0.7 + (0.1 * i), type: "spring", stiffness: 120, damping: 14 }}
+                          whileHover={{ 
+                            y: -12, 
+                            scale: 1.05,
+                            rotateY: (i % 2 === 0 ? 5 : -5),
+                            borderColor: dev.color,
+                            boxShadow: `0 20px 40px rgba(0,0,0,0.5), 0 0 25px ${dev.color}50`,
+                            background: "rgba(30, 41, 59, 0.85)"
+                          }}
+                          style={{ 
+                            background: "rgba(30, 41, 59, 0.4)", 
+                            border: "1px solid rgba(255,255,255,0.06)", 
+                            borderRadius: "24px", 
+                            padding: "24px 16px",
+                            width: "170px",
+                            textAlign: "center",
+                            cursor: "pointer",
+                            backdropFilter: "blur(20px)",
+                            transition: "border-color 0.4s ease, background 0.4s ease",
+                            transformStyle: "preserve-3d"
+                          }}
+                        >
+                          <motion.div 
+                            animate={{ y: [0, -6, 0] }}
+                            transition={{ repeat: Infinity, duration: 3 + i * 0.5, ease: "easeInOut" }}
+                            style={{ 
+                              width: "80px", 
+                              height: "80px", 
+                              borderRadius: "50%", 
+                              margin: "0 auto 16px", 
+                              background: `linear-gradient(135deg, ${dev.color}, #0F172A)`, 
+                              padding: "3px",
+                              boxShadow: `0 0 20px ${dev.color}50, inset 0 2px 5px rgba(255,255,255,0.3)`
+                            }}
+                          >
+                            <motion.img 
+                              whileHover={{ rotate: 360 }}
+                              transition={{ duration: 0.8, ease: "anticipate" }}
+                              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${dev.seed}&backgroundColor=${dev.bg}`} 
+                              alt={dev.name} 
+                              style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#0F172A", border: "3px solid #0F172A", objectFit: "cover" }} 
+                            />
+                          </motion.div>
+                          <div style={{ color: "white", fontWeight: 800, fontSize: "15px", marginBottom: "6px" }}>{dev.name}</div>
+                          <div style={{ color: dev.color, fontSize: "12px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>{dev.role}</div>
+                        </motion.div>
+                      ))}
 
-                    {/* Developer 2 */}
-                    <div style={{ 
-                      background: "rgba(255,255,255,0.02)", 
-                      border: "1px solid rgba(255,255,255,0.05)", 
-                      borderRadius: "16px", 
-                      padding: "20px 16px",
-                      width: "180px",
-                      textAlign: "center",
-                      transition: "transform 0.3s ease, border-color 0.3s ease",
-                      cursor: "default"
-                    }} className="developer-card">
-                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #10B981, #059669)", padding: "2px" }}>
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jaajitha&backgroundColor=c0aede" alt="P Jaajitha Reddy" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
-                      </div>
-                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>P Jaajitha Reddy</div>
-                      <div style={{ color: "#10B981", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Lead UI/UX Designer</div>
                     </div>
+                  </motion.div>
 
-                    {/* Developer 3 */}
-                    <div style={{ 
-                      background: "rgba(255,255,255,0.02)", 
-                      border: "1px solid rgba(255,255,255,0.05)", 
-                      borderRadius: "16px", 
-                      padding: "20px 16px",
-                      width: "180px",
-                      textAlign: "center",
-                      transition: "transform 0.3s ease, border-color 0.3s ease",
-                      cursor: "default"
-                    }} className="developer-card">
-                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #F59E0B, #D97706)", padding: "2px" }}>
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Durga&backgroundColor=fcd34d" alt="S Durga Sri" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
-                      </div>
-                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>S Durga Sri</div>
-                      <div style={{ color: "#F59E0B", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Data Researcher</div>
-                    </div>
-
-                    {/* Developer 4 */}
-                    <div style={{ 
-                      background: "rgba(255,255,255,0.02)", 
-                      border: "1px solid rgba(255,255,255,0.05)", 
-                      borderRadius: "16px", 
-                      padding: "20px 16px",
-                      width: "180px",
-                      textAlign: "center",
-                      transition: "transform 0.3s ease, border-color 0.3s ease",
-                      cursor: "default"
-                    }} className="developer-card">
-                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #8B5CF6, #6D28D9)", padding: "2px" }}>
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kiran&backgroundColor=ddd6fe" alt="I Kiran Kumar" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
-                      </div>
-                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>I Kiran Kumar</div>
-                      <div style={{ color: "#8B5CF6", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Backend Developer</div>
-                    </div>
-
-                    {/* Developer 5 */}
-                    <div style={{ 
-                      background: "rgba(255,255,255,0.02)", 
-                      border: "1px solid rgba(255,255,255,0.05)", 
-                      borderRadius: "16px", 
-                      padding: "20px 16px",
-                      width: "180px",
-                      textAlign: "center",
-                      transition: "transform 0.3s ease, border-color 0.3s ease",
-                      cursor: "default"
-                    }} className="developer-card">
-                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #F43F5E, #E11D48)", padding: "2px" }}>
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Monika&backgroundColor=fecdd3" alt="L Monika" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
-                      </div>
-                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>L Monika</div>
-                      <div style={{ color: "#F43F5E", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>QA Engineer</div>
-                    </div>
-
+                  <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+                    <motion.button 
+                      whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setShowTermsModal(true)}
+                      style={{ padding: "12px 24px", borderRadius: "14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: "13px", fontWeight: 600, cursor: "pointer", backdropFilter: "blur(10px)" }}
+                    >
+                      Terms of Service
+                    </motion.button>
+                    <motion.button 
+                      whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setShowPrivacyModal(true)}
+                      style={{ padding: "12px 24px", borderRadius: "14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: "13px", fontWeight: 600, cursor: "pointer", backdropFilter: "blur(10px)" }}
+                    >
+                      Privacy Policy
+                    </motion.button>
                   </div>
                 </div>
-
-                <div style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
-                  <button 
-                    onClick={() => showToast("Showing Terms & Conditions.", "info")}
-                    className="settings-action-btn secondary"
-                    style={{ padding: "10px 20px", borderRadius: "12px" }}
-                  >
-                    Terms of Service
-                  </button>
-                  <button 
-                    onClick={() => showToast("Displaying Privacy Policy.", "info")}
-                    className="settings-action-btn secondary"
-                    style={{ padding: "10px 20px", borderRadius: "12px" }}
-                  >
-                    Privacy Policy
-                  </button>
-                </div>
-              </div>
+              </motion.div>
             )}
 
           </div>
@@ -1165,6 +1233,90 @@ function Settings() {
                 style={{ flex: 1, background: "linear-gradient(135deg, #EF4444, #DC2626)", border: "none", color: "white", padding: "12px" }}
               >
                 Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Terms & Conditions Modal */}
+      {showTermsModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(3, 7, 18, 0.8)", backdropFilter: "blur(12px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 10000, animation: "fadeIn 0.2s ease-out"
+        }}>
+          <div className="glass-card-new" style={{
+            width: "90%", maxWidth: "600px", maxHeight: "80vh", overflowY: "auto",
+            border: "1px solid rgba(6, 182, 212, 0.25)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(6, 182, 212, 0.08)",
+            padding: "32px", background: "rgba(15, 23, 42, 0.95)",
+            textAlign: "left", borderRadius: "24px"
+          }}>
+            <h2 style={{ fontSize: "24px", fontWeight: 800, color: "white", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
+              <FiInfo color="#06B6D4" /> Terms of Service
+            </h2>
+            <div style={{ color: "#94A3B8", fontSize: "14px", lineHeight: "1.7", marginBottom: "30px", maxHeight: "50vh", overflowY: "auto", paddingRight: "10px" }}>
+              <p>Welcome to AR AnatomyAI. By using our application, you agree to these terms.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>1. Acceptance of Terms</h4>
+              <p>By accessing or using our AR learning platform, you confirm your acceptance of these terms.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>2. User Responsibilities</h4>
+              <p>You agree to use this platform strictly for educational and informational purposes. The AI-generated medical analogies and anatomy quiz results do not constitute professional medical advice.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>3. Data Privacy</h4>
+              <p>Your quiz attempts and progress are stored securely to track your learning journey. We do not sell your data to third parties.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>4. Modifications</h4>
+              <p>We reserve the right to update or modify these terms at any time. Continued use implies acceptance of the updated terms.</p>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="settings-action-btn"
+                style={{ background: "linear-gradient(135deg, #06B6D4, #3B82F6)", border: "none", color: "white", padding: "12px 24px", borderRadius: "12px" }}
+              >
+                I Understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Privacy Policy Modal */}
+      {showPrivacyModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(3, 7, 18, 0.8)", backdropFilter: "blur(12px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 10000, animation: "fadeIn 0.2s ease-out"
+        }}>
+          <div className="glass-card-new" style={{
+            width: "90%", maxWidth: "600px", maxHeight: "80vh", overflowY: "auto",
+            border: "1px solid rgba(167, 139, 250, 0.25)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(167, 139, 250, 0.08)",
+            padding: "32px", background: "rgba(15, 23, 42, 0.95)",
+            textAlign: "left", borderRadius: "24px"
+          }}>
+            <h2 style={{ fontSize: "24px", fontWeight: 800, color: "white", marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
+              <FiEye color="#A78BFA" /> Privacy Policy
+            </h2>
+            <div style={{ color: "#94A3B8", fontSize: "14px", lineHeight: "1.7", marginBottom: "30px", maxHeight: "50vh", overflowY: "auto", paddingRight: "10px" }}>
+              <p>Your privacy is critically important to us at AR AnatomyAI.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>1. Information We Collect</h4>
+              <p>We collect information necessary to provide you with a personalized learning experience, including your email address, quiz scores, and weak anatomical areas.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>2. How We Use Information</h4>
+              <p>We use this information to operate the platform, provide AI-driven tutoring (via Google Gemini), and generate personalized progress reports.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>3. Data Protection</h4>
+              <p>Your data is secured using industry-standard encryption. Authentication is handled safely by Supabase.</p>
+              <h4 style={{ color: "white", marginTop: "16px", marginBottom: "8px" }}>4. Your Rights</h4>
+              <p>You have the right to request the deletion of your account and all associated progress data at any time via the Danger Zone in your settings.</p>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="settings-action-btn"
+                style={{ background: "linear-gradient(135deg, #A78BFA, #8B5CF6)", border: "none", color: "white", padding: "12px 24px", borderRadius: "12px" }}
+              >
+                Close
               </button>
             </div>
           </div>
