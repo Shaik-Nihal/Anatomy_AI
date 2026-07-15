@@ -321,8 +321,11 @@ function Settings() {
         item.attempted_at
       ]);
       const csvContent = [
+        "AnatomyAI Quiz Progress Report",
         `User Name: ${fullName || "Unknown User"}`,
-        `Email: ${email}`,
+        `Generated for: ${email}`,
+        `Date: ${new Date().toLocaleDateString()}`,
+        "",
         headers.join(","), 
         ...rows.map(e => e.join(","))
       ].join("\n");
