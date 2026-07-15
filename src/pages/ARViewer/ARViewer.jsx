@@ -7,7 +7,8 @@ import Navbar from "../../components/Navbar";
 import ComparisonViewer from "../Comparison/ComparisonViewer";
 import { FaYoutube } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
-import { generateQuiz } from "../../services/quizApi";
+import { generateQuiz, saveQuizResult } from "../../services/quizApi";
+import { useAuth } from "../../contexts/AuthContext";
 import { videoData } from "../../data/videoData";
 import "./ARViewer.css";
 
@@ -843,6 +844,7 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
 function ARViewer() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const selectedOrgan = location.state?.organ || "Heart";
   const [activeTab, setActiveTab] = useState("overview"); // "overview" | "anatomy" | "quiz" | "comparison" | "videos"
@@ -1007,7 +1009,21 @@ function ARViewer() {
       generateQuiz(selectedOrgan, "Medium")
         .then((questions) => {
           if (questions && questions.length > 0) {
-            setQuizQuestions(questions);
+            const formatted = questions
+              .filter(q => q.options && q.options.length > 0)
+              .map(q => {
+                const correctOpt = q.options.find(o => o.startsWith(q.answer) || o === q.answer) || q.answer;
+                return {
+                  question: q.question,
+                  options: q.options,
+                  correctAnswer: correctOpt
+                };
+              });
+            if (formatted.length > 0) {
+              setQuizQuestions(formatted);
+            } else {
+              setQuizQuestions(fallbackQuizzes[selectedOrgan] || fallbackQuizzes.Heart);
+            }
           } else {
             setQuizQuestions(fallbackQuizzes[selectedOrgan] || fallbackQuizzes.Heart);
           }
@@ -1444,6 +1460,16 @@ function ARViewer() {
                                 setSelectedAnswer(null);
                               } else {
                                 setQuizFinished(true);
+                                const accuracy = Math.round((quizScore / quizQuestions.length) * 100);
+                                saveQuizResult({
+                                  userId: user?.email || "temp_user",
+                                  organ: selectedOrgan,
+                                  difficulty: "Medium",
+                                  score: quizScore,
+                                  totalQuestions: quizQuestions.length,
+                                  percentage: accuracy,
+                                  weakAreas: []
+                                }).catch(err => console.error("Failed to save AR quiz result:", err));
                               }
                             }}
                             style={{

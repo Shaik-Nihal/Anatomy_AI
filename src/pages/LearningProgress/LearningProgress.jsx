@@ -188,21 +188,27 @@ function LearningProgress() {
   const overallMastery = latestAttempts.length > 0 ? Math.round(masterySum / organList.length) : 0;
 
   // Chart data
-  const dateMap = {};
+  const masteryData = [];
+  const historicalLatest = {};
+
   [...progressData]
     .sort((a, b) => new Date(a.attempted_at) - new Date(b.attempted_at))
     .forEach((attempt) => {
       const dateObj = new Date(attempt.attempted_at);
       const dateStr = dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      if (!dateMap[dateStr]) dateMap[dateStr] = { sum: 0, count: 0 };
-      dateMap[dateStr].sum += attempt.percentage;
-      dateMap[dateStr].count += 1;
+      
+      historicalLatest[attempt.organ] = attempt.percentage;
+      
+      const scores = Object.values(historicalLatest);
+      const currentAvg = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+      
+      const existing = masteryData.find(d => d.date === dateStr);
+      if (existing) {
+         existing.value = currentAvg;
+      } else {
+         masteryData.push({ date: dateStr, value: currentAvg });
+      }
     });
-
-  const masteryData = Object.keys(dateMap).map((date) => ({
-    date,
-    value: Math.round(dateMap[date].sum / dateMap[date].count)
-  }));
 
   if (masteryData.length === 1) {
     masteryData.unshift({ date: "Start", value: 0 });
