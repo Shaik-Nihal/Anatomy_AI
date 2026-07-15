@@ -320,7 +320,12 @@ function Settings() {
         (item.weak_areas || "").replace(/,/g, ";"),
         item.attempted_at
       ]);
-      const csvContent = [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      const csvContent = [
+        `User Name: ${fullName || "Unknown User"}`,
+        `Email: ${email}`,
+        headers.join(","), 
+        ...rows.map(e => e.join(","))
+      ].join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -355,8 +360,9 @@ function Settings() {
       // Subtitle
       doc.setFontSize(11);
       doc.setTextColor(100, 100, 100);
-      doc.text(`Generated for: ${email}`, 14, 30);
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 36);
+      doc.text(`User Name: ${fullName || "Unknown User"}`, 14, 30);
+      doc.text(`Generated for: ${email}`, 14, 36);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 42);
 
       // Table Data
       const tableColumn = ["Date", "Organ", "Difficulty", "Score", "Accuracy", "Weak Areas"];
@@ -377,7 +383,7 @@ function Settings() {
       autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
-        startY: 45,
+        startY: 50,
         theme: 'grid',
         styles: { fontSize: 9, cellPadding: 4 },
         headStyles: { fillColor: [6, 182, 212], textColor: 255, fontStyle: 'bold' },
