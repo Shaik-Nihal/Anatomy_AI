@@ -37,7 +37,7 @@ const educationalContent = {
           { title: "Kenhub: Anatomy of the Human Heart", url: "https://www.kenhub.com/en/library/anatomy/the-heart" }
         ]
       },
-      video: "7XadFvjL-tQ" // Heart anatomy video
+      video: "X9ZZ6tcxArI" // Heart anatomy video
     },
     "Aorta": {
       anatomy: "The Aorta is the largest artery in the human body, arising directly from the left ventricle. It curves upwards (ascending aorta), arches back (aortic arch), and descends through the chest (thoracic aorta) and abdomen (abdominal aorta) before dividing.",
@@ -58,7 +58,7 @@ const educationalContent = {
           { title: "PubMed: Histology and Pathophysiology of the Aorta", url: "https://www.ncbi.nlm.nih.gov/books/NBK537130/" }
         ]
       },
-      video: "l8bUryfX2XQ" // Aorta physiology video
+      video: "X9ZZ6tcxArI" // Aorta physiology video
     },
     "Left Ventricle": {
       anatomy: "The Left Ventricle has walls that are three times thicker than the right ventricle. It receives oxygenated blood from the left atrium through the mitral valve and ejects it through the aortic valve into the systemic circulation.",
@@ -79,7 +79,7 @@ const educationalContent = {
           { title: "Kenhub: Left Ventricle Structure & Relations", url: "https://www.kenhub.com/en/library/anatomy/left-ventricle" }
         ]
       },
-      video: "cphZlRk08iM" // Left Ventricle video
+      video: "Vca95qkgwaA" // Left Ventricle video
     },
     "Right Ventricle": {
       anatomy: "The Right Ventricle is crescent-shaped in cross section and lies anteriorly. It receives deoxygenated blood from the right atrium through the tricuspid valve and pumps it through the pulmonary valve into the pulmonary artery.",
@@ -100,7 +100,7 @@ const educationalContent = {
           { title: "Kenhub: Right Ventricle Anatomy & Valves", url: "https://www.kenhub.com/en/library/anatomy/right-ventricle" }
         ]
       },
-      video: "vD_vswJ6670"
+      video: "X9ZZ6tcxArI"
     },
     "Left Atrium": {
       anatomy: "The Left Atrium forms most of the base of the heart. It receives oxygenated blood from the lungs via four pulmonary veins and pumps it into the left ventricle.",
@@ -120,7 +120,7 @@ const educationalContent = {
           { title: "CDC: Atrial Fibrillation Overview", url: "https://www.cdc.gov/heartdisease/atrial_fibrillation.htm" }
         ]
       },
-      video: "2N-P3B3W5d4"
+      video: "X9ZZ6tcxArI"
     },
     "Right Atrium": {
       anatomy: "The Right Atrium receives deoxygenated blood returning from the body tissues via the Superior Vena Cava (upper body), Inferior Vena Cava (lower body), and Coronary Sinus (heart tissues).",
@@ -140,7 +140,7 @@ const educationalContent = {
           { title: "NIH: Sinoatrial Node Conductive Pathway", url: "https://www.ncbi.nlm.nih.gov/books/NBK545199/" }
         ]
       },
-      video: "Ew2o39o3WnI"
+      video: "X9ZZ6tcxArI"
     },
     "Pulmonary Artery": {
       anatomy: "The Pulmonary Artery (or Trunk) emerges from the right ventricle and splits into the left and right pulmonary arteries, carrying deoxygenated blood to the lungs.",
@@ -160,7 +160,7 @@ const educationalContent = {
           { title: "MedlinePlus: Pulmonary Embolism Guides", url: "https://medlineplus.gov/pulmonaryembolism.html" }
         ]
       },
-      video: "J7D1h6S1Ksw"
+      video: "X9ZZ6tcxArI"
     },
     "Myocardium / Heart Wall": {
       anatomy: "The Myocardium is the middle muscular layer of the heart wall. It consists of specialized branching cardiac muscle cells (cardiomyocytes) linked by intercalated discs.",
@@ -180,7 +180,7 @@ const educationalContent = {
           { title: "NIH: Histology of the Myocardium", url: "https://www.ncbi.nlm.nih.gov/books/NBK535359/" }
         ]
       },
-      video: "n8Qz02v1Pps"
+      video: "X9ZZ6tcxArI"
     }
   },
   Brain: {
@@ -207,7 +207,7 @@ const educationalContent = {
           { title: "Kenhub: Human Brain Structure Atlas", url: "https://www.kenhub.com/en/library/anatomy/the-brain" }
         ]
       },
-      video: "Qzd7a_xT2k0" // general brain lobes video
+      video: "RaiPpQt1OJE" // general brain lobes video
     },
     "Frontal Lobe": {
       anatomy: "The Frontal Lobe is the largest lobe of the cerebral cortex, situated at the front of each hemisphere. It includes the prefrontal cortex, premotor area, and primary motor cortex.",
@@ -231,7 +231,7 @@ const educationalContent = {
           { title: "NIH: The Frontal Lobe Functional Mapping", url: "https://www.ncbi.nlm.nih.gov/books/NBK539829/" }
         ]
       },
-      video: "F70OzEU5Z10"
+      video: "RaiPpQt1OJE"
     },
     "Parietal Lobe": {
       anatomy: "The Parietal Lobe is positioned posterior to the frontal lobe. It contains the primary somatosensory cortex which processes sensations from body tissues.",
@@ -251,7 +251,7 @@ const educationalContent = {
           { title: "NIH: Parietal Lobe Assessment Guide", url: "https://www.ncbi.nlm.nih.gov/books/NBK559092/" }
         ]
       },
-      video: "pX3K0rL6W3o"
+      video: "RaiPpQt1OJE"
     },
     "Occipital Lobe": {
       anatomy: "The Occipital Lobe is the visual processing center of the brain, located in the posterior-most region of the cerebral cortex, housing the primary visual cortex (V1).",
@@ -275,7 +275,7 @@ const educationalContent = {
           { title: "PubMed: Cortical Visual Pathway Systems", url: "https://www.ncbi.nlm.nih.gov/books/NBK544321/" }
         ]
       },
-      video: "zBvBsh55HIE"
+      video: "RaiPpQt1OJE"
     },
     "Temporal Lobe": {
       anatomy: "The Temporal Lobe is located inferior to the lateral sulcus. It houses the primary auditory cortex, Wernicke's area, hippocampus, and amygdala.",
@@ -295,7 +295,7 @@ const educationalContent = {
           { title: "NIH: Neuroanatomy, Temporal Lobe", url: "https://www.ncbi.nlm.nih.gov/books/NBK538321/" }
         ]
       },
-      video: "pX3K0rL6W3o" // Shared cerebral mapping video
+      video: "RaiPpQt1OJE" // Shared cerebral mapping video
     },
     "Cerebellum": {
       anatomy: "The Cerebellum ('little brain') is located at the back of the skull. It is highly folded and contains over 50% of all neurons in the brain, arranged in a dense cerebellar cortex.",
@@ -316,7 +316,7 @@ const educationalContent = {
           { title: "Kenhub: Cerebellar Cortex Pathways", url: "https://www.kenhub.com/en/library/anatomy/the-cerebellum" }
         ]
       },
-      video: "7aW9P4-O_fU"
+      video: "RaiPpQt1OJE"
     },
     "Brainstem": {
       anatomy: "The Brainstem consists of the midbrain, pons, and medulla oblongata. It connects the cerebral hemispheres to the spinal cord.",
@@ -336,7 +336,7 @@ const educationalContent = {
           { title: "NIH: Brainstem Physiology & Nuclei", url: "https://www.ncbi.nlm.nih.gov/books/NBK541084/" }
         ]
       },
-      video: "wM1V6P5_t4g"
+      video: "RaiPpQt1OJE"
     },
     "Cerebral Cortex": {
       anatomy: "The Cerebral Cortex is the highly folded gray matter covering the cerebrum. The folding produces ridges (gyri) and grooves (sulci), maximizing surface area.",
@@ -356,7 +356,7 @@ const educationalContent = {
           { title: "NIH: Histology of the Cerebral Cortex", url: "https://www.ncbi.nlm.nih.gov/books/NBK531476/" }
         ]
       },
-      video: "mGPz-hBw_Ds"
+      video: "RaiPpQt1OJE"
     }
   }
   ,
@@ -381,7 +381,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "mOKmjYwfDFA"
+      video: "FGDJ5Ib-6Y8"
     }
   },
   Kidney: {
@@ -404,7 +404,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "cc8sUsg9ccg"
+      video: "l128tW1H5a8"
     }
   },
   Stomach: {
@@ -427,7 +427,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "Q-n_Q0NCGjc"
+      video: "ca5OCxhSmRY"
     }
   },
   Intestines: {
@@ -450,7 +450,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "p1Fvw3P_XKw"
+      video: "roUClLh6wO4"
     }
   },
   Skull: {
@@ -473,7 +473,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "Vf_E7j1y8k4"
+      video: "WRmNC_yPQZ8"
     }
   },
   Skeleton: {
@@ -519,7 +519,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "wM202C2UIfg"
+      video: "N-Mn8mK7Tsc"
     }
   },
   Eye: {
@@ -542,7 +542,7 @@ const educationalContent = {
           }
         ]
       },
-      video: "O6Xz8bC1w1k"
+      video: "7hKdugiPv5g"
     }
   },
   "Human Anatomy": {
