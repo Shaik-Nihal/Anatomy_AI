@@ -1077,11 +1077,19 @@ function ARViewer() {
                     ← Back to Selection
                   </button>
                   <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                    <div style={{ fontSize: "40px" }}>
-                      {selectedOrgan === "Heart" && "🫀"}
-                      {selectedOrgan === "Brain" && "🧠"}
-                      {selectedOrgan === "Human Anatomy" && "🧍‍♂️"}
-                      {selectedOrgan !== "Heart" && selectedOrgan !== "Brain" && selectedOrgan !== "Human Anatomy" && "🧪"}
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "45px", height: "45px", flexShrink: 0 }}>
+                      {selectedOrgan === "Heart" && <span style={{ fontSize: "40px" }}>🫀</span>}
+                      {selectedOrgan === "Brain" && <span style={{ fontSize: "40px" }}>🧠</span>}
+                      {selectedOrgan === "Lungs" && <span style={{ fontSize: "40px" }}>🫁</span>}
+                      {selectedOrgan === "Liver" && <img src="/icons/liver.png" alt="Liver" style={{ width: "100%", height: "100%", objectFit: "contain" }} />}
+                      {selectedOrgan === "Kidney" && <img src="/icons/kidney.png" alt="Kidney" style={{ width: "100%", height: "100%", objectFit: "contain" }} />}
+                      {selectedOrgan === "Stomach" && <img src="/icons/stomach.png" alt="Stomach" style={{ width: "100%", height: "100%", objectFit: "contain" }} />}
+                      {selectedOrgan === "Intestines" && <img src="/icons/intestines.png" alt="Intestines" style={{ width: "100%", height: "100%", objectFit: "contain" }} />}
+                      {selectedOrgan === "Human Anatomy" && <img src="/icons/human.png" alt="Human Anatomy" style={{ width: "100%", height: "100%", objectFit: "contain" }} />}
+                      {selectedOrgan === "Skeleton" && <span style={{ fontSize: "40px" }}>🦴</span>}
+                      {selectedOrgan === "Skull" && <span style={{ fontSize: "40px" }}>💀</span>}
+                      {selectedOrgan === "Eye" && <span style={{ fontSize: "40px" }}>👁️</span>}
+                      {["Heart", "Brain", "Lungs", "Liver", "Kidney", "Stomach", "Intestines", "Human Anatomy", "Skeleton", "Skull", "Eye"].indexOf(selectedOrgan) === -1 && <span style={{ fontSize: "40px" }}>🧪</span>}
                     </div>
                     <div>
                       <h3 style={{ margin: 0, fontSize: "12px", color: "#06B6D4", textTransform: "uppercase", letterSpacing: "1px", fontWeight: "800" }}>Current Model</h3>
