@@ -5,10 +5,13 @@ import "./Settings.css";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import logo from "../../assets/logo.png";
+import HologramLogo from "../../components/HologramLogo";
 import { supabase } from "../../services/supabase";
 import { getUserProgress, resetUserProgress } from "../../services/quizApi";
 import { jsPDF } from "jspdf";
+import confetti from "canvas-confetti";
 import autoTable from "jspdf-autotable";
+import { playHoverSound, playClickSound, playWhooshSound } from "../../utils/audio";
 import {
   FiUser,
   FiLock,
@@ -124,6 +127,44 @@ function Settings() {
   const [loading, setLoading] = useState(false);
   const [sessionInfo, setSessionInfo] = useState({ os: "Unknown OS", browser: "Unknown Browser" });
   const [othersRevoked, setOthersRevoked] = useState(false);
+
+  // Easter Egg states
+  const [logoClickCount, setLogoClickCount] = useState(0);
+  const [easterEggActive, setEasterEggActive] = useState(false);
+  const [showSecretModal, setShowSecretModal] = useState(false);
+
+  useEffect(() => {
+    if (logoClickCount > 0) {
+      const timer = setTimeout(() => setLogoClickCount(0), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [logoClickCount]);
+
+  const handleLogoClick = () => {
+    if (easterEggActive) return; // Prevent multiple triggers
+    setLogoClickCount(prev => prev + 1);
+    
+    if (logoClickCount === 4) {
+      // Trigger confetti explosion on 5th click
+      const duration = 4 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+      const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+      const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+        if (timeLeft <= 0) return clearInterval(interval);
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+
+      setEasterEggActive(true);
+      setShowSecretModal(true);
+      setLogoClickCount(0); // reset
+    }
+  };
 
   useEffect(() => {
     // Parse userAgent for current session display
@@ -954,24 +995,29 @@ function Settings() {
 
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <motion.div 
+                    onClick={handleLogoClick}
+                    whileTap={{ scale: 0.9 }}
                     animate={{ y: [0, -12, 0] }}
                     transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
                     style={{
-                      width: "100px",
-                      height: "100px",
-                      background: "rgba(255, 255, 255, 0.03)",
-                      borderRadius: "30px",
+                      width: "130px",
+                      height: "130px",
+                      background: easterEggActive ? "rgba(236, 72, 153, 0.2)" : "rgba(255, 255, 255, 0.03)",
+                      borderRadius: "36px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       margin: "0 auto 28px",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                      boxShadow: "0 15px 35px rgba(0,0,0,0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)",
+                      border: easterEggActive ? "1px solid rgba(236, 72, 153, 0.8)" : "1px solid rgba(255,255,255,0.1)",
+                      boxShadow: easterEggActive ? "0 15px 50px rgba(236, 72, 153, 0.6), inset 0 0 30px rgba(236, 72, 153, 0.4)" : "0 15px 35px rgba(0,0,0,0.3), inset 0 0 20px rgba(6, 182, 212, 0.1)",
                       backdropFilter: "blur(15px)",
-                      padding: "16px"
+                      padding: "8px",
+                      overflow: "visible",
+                      cursor: "pointer",
+                      transition: "all 0.5s ease"
                     }}
                   >
-                    <img src={logo} alt="AR AnatomyAI Logo" style={{ width: "100%", height: "100%", objectFit: "contain", filter: "drop-shadow(0 0 10px rgba(6, 182, 212, 0.4))" }} />
+                    <HologramLogo />
                   </motion.div>
                   
                   <motion.h2 
@@ -1072,7 +1118,13 @@ function Settings() {
                     </motion.div>
                   </div>
 
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} style={{ textAlign: "center", marginBottom: "48px" }}>
+                  <motion.div 
+                    onViewportEnter={() => playWhooshSound()} 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ delay: 0.6 }} 
+                    style={{ textAlign: "center", marginBottom: "48px" }}
+                  >
                     <div style={{ display: "inline-block", position: "relative" }}>
                       <h3 style={{ color: "white", fontSize: "22px", fontWeight: 800, marginBottom: "32px", letterSpacing: "-0.5px" }}>Meet the Team</h3>
                       <div style={{ position: "absolute", bottom: "16px", left: "20%", width: "60%", height: "4px", background: "linear-gradient(90deg, transparent, #06B6D4, transparent)", borderRadius: "2px" }} />
@@ -1092,6 +1144,7 @@ function Settings() {
                           initial={{ opacity: 0, y: 40, rotateX: -15, scale: 0.9 }}
                           animate={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
                           transition={{ delay: 0.7 + (0.1 * i), type: "spring", stiffness: 120, damping: 14 }}
+                          onHoverStart={() => playHoverSound()}
                           whileHover={{ 
                             y: -12, 
                             scale: 1.05,
@@ -1146,7 +1199,7 @@ function Settings() {
                     <motion.button 
                       whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowTermsModal(true)}
+                      onClick={() => { playClickSound(); setShowTermsModal(true); }}
                       style={{ padding: "12px 24px", borderRadius: "14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: "13px", fontWeight: 600, cursor: "pointer", backdropFilter: "blur(10px)" }}
                     >
                       Terms of Service
@@ -1154,7 +1207,7 @@ function Settings() {
                     <motion.button 
                       whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setShowPrivacyModal(true)}
+                      onClick={() => { playClickSound(); setShowPrivacyModal(true); }}
                       style={{ padding: "12px 24px", borderRadius: "14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", fontSize: "13px", fontWeight: 600, cursor: "pointer", backdropFilter: "blur(10px)" }}
                     >
                       Privacy Policy
@@ -1322,8 +1375,40 @@ function Settings() {
           </div>
         </div>
       )}
+
+      {/* Secret Cyberpunk Easter Egg Modal */}
+      {showSecretModal && (
+        <div style={{
+          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+          background: "rgba(0, 0, 0, 0.9)", backdropFilter: "blur(20px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 10000, animation: "fadeIn 0.2s ease-out"
+        }}>
+          <div className="glass-card-new" style={{
+            width: "90%", maxWidth: "500px",
+            border: "2px solid #EC4899",
+            boxShadow: "0 0 50px rgba(236, 72, 153, 0.5), inset 0 0 20px rgba(236, 72, 153, 0.3)",
+            padding: "40px", background: "linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(88, 28, 135, 0.95))",
+            textAlign: "center", borderRadius: "30px"
+          }}>
+            <h2 style={{ fontSize: "32px", fontWeight: 900, color: "#EC4899", marginBottom: "16px", textTransform: "uppercase", letterSpacing: "2px", textShadow: "0 0 10px #EC4899" }}>
+              CYBERPUNK MODE UNLOCKED
+            </h2>
+            <p style={{ color: "#E2E8F0", fontSize: "16px", lineHeight: "1.6", marginBottom: "32px", fontWeight: 600 }}>
+              "You found the secret core! Welcome to the bleeding edge of anatomy exploration." 🚀
+            </p>
+            <button
+              onClick={() => setShowSecretModal(false)}
+              style={{ background: "linear-gradient(90deg, #EC4899, #8B5CF6)", border: "none", color: "white", padding: "14px 32px", borderRadius: "16px", fontSize: "16px", fontWeight: 800, cursor: "pointer", boxShadow: "0 10px 20px rgba(236, 72, 153, 0.4)", textTransform: "uppercase", letterSpacing: "1px" }}
+            >
+              Enter the Matrix
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 export default Settings;
