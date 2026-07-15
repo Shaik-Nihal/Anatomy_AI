@@ -499,6 +499,52 @@ const educationalContent = {
       video: "rDGqkMHPDq0"
     }
   },
+  Liver: {
+    general: {
+      anatomy: "The liver is a large, wedge-shaped organ located in the upper right quadrant of the abdominal cavity. It is the largest internal organ and is divided into right, left, caudate, and quadrate lobes. It plays a pivotal role in metabolic processes, detoxification, and bile production.",
+      module: {
+        title: "Hepatic Metabolism & Detoxification",
+        sections: [
+          {
+            heading: "Metabolic Hub",
+            text: "The liver centralizes carbohydrate, lipid, and protein metabolism. It stores glucose as glycogen, synthesizes plasma proteins like albumin and clotting factors, and regulates circulating lipoprotein cholesterol."
+          },
+          {
+            heading: "Detoxification & Clearance",
+            text: "Hepatocytes neutralize metabolic waste products (converting ammonia to urea) and metabolize exogenous toxins and pharmaceuticals using cytochrome P450 enzymes for renal or biliary excretion."
+          },
+          {
+            heading: "Hepatic Cirrhosis",
+            text: "Chronic liver injury from alcohol, viral hepatitis, or fatty liver disease leads to fibrosis. Healthy hepatocytes are replaced by scar tissue, disrupting blood flow (portal hypertension) and leading to liver failure."
+          }
+        ]
+      },
+      video: "wM202C2UIfg"
+    }
+  },
+  Eye: {
+    general: {
+      anatomy: "The human eye is a highly specialized sensory organ responsible for vision. It acts as an organic camera, capturing light through the cornea and lens, and focusing it onto the light-sensitive retina at the back of the globe, where photoreceptors transduce optical data into neural signals.",
+      module: {
+        title: "Visual Optics & Retinal Physiology",
+        sections: [
+          {
+            heading: "Refractive Media",
+            text: "The cornea provides the majority of the eye's refractive power, while the crystalline lens fine-tunes focus (accommodation) for near objects. The aqueous and vitreous humors maintain structural pressure (IOP)."
+          },
+          {
+            heading: "Phototransduction",
+            text: "The retina contains millions of photoreceptors. Rods dominate peripheral and low-light (scotopic) vision, whereas cones are concentrated in the fovea, providing high-acuity color (photopic) vision."
+          },
+          {
+            heading: "Glaucoma",
+            text: "A progressive optic neuropathy often associated with elevated intraocular pressure. It damages the optic nerve head, leading to an insidious, irreversible loss of peripheral visual fields."
+          }
+        ]
+      },
+      video: "O6Xz8bC1w1k"
+    }
+  },
   "Human Anatomy": {
     general: {
       anatomy: "Human anatomy is the comprehensive scientific study of the morphology of the human body. It explores the intricate spatial and functional relationships between macroscopic organ systems, exploring how they collectively establish and maintain physiological homeostasis.",
