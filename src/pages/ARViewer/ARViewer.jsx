@@ -601,8 +601,9 @@ function FocusHandler({ targetPoint, controlsRef }) {
   return null;
 }
 
-function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHoverRegion, onLoadScene }) {
+function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHoverRegion, onLoadScene, isBeating }) {
   const groupRef = useRef();
+  const targetScale = useRef(0);
   let modelPath = "/models/human_heart.glb"; // Default to Heart
 
   if (organ === "Brain") modelPath = "/models/human_brain_cerebrum__brainstem.glb";
@@ -723,6 +724,7 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
 
       const conf = organConfig[organ] || { scaleMultiplier: 1.0, xOffset: 0, yOffset: 0, zOffset: 0 };
       const scale = (targetSize / maxDim) * conf.scaleMultiplier;
+      targetScale.current = scale;
       groupRef.current.scale.set(scale, scale, scale);
 
       // Auto-center based on bounds, then apply manual corrections for visual center of mass
@@ -733,6 +735,31 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
       );
     }
   }, [scene, organ]);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    
+    if (organ === "Heart" && isBeating) {
+      const elapsed = state.clock.getElapsedTime();
+      let offset = 0;
+      
+      // Normal sinus beat (lub-dub)
+      const t = (elapsed * 1.4) % 2.0;
+      if (t < 0.25) {
+        offset = Math.sin((t / 0.25) * Math.PI) * 0.06; // Lub
+      } else if (t >= 0.3 && t < 0.55) {
+        offset = Math.sin(((t - 0.3) / 0.25) * Math.PI) * 0.09; // Dub
+      }
+      
+      const finalScale = targetScale.current * (1 + offset);
+      groupRef.current.scale.set(finalScale, finalScale, finalScale);
+    } else {
+      // Ensure scale is exactly targetScale for other organs
+      if (targetScale.current > 0) {
+        groupRef.current.scale.set(targetScale.current, targetScale.current, targetScale.current);
+      }
+    }
+  });
 
   return (
     <group ref={groupRef}>
@@ -774,6 +801,7 @@ function ARViewer() {
   const [activePanel, setActivePanel] = useState("overview");
   const [playingVideoId, setPlayingVideoId] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isBeating, setIsBeating] = useState(true);
 
   useEffect(() => {
     setPlayingVideoId(null);
@@ -1130,6 +1158,7 @@ function ARViewer() {
                 <OrganModel
                   organ={selectedOrgan}
                   onLoadScene={setLoadedScene}
+                  isBeating={isBeating}
                 />
 
                 <OrbitControls ref={controlsRef} autoRotate={autoRotate} />
@@ -1591,6 +1620,22 @@ function ARViewer() {
                   <span className="icon">⛶</span>
                   <span className="label">Focus Mode</span>
                 </button>
+                {selectedOrgan === "Heart" && (
+                  <button
+                    onClick={() => setIsBeating(!isBeating)}
+                    className="floating-dock-button"
+                    style={{ marginLeft: "8px", color: isBeating ? "#ef4444" : "#94A3B8" }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(15, 23, 42, 0.85)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <span className="icon">{isBeating ? "⏹️" : "▶️"}</span>
+                    <span className="label">{isBeating ? "Stop Beating" : "Play Beating"}</span>
+                  </button>
+                )}
               </div>
             )}
 

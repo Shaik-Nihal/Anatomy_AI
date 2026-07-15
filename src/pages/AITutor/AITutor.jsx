@@ -3,7 +3,7 @@ import Navbar from "../../components/Navbar";
 import { sendTutorQuestion, getTutorSpeech } from "../../services/quizApi";
 import { useAuth } from "../../contexts/AuthContext";
 import { useGamification } from "../../contexts/GamificationContext";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import "./AITutor.css";
@@ -65,7 +65,11 @@ function getRegionFromMeshName(meshName, organ) {
   return meshName.replace(/_/g, " ");
 }
 
-function OrganModel({ organ, selectedRegion }) {
+function OrganModel({ organ, selectedRegion, isBeating }) {
+  const originalMaterials = useRef(new Map());
+  const groupRef = useRef();
+  const targetScale = useRef(0);
+  
   let modelPath = "/models/human_heart.glb"; // Default
   if (organ === "Brain") modelPath = "/models/human_brain_cerebrum__brainstem.glb";
   else if (organ === "Human Anatomy") modelPath = "/models/male_full_body_ecorche.glb";
@@ -77,8 +81,6 @@ function OrganModel({ organ, selectedRegion }) {
   else if (organ === "Skeleton") modelPath = "/models/ecorche_-_anatomy_study.glb";
 
   const { scene } = useGLTF(modelPath);
-  const originalMaterials = useRef(new Map());
-  const groupRef = useRef();
 
   // Back up original material settings to allow non-destructive glow tinting
   useEffect(() => {
@@ -172,6 +174,7 @@ function OrganModel({ organ, selectedRegion }) {
 
       const conf = organConfig[organ] || { scaleMultiplier: 1.0, xOffset: 0, yOffset: 0, zOffset: 0 };
       const scale = (targetSize / maxDim) * conf.scaleMultiplier;
+      targetScale.current = scale;
       groupRef.current.scale.set(scale, scale, scale);
 
       // Auto-center based on bounds, then apply manual corrections for visual center of mass
@@ -182,6 +185,30 @@ function OrganModel({ organ, selectedRegion }) {
       );
     }
   }, [scene, organ]);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    
+    if (organ === "Heart" && isBeating) {
+      const elapsed = state.clock.getElapsedTime();
+      let offset = 0;
+      
+      // Normal sinus beat (lub-dub)
+      const t = (elapsed * 1.4) % 2.0;
+      if (t < 0.25) {
+        offset = Math.sin((t / 0.25) * Math.PI) * 0.06; // Lub
+      } else if (t >= 0.3 && t < 0.55) {
+        offset = Math.sin(((t - 0.3) / 0.25) * Math.PI) * 0.09; // Dub
+      }
+      
+      const finalScale = targetScale.current * (1 + offset);
+      groupRef.current.scale.set(finalScale, finalScale, finalScale);
+    } else {
+      if (targetScale.current > 0) {
+        groupRef.current.scale.set(targetScale.current, targetScale.current, targetScale.current);
+      }
+    }
+  });
 
   return (
     <group ref={groupRef}>
@@ -197,6 +224,7 @@ function AITutor() {
     { role: "assistant", text: "Hello! I am your AI Anatomy Tutor. Ask me any question about human organs, systems, or study recommendations." },
   ]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [isBeating, setIsBeating] = useState(true);
 
   const { user } = useAuth();
   const { addXP, awardBadge } = useGamification();
@@ -1082,7 +1110,31 @@ function AITutor() {
         <div className="tutor-3d-visualizer">
           <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: "15px", marginBottom: "15px" }}>
             <h3 style={{ fontSize: "18px", color: "#fff", fontWeight: "700", margin: 0 }}>Interactive 3D Visualizer</h3>
-            <p style={{ color: "#94A3B8", fontSize: "12px", margin: "4px 0 0 0" }}>Active Model: <strong style={{ color: "#06B6D4" }}>{selectedOrgan}</strong></p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "4px 0 0 0" }}>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0 }}>Active Model: <strong style={{ color: "#06B6D4" }}>{selectedOrgan}</strong></p>
+              {selectedOrgan === "Heart" && (
+                <button
+                  onClick={() => setIsBeating(!isBeating)}
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "8px",
+                    color: isBeating ? "#ef4444" : "#94A3B8",
+                    fontSize: "11px",
+                    padding: "4px 8px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.05)"}
+                >
+                  {isBeating ? "⏹️ Stop Beating" : "▶️ Play Beating"}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="tutor-canvas-container">
@@ -1094,6 +1146,7 @@ function AITutor() {
               <OrganModel
                 organ={selectedOrgan}
                 selectedRegion={selectedRegion}
+                isBeating={isBeating}
               />
 
               <OrbitControls enableZoom={true} />
