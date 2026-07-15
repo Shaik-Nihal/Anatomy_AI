@@ -21,6 +21,48 @@ import {
   FiMonitor
 } from "react-icons/fi";
 
+// Compress image to Base64 (max 256x256) to fit inside Supabase auth metadata limits
+const compressImage = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 256;
+        const MAX_HEIGHT = 256;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Compress heavily using jpeg
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+        resolve(dataUrl);
+      };
+      img.onerror = (error) => reject(error);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 function Settings() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -54,12 +96,36 @@ function Settings() {
   const [toastType, setToastType] = useState("success"); // success | error | info
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sessionInfo, setSessionInfo] = useState({ os: "Unknown OS", browser: "Unknown Browser" });
+
+  useEffect(() => {
+    // Parse userAgent for current session display
+    const ua = navigator.userAgent;
+    let os = "Unknown OS";
+    let browser = "Unknown Browser";
+
+    if (ua.indexOf("Win") !== -1) os = "Windows Desktop";
+    else if (ua.indexOf("Mac") !== -1) os = "Mac OS";
+    else if (ua.indexOf("Linux") !== -1) os = "Linux";
+    else if (ua.indexOf("Android") !== -1) os = "Android";
+    else if (ua.indexOf("like Mac") !== -1) os = "iOS";
+
+    if (ua.indexOf("Chrome") !== -1) browser = "Chrome";
+    else if (ua.indexOf("Safari") !== -1) browser = "Safari";
+    else if (ua.indexOf("Firefox") !== -1) browser = "Firefox";
+    else if (ua.indexOf("Edge") !== -1) browser = "Edge";
+
+    setSessionInfo({ os, browser });
+  }, []);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
     if (user) {
       setFullName(user.user_metadata?.full_name || "");
       setEmail(user.email || "");
+      if (user.user_metadata?.avatar_url) {
+        setProfilePic(user.user_metadata.avatar_url);
+      }
     }
 
     const storedDarkMode = localStorage.getItem("settings_dark_mode");
@@ -168,10 +234,26 @@ function Settings() {
     e.preventDefault();
     setLoading(true);
     try {
+      let avatarBase64 = user?.user_metadata?.avatar_url || null;
+      
+      // If a new picture was uploaded (File object), compress it to base64
+      if (profilePic && typeof profilePic !== "string") {
+        showToast("Compressing profile picture...", "info");
+        avatarBase64 = await compressImage(profilePic);
+      }
+
       const { error } = await supabase.auth.updateUser({
-        data: { full_name: fullName }
+        data: { 
+          full_name: fullName,
+          avatar_url: avatarBase64
+        }
       });
       if (error) throw error;
+      
+      if (profilePic && typeof profilePic !== "string") {
+        setProfilePic(avatarBase64); // Update local state to the compressed base64
+      }
+      
       showToast("Profile details updated successfully!", "success");
     } catch (err) {
       showToast(err.message || "Failed to update profile", "error");
@@ -446,9 +528,18 @@ function Settings() {
                       justifyContent: "center",
                       fontSize: "24px",
                       fontWeight: 700,
-                      color: "white"
+                      color: "white",
+                      overflow: "hidden"
                     }}>
-                      {fullName ? fullName.charAt(0).toUpperCase() : "A"}
+                      {profilePic ? (
+                        <img 
+                          src={typeof profilePic === "string" ? profilePic : URL.createObjectURL(profilePic)} 
+                          alt="Profile" 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        />
+                      ) : (
+                        fullName ? fullName.charAt(0).toUpperCase() : "A"
+                      )}
                     </div>
                     <div>
                       <input
@@ -723,8 +814,8 @@ function Settings() {
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.01)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.03)" }}>
                       <FiMonitor style={{ color: "#06B6D4", fontSize: "20px" }} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>Windows Desktop (Vite Client)</div>
-                        <div style={{ fontSize: "11px", color: "#64748B" }}>IP: 192.168.1.45 • India (Current Session)</div>
+                        <div style={{ fontSize: "13px", fontWeight: 600, color: "white" }}>{sessionInfo.os} ({sessionInfo.browser})</div>
+                        <div style={{ fontSize: "11px", color: "#64748B" }}>Local Network • (Current Session)</div>
                       </div>
                       <span style={{ fontSize: "10px", color: "#10B981", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", padding: "2px 6px", borderRadius: "6px", fontWeight: 700 }}>ACTIVE</span>
                     </div>
@@ -732,15 +823,15 @@ function Settings() {
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.01)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.03)" }}>
                       <FiMonitor style={{ color: "#94A3B8", fontSize: "20px" }} />
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: "13px", fontWeight: 600, color: "#CBD5E1" }}>iPhone 15 Mobile client</div>
-                        <div style={{ fontSize: "11px", color: "#64748B" }}>IP: 103.88.22.12 • India • 2 days ago</div>
+                        <div style={{ fontSize: "13px", fontWeight: 600, color: "#CBD5E1" }}>Other signed-in devices</div>
+                        <div style={{ fontSize: "11px", color: "#64748B" }}>Previously authorized browsers or mobile apps</div>
                       </div>
                       <button
                         type="button"
                         onClick={handleRevokeSession}
                         style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444", fontSize: "10px", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontWeight: 600 }}
                       >
-                        REVOKE
+                        REVOKE OTHERS
                       </button>
                     </div>
                   </div>
