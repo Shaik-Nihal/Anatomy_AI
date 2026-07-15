@@ -681,10 +681,13 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
     // Reset group transforms to measure raw scene
     groupRef.current.scale.set(1, 1, 1);
     groupRef.current.position.set(0, 0, 0);
+    groupRef.current.rotation.set(0, 0, 0);
+    groupRef.current.updateMatrixWorld(true);
 
     // Compute bounding box strictly for visible meshes to ignore invisible lights/armatures
     const box = new THREE.Box3();
     box.makeEmpty();
+
     scene.traverse((node) => {
       if (node.isMesh && node.visible && !node.name.toLowerCase().includes('light') && !node.name.toLowerCase().includes('camera')) {
         node.geometry.computeBoundingBox();
@@ -705,10 +708,10 @@ function OrganModel({ organ, onSelectPart, selectedRegion, hoveredRegion, onHove
     // Anatomical models often have long protruding vessels (ureters, veins) 
     // that heavily skew the geometric center away from the visual center of mass.
     const organConfig = {
-      Kidney: { scaleMultiplier: 2.8, xOffset: -1.0, yOffset: 1.0, zOffset: 0 },
-      Lungs: { scaleMultiplier: 1.5, xOffset: 0, yOffset: 0.2, zOffset: 0 },
-      Stomach: { scaleMultiplier: 1.6, xOffset: 0, yOffset: 0.2, zOffset: 0 },
-      Intestines: { scaleMultiplier: 1.3, xOffset: 0, yOffset: 0, zOffset: 0 },
+      Kidney: { scaleMultiplier: 0.85, xOffset: -0.1, yOffset: 0.5, zOffset: 0 },
+      Lungs: { scaleMultiplier: 0.9, xOffset: 0, yOffset: 0, zOffset: 0 },
+      Stomach: { scaleMultiplier: 0.9, xOffset: 0, yOffset: 0, zOffset: 0 },
+      Intestines: { scaleMultiplier: 0.9, xOffset: 0, yOffset: 0, zOffset: 0 },
       Skeleton: { scaleMultiplier: 1.0, xOffset: 0, yOffset: -0.4, zOffset: 0 },
       "Human Anatomy": { scaleMultiplier: 1.0, xOffset: 0, yOffset: -0.4, zOffset: 0 },
     };
