@@ -1,6 +1,8 @@
 import ResultPage from "./ResultPage";
 import React, { useEffect, useState } from "react";
 import { useGamification } from "../../contexts/GamificationContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { saveQuizResult } from "../../services/quizApi";
 
 function QuizScreen({
   organ,
@@ -17,7 +19,29 @@ function QuizScreen({
   const [score, setScore] = useState(0);
   const [weakAreas, setWeakAreas] = useState([]);
   const { addXP } = useGamification();
+  const { user } = useAuth();
   const [xpAwarded, setXpAwarded] = useState(false);
+
+  const finishQuiz = () => {
+    if (!xpAwarded) {
+      addXP(score * 20, "Quiz Completed");
+      setXpAwarded(true);
+
+      const accuracy = Math.round((score / questions.length) * 100);
+      const email = user?.email || "temp_user";
+
+      saveQuizResult({
+        userId: email,
+        organ,
+        difficulty,
+        score,
+        totalQuestions: questions.length,
+        percentage: accuracy,
+        weakAreas: [...new Set(weakAreas)],
+      }).catch((err) => console.error("Save failed:", err));
+    }
+    setCurrentQuestion(questions.length);
+  };
 
   
 
@@ -45,11 +69,7 @@ function QuizScreen({
         setTimeLeft(getInitialTime());
         setFillAnswer("");
       } else {
-        if (!xpAwarded) {
-          addXP(score * 20, "Quiz Completed");
-          setXpAwarded(true);
-        }
-        setCurrentQuestion(questions.length);
+        finishQuiz();
       }
       return;
     }
@@ -134,11 +154,7 @@ if (question.type === "fill_blank_option") {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion((prev) => prev + 1);
     } else {
-      if (!xpAwarded) {
-        addXP(score * 20, "Quiz Completed");
-        setXpAwarded(true);
-      }
-      setCurrentQuestion(questions.length);
+      finishQuiz();
     }
 
     setSelectedAnswer(null);

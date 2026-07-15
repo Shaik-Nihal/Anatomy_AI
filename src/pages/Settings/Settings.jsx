@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./Settings.css";
 import Navbar from "../../components/Navbar";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../services/supabase";
@@ -78,18 +79,39 @@ function Settings() {
   const [confirmPassword, setConfirmPassword] = useState("");
   
   // Appearance state
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const [themeColor, setThemeColor] = useState("cyan");
-  const [fontSize, setFontSize] = useState("medium");
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const val = localStorage.getItem("settings_dark_mode");
+    return val !== null ? val === "true" : true;
+  });
+  const [themeColor, setThemeColor] = useState(() => {
+    return localStorage.getItem("settings_theme_color") || "cyan";
+  });
+  const [fontSize, setFontSize] = useState(() => {
+    return localStorage.getItem("settings_font_size") || "medium";
+  });
   
   // Learning preferences state
-  const [dailyGoal, setDailyGoal] = useState("30"); // in minutes
-  const [remindersEnabled, setRemindersEnabled] = useState(true);
+  const [dailyGoal, setDailyGoal] = useState(() => {
+    return localStorage.getItem("settings_daily_goal") || "30";
+  }); // in minutes
+  const [remindersEnabled, setRemindersEnabled] = useState(() => {
+    const val = localStorage.getItem("settings_reminders_enabled");
+    return val !== null ? val === "true" : true;
+  });
   
   // Notification state
-  const [notifEmail, setNotifEmail] = useState(true);
-  const [notifResults, setNotifResults] = useState(true);
-  const [notifProgress, setNotifProgress] = useState(false);
+  const [notifEmail, setNotifEmail] = useState(() => {
+    const val = localStorage.getItem("settings_notif_email");
+    return val !== null ? val === "true" : true;
+  });
+  const [notifResults, setNotifResults] = useState(() => {
+    const val = localStorage.getItem("settings_notif_results");
+    return val !== null ? val === "true" : true;
+  });
+  const [notifProgress, setNotifProgress] = useState(() => {
+    const val = localStorage.getItem("settings_notif_progress");
+    return val !== null ? val === "true" : false;
+  });
   
   // System states
   const [toastMessage, setToastMessage] = useState(null);
@@ -97,6 +119,7 @@ function Settings() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sessionInfo, setSessionInfo] = useState({ os: "Unknown OS", browser: "Unknown Browser" });
+  const [othersRevoked, setOthersRevoked] = useState(false);
 
   useEffect(() => {
     // Parse userAgent for current session display
@@ -128,39 +151,7 @@ function Settings() {
       }
     }
 
-    const storedDarkMode = localStorage.getItem("settings_dark_mode");
-    if (storedDarkMode !== null) {
-      setIsDarkMode(storedDarkMode === "true");
-    }
-    
-    const storedThemeColor = localStorage.getItem("settings_theme_color");
-    if (storedThemeColor) {
-      setThemeColor(storedThemeColor);
-    }
-    
-    const storedFontSize = localStorage.getItem("settings_font_size");
-    if (storedFontSize) {
-      setFontSize(storedFontSize);
-    }
-    
-    const storedDailyGoal = localStorage.getItem("settings_daily_goal");
-    if (storedDailyGoal) {
-      setDailyGoal(storedDailyGoal);
-    }
-    
-    const storedReminders = localStorage.getItem("settings_reminders_enabled");
-    if (storedReminders !== null) {
-      setRemindersEnabled(storedReminders === "true");
-    }
 
-    const storedNotifEmail = localStorage.getItem("settings_notif_email");
-    if (storedNotifEmail !== null) setNotifEmail(storedNotifEmail === "true");
-
-    const storedNotifResults = localStorage.getItem("settings_notif_results");
-    if (storedNotifResults !== null) setNotifResults(storedNotifResults === "true");
-
-    const storedNotifProgress = localStorage.getItem("settings_notif_progress");
-    if (storedNotifProgress !== null) setNotifProgress(storedNotifProgress === "true");
   }, [user]);
 
   // Apply Dark/Light Mode
@@ -302,6 +293,7 @@ function Settings() {
       const { error } = await supabase.auth.signOut({ scope: "others" });
       if (error) throw error;
       showToast("Successfully terminated all other active client logins.", "success");
+      setOthersRevoked(true);
     } catch (err) {
       showToast("Failed to revoke session: " + err.message, "error");
     }
@@ -725,9 +717,10 @@ function Settings() {
                     min="10"
                     max="180"
                     step="5"
+                    className="premium-slider"
                     value={dailyGoal}
                     onChange={(e) => setDailyGoal(e.target.value)}
-                    style={{ width: "100%", accentColor: "#06B6D4", marginTop: "10px" }}
+                    style={{ marginTop: "10px" }}
                   />
                   <div style={{ display: "flex", justifyContent: "space-between", color: "#64748B", fontSize: "11px", marginTop: "4px" }}>
                     <span>10 Min</span>
@@ -736,17 +729,22 @@ function Settings() {
                   </div>
                 </div>
 
-                <div className="form-group-new" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "14px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                <div className="premium-setting-item">
                   <div>
                     <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Daily Learning Reminders</div>
                     <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Remind me to study daily to preserve my streak.</div>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={remindersEnabled}
-                    onChange={(e) => setRemindersEnabled(e.target.checked)}
-                    style={{ width: "20px", height: "20px", accentColor: "#06B6D4", cursor: "pointer" }}
-                  />
+                  <label className="toggle-wrapper">
+                    <input
+                      type="checkbox"
+                      className="toggle-input"
+                      checked={remindersEnabled}
+                      onChange={(e) => setRemindersEnabled(e.target.checked)}
+                    />
+                    <div className="toggle-bg">
+                      <div className="toggle-circle"></div>
+                    </div>
+                  </label>
                 </div>
               </div>
             )}
@@ -758,43 +756,67 @@ function Settings() {
                 <p className="panel-desc">Configure automated mailers and results broadcasts.</p>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "14px", marginTop: "6px" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "14px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <div className="premium-setting-item">
                     <div>
                       <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Email Notifications</div>
                       <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Receive system notices via email.</div>
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={notifEmail}
-                      onChange={(e) => setNotifEmail(e.target.checked)}
-                      style={{ width: "20px", height: "20px", accentColor: "#06B6D4", cursor: "pointer" }}
-                    />
+                    <label className="toggle-wrapper">
+                      <input
+                        type="checkbox"
+                        className="toggle-input"
+                        checked={notifEmail}
+                        onChange={(e) => {
+                          setNotifEmail(e.target.checked);
+                          showToast("Notification preferences updated.", "success");
+                        }}
+                      />
+                      <div className="toggle-bg">
+                        <div className="toggle-circle"></div>
+                      </div>
+                    </label>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "14px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <div className="premium-setting-item">
                     <div>
                       <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Quiz Results Alerts</div>
                       <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Broadcasting summaries of finished assessments.</div>
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={notifResults}
-                      onChange={(e) => setNotifResults(e.target.checked)}
-                      style={{ width: "20px", height: "20px", accentColor: "#06B6D4", cursor: "pointer" }}
-                    />
+                    <label className="toggle-wrapper">
+                      <input
+                        type="checkbox"
+                        className="toggle-input"
+                        checked={notifResults}
+                        onChange={(e) => {
+                          setNotifResults(e.target.checked);
+                          showToast("Notification preferences updated.", "success");
+                        }}
+                      />
+                      <div className="toggle-bg">
+                        <div className="toggle-circle"></div>
+                      </div>
+                    </label>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.02)", padding: "14px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.04)" }}>
+                  <div className="premium-setting-item">
                     <div>
                       <div style={{ fontWeight: 600, color: "white", fontSize: "14px" }}>Progress Updates Notifications</div>
                       <div style={{ color: "#64748B", fontSize: "12px", marginTop: "2px" }}>Weekly analysis of study time and mastery charts.</div>
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={notifProgress}
-                      onChange={(e) => setNotifProgress(e.target.checked)}
-                      style={{ width: "20px", height: "20px", accentColor: "#06B6D4", cursor: "pointer" }}
-                    />
+                    <label className="toggle-wrapper">
+                      <input
+                        type="checkbox"
+                        className="toggle-input"
+                        checked={notifProgress}
+                        onChange={(e) => {
+                          setNotifProgress(e.target.checked);
+                          showToast("Notification preferences updated.", "success");
+                        }}
+                      />
+                      <div className="toggle-bg">
+                        <div className="toggle-circle"></div>
+                      </div>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -820,20 +842,30 @@ function Settings() {
                       <span style={{ fontSize: "10px", color: "#10B981", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", padding: "2px 6px", borderRadius: "6px", fontWeight: 700 }}>ACTIVE</span>
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.01)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.03)" }}>
-                      <FiMonitor style={{ color: "#94A3B8", fontSize: "20px" }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: "13px", fontWeight: 600, color: "#CBD5E1" }}>Other signed-in devices</div>
-                        <div style={{ fontSize: "11px", color: "#64748B" }}>Previously authorized browsers or mobile apps</div>
+                    {!othersRevoked ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.01)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                        <FiMonitor style={{ color: "#94A3B8", fontSize: "20px" }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: "13px", fontWeight: 600, color: "#CBD5E1" }}>Other signed-in devices</div>
+                          <div style={{ fontSize: "11px", color: "#64748B" }}>Previously authorized browsers or mobile apps</div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRevokeSession}
+                          style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444", fontSize: "10px", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontWeight: 600 }}
+                        >
+                          REVOKE OTHERS
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleRevokeSession}
-                        style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#EF4444", fontSize: "10px", padding: "4px 8px", borderRadius: "6px", cursor: "pointer", fontWeight: 600 }}
-                      >
-                        REVOKE OTHERS
-                      </button>
-                    </div>
+                    ) : (
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "rgba(255,255,255,0.01)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.03)" }}>
+                        <FiMonitor style={{ color: "#94A3B8", fontSize: "20px", opacity: 0.5 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: "13px", fontWeight: 600, color: "#64748B" }}>No other signed-in devices</div>
+                          <div style={{ fontSize: "11px", color: "#475569" }}>All other sessions have been terminated.</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

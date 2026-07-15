@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
-import { saveQuizResult } from "../../services/quizApi";
+import React from "react";
 import Navbar from "../../components/Navbar";
-import { useAuth } from "../../contexts/AuthContext";
 
 function ResultPage({
   score,
@@ -13,30 +11,9 @@ function ResultPage({
   onNextLevel,   // (nextDifficulty) => void  -- start medium/hard
   onHome,        // go to Other Topics
 }) {
-  const { user } = useAuth();
   const accuracy = totalQuestions
     ? Math.round((score / totalQuestions) * 100)
     : 0;
-
-  useEffect(() => {
-    const email = user?.email || "temp_user";
-
-    saveQuizResult({
-      userId: email,
-      organ,
-      difficulty,
-      score,
-      totalQuestions,
-      percentage: accuracy,
-      weakAreas,
-    })
-      .then(() => {
-        console.log("Quiz result saved");
-      })
-      .catch((err) => {
-        console.error("Save failed:", err);
-      });
-  }, [accuracy, difficulty, organ, score, totalQuestions, weakAreas]);
 
   // Glow strength based on raw score
   const glowClass =
