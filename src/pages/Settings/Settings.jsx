@@ -913,30 +913,174 @@ function Settings() {
 
             {/* ABOUT TAB */}
             {activeTab === "about" && (
-              <div className="settings-form-panel">
-                <h2 className="panel-title">About AR AnatomyAI</h2>
-                <p className="panel-desc">Application metadata, policies, and documentation links.</p>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "10px" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "100px 1fr", gap: "8px", fontSize: "13px" }}>
-                    <div style={{ color: "#64748B", fontWeight: 600 }}>App Version:</div>
-                    <div style={{ color: "#white" }}>1.2.4 (Stable Build)</div>
-
-                    <div style={{ color: "#64748B", fontWeight: 600 }}>Developer:</div>
-                    <div style={{ color: "#white" }}>Google DeepMind Advanced Engineering</div>
-
-                    <div style={{ color: "#64748B", fontWeight: 600 }}>Engine:</div>
-                    <div style={{ color: "#white" }}>React 19 + ThreeJS / Fiber</div>
+              <div className="settings-form-panel" style={{ textAlign: "center", padding: "40px 20px" }}>
+                <div style={{
+                  width: "80px",
+                  height: "80px",
+                  background: "linear-gradient(135deg, #06B6D4, #3B82F6)",
+                  borderRadius: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 20px",
+                  boxShadow: "0 10px 25px rgba(6, 182, 212, 0.4)",
+                  transform: "rotate(-5deg)"
+                }}>
+                  <FiInfo style={{ fontSize: "40px", color: "white", transform: "rotate(5deg)" }} />
+                </div>
+                
+                <h2 style={{ fontSize: "28px", fontWeight: 800, color: "white", margin: "0 0 8px 0", letterSpacing: "-0.5px" }}>AR AnatomyAI</h2>
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}>
+                  <div style={{ 
+                    background: "rgba(6, 182, 212, 0.15)", 
+                    border: "1px solid rgba(6, 182, 212, 0.3)", 
+                    color: "#06B6D4", 
+                    padding: "4px 12px", 
+                    borderRadius: "20px", 
+                    fontSize: "12px", 
+                    fontWeight: 700
+                  }}>
+                    v1.2.4 (Stable Build)
                   </div>
+                </div>
 
-                  <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "16px", display: "flex", gap: "20px" }}>
-                    <a href="#terms" onClick={(e) => { e.preventDefault(); showToast("Showing Terms & Conditions.", "info"); }} style={{ color: "#06B6D4", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}>
-                      Terms & Conditions
-                    </a>
-                    <a href="#privacy" onClick={(e) => { e.preventDefault(); showToast("Displaying Privacy Policy.", "info"); }} style={{ color: "#06B6D4", textDecoration: "none", fontSize: "13px", fontWeight: 500 }}>
-                      Privacy Policy
-                    </a>
+                <p style={{ color: "#94A3B8", fontSize: "14px", lineHeight: "1.6", maxWidth: "400px", margin: "0 auto 32px" }}>
+                  A next-generation interactive learning platform utilizing advanced AI and augmented reality to master human anatomy.
+                </p>
+
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "32px" }}>
+                  <div style={{ 
+                    background: "rgba(255,255,255,0.02)", 
+                    border: "1px solid rgba(255,255,255,0.05)", 
+                    borderRadius: "16px", 
+                    padding: "20px",
+                    width: "100%",
+                    maxWidth: "400px",
+                    textAlign: "left"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+                      <span style={{ color: "#64748B", fontSize: "13px", fontWeight: 600 }}>Engine Core</span>
+                      <span style={{ color: "white", fontSize: "13px", fontWeight: 500 }}>React 19 + ThreeJS</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                      <span style={{ color: "#64748B", fontSize: "13px", fontWeight: 600 }}>AI Models</span>
+                      <span style={{ color: "white", fontSize: "13px", fontWeight: 500 }}>Google Gemini Pro</span>
+                    </div>
                   </div>
+                </div>
+
+                <div style={{ textAlign: "center", marginBottom: "32px" }}>
+                  <h3 style={{ color: "white", fontSize: "18px", fontWeight: 700, marginBottom: "20px" }}>Meet the Developers</h3>
+                  <div style={{ display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap", maxWidth: "900px", margin: "0 auto" }}>
+                    
+                    {/* Developer 1 */}
+                    <div style={{ 
+                      background: "rgba(255,255,255,0.02)", 
+                      border: "1px solid rgba(255,255,255,0.05)", 
+                      borderRadius: "16px", 
+                      padding: "20px 16px",
+                      width: "180px",
+                      textAlign: "center",
+                      transition: "transform 0.3s ease, border-color 0.3s ease",
+                      cursor: "default"
+                    }} className="developer-card">
+                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #06B6D4, #3B82F6)", padding: "2px" }}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nihal&backgroundColor=b6e3f4" alt="Shaik Nihal" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
+                      </div>
+                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>Shaik Nihal</div>
+                      <div style={{ color: "#06B6D4", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Lead AI & Full-Stack</div>
+                    </div>
+
+                    {/* Developer 2 */}
+                    <div style={{ 
+                      background: "rgba(255,255,255,0.02)", 
+                      border: "1px solid rgba(255,255,255,0.05)", 
+                      borderRadius: "16px", 
+                      padding: "20px 16px",
+                      width: "180px",
+                      textAlign: "center",
+                      transition: "transform 0.3s ease, border-color 0.3s ease",
+                      cursor: "default"
+                    }} className="developer-card">
+                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #10B981, #059669)", padding: "2px" }}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jaajitha&backgroundColor=c0aede" alt="P Jaajitha Reddy" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
+                      </div>
+                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>P Jaajitha Reddy</div>
+                      <div style={{ color: "#10B981", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Lead UI/UX Designer</div>
+                    </div>
+
+                    {/* Developer 3 */}
+                    <div style={{ 
+                      background: "rgba(255,255,255,0.02)", 
+                      border: "1px solid rgba(255,255,255,0.05)", 
+                      borderRadius: "16px", 
+                      padding: "20px 16px",
+                      width: "180px",
+                      textAlign: "center",
+                      transition: "transform 0.3s ease, border-color 0.3s ease",
+                      cursor: "default"
+                    }} className="developer-card">
+                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #F59E0B, #D97706)", padding: "2px" }}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Durga&backgroundColor=fcd34d" alt="S Durga Sri" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
+                      </div>
+                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>S Durga Sri</div>
+                      <div style={{ color: "#F59E0B", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Data Researcher</div>
+                    </div>
+
+                    {/* Developer 4 */}
+                    <div style={{ 
+                      background: "rgba(255,255,255,0.02)", 
+                      border: "1px solid rgba(255,255,255,0.05)", 
+                      borderRadius: "16px", 
+                      padding: "20px 16px",
+                      width: "180px",
+                      textAlign: "center",
+                      transition: "transform 0.3s ease, border-color 0.3s ease",
+                      cursor: "default"
+                    }} className="developer-card">
+                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #8B5CF6, #6D28D9)", padding: "2px" }}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Kiran&backgroundColor=ddd6fe" alt="I Kiran Kumar" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
+                      </div>
+                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>I Kiran Kumar</div>
+                      <div style={{ color: "#8B5CF6", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>Backend Developer</div>
+                    </div>
+
+                    {/* Developer 5 */}
+                    <div style={{ 
+                      background: "rgba(255,255,255,0.02)", 
+                      border: "1px solid rgba(255,255,255,0.05)", 
+                      borderRadius: "16px", 
+                      padding: "20px 16px",
+                      width: "180px",
+                      textAlign: "center",
+                      transition: "transform 0.3s ease, border-color 0.3s ease",
+                      cursor: "default"
+                    }} className="developer-card">
+                      <div style={{ width: "64px", height: "64px", borderRadius: "50%", margin: "0 auto 12px", background: "linear-gradient(135deg, #F43F5E, #E11D48)", padding: "2px" }}>
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Monika&backgroundColor=fecdd3" alt="L Monika" style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#1E293B" }} />
+                      </div>
+                      <div style={{ color: "white", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>L Monika</div>
+                      <div style={{ color: "#F43F5E", fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px" }}>QA Engineer</div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "center", gap: "16px" }}>
+                  <button 
+                    onClick={() => showToast("Showing Terms & Conditions.", "info")}
+                    className="settings-action-btn secondary"
+                    style={{ padding: "10px 20px", borderRadius: "12px" }}
+                  >
+                    Terms of Service
+                  </button>
+                  <button 
+                    onClick={() => showToast("Displaying Privacy Policy.", "info")}
+                    className="settings-action-btn secondary"
+                    style={{ padding: "10px 20px", borderRadius: "12px" }}
+                  >
+                    Privacy Policy
+                  </button>
                 </div>
               </div>
             )}
